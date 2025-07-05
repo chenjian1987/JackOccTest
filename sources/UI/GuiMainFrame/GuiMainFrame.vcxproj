@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\AppWindowFactory.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainFrameDefine.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainOccDefines.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IAppWindow.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IAppWindowFactory.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IfcImportUtils.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\WinMainSlotsDefine.h" />
+    <CustomBuild Include="WinParametricBuild.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="IfcImportDialog.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+    </CustomBuild>
+    <CustomBuild Include="ShapeEditDialog.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="HomePage.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+    </CustomBuild>
+    <CustomBuild Include="MainWindow.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AppWindowFactory.cpp" />
+    <ClCompile Include="HomePage.cpp" />
+    <ClCompile Include="HomePageActionFun.cpp" />
+    <ClCompile Include="IAppWindowFactory.cpp" />
+    <ClCompile Include="IfcImportDialog.cpp" />
+    <ClCompile Include="IfcImportUtils.cpp" />
+    <ClCompile Include="IMainWindow.cpp" />
+    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="ShapeEditDialog.cpp" />
+    <ClCompile Include="WinParametricBuild.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{d0c516bc-5b4c-48cf-9189-d308050dcfb1}</ProjectGuid>
+    <RootNamespace>GuiMainFrame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(JACKC_SOLUTION_BIN_DIR)\</OutDir>
+    <IntDir>$(JACKC_BUILD_OUTPUT_DIR)\$(TargetName).dir\$(Configuration)\</IntDir>
+    <TargetName>JackC$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN64;_USRDLL;_WINDOWS;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;_DEBUG;JACKC_GUI_MAIN_FRAME_HOME;_USE_MATH_DEFINES;_ITERATOR_DEBUG_LEVEL=2;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame;$(JACKC_SOLUTION_INC_DIR)\UI\GuiBase;$(JACKC_SOLUTION_INC_DIR)\UI\UiView;$(JACKC_SOLUTION_INC_DIR)\UI\GuiMainFrame;$(JACKC_SOLUTION_INC_DIR)\App;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Common;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Math;$(JACKC_SOLUTION_INC_DIR)\Model\Database;$(JACKC_SOLUTION_INC_DIR)\Model\Element;$(JACKC_SARIBBON_INC_DIR);$(JACKC_QT_INC_DIR);$(JACKC_QT_INC_DIR)\QtWidgets;$(JACKC_QT_INC_DIR)\QtCore;$(JACKC_QT_INC_DIR)\QtGui;$(JACKC_QT_INC_DIR)\QtNetwork;$(JACKC_QT_INC_DIR)\QtCore5Compat;$(JACKC_OCC_INC_DIR);$(JACKC_PUGXML_INC_DIR);$(JACKC_IFCPP_INC_DIR);$(JACKC_JSONCPP_INC_DIR);$(JACKC_IFCPP_INC_DIR)\ifcpp\IFC4X3\include;$(JACKC_IFCPP_INC_DIR)\ifcpp\model;$(JACKC_IFCPP_INC_DIR)\ifcpp\geometry;$(JACKC_IFCPP_INC_DIR)\ifcpp\reader;$(JACKC_IFCPP_INC_DIR)\ifcpp\writer;$(JACKC_IFCPP_INC_DIR)\external;$(JACKC_IFCPP_INC_DIR)\external\Carve\src\include;$(JACKC_IFCPP_INC_DIR)\external\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:__cplusplus  /permissive- /wd4996 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(JACKC_SOLUTION_BIN_DIR)\$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR);$(JACKC_PUGXML_LIB_DIR);$(JACKC_JSONCPP_LIB_DIR);$(JACKC_QT_LIB_DIR);$(JACKC_OCC_LIB_DIR);$(JACKC_SARIBBON_LIB_DIR)\Debug;$(JACKC_IFCPP_LIB_DIR)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>JackCUiView.lib;JackCAppInterface.lib;JackCCommon.lib;Qt6Widgetsd.lib;Qt6Guid.lib;Qt6Cored.lib;Qt6Core5Compatd.lib;TKernel.lib;TKMath.lib;TKService.lib;TKV3d.lib;TKOpenGl.lib;TKBRep.lib;TKGeomBase.lib;TKGeomAlgo.lib;TKTopAlgo.lib;TKPrim.lib;TKBool.lib;TKBO.lib;TKG3d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;SARibbonBard.lib;pugixml.lib;jsoncpp.lib;TKBin.lib;TKBinL.lib;TKBinTObj.lib;TKBinXCAF.lib;TKCAF.lib;TKCDF.lib;TKFeat.lib;TKFillet.lib;TKG2d.lib;TKHLR.lib;TKLCAF.lib;TKMesh.lib;TKMeshVS.lib;TKOffset.lib;TKShHealing.lib;TKStd.lib;TKStdL.lib;TKTObj.lib;TKVCAF.lib;TKXCAF.lib;TKXMesh.lib;TKXSBase.lib;IfcPlusPlusd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>$(JACKC_SOLUTION_PDB_DIR)\$(TargetName).pdb</ProgramDatabaseFile>
+      <ImportLibrary>$(JACKC_SOLUTION_LIB_DIR)/$(TargetName).lib</ImportLibrary>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

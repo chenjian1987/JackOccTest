@@ -1,0 +1,12 @@
+QT.multimedia_private.VERSION = 6.3.1
+QT.multimedia_private.name = QtMultimedia
+QT.multimedia_private.module =
+QT.multimedia_private.libs = $$QT_MODULE_LIB_BASE
+QT.multimedia_private.includes = $$QT_MODULE_INCLUDE_BASE/QtMultimedia/6.3.1 $$QT_MODULE_INCLUDE_BASE/QtMultimedia/6.3.1/QtMultimedia
+QT.multimedia_private.frameworks = 
+QT.multimedia_private.depends = core_private gui_private multimedia
+QT.multimedia_private.uses = 
+QT.multimedia_private.module_config = v2 internal_module
+QT.multimedia_private.enabled_features = evr wmsdk wmf
+QT.multimedia_private.disabled_features = alsa avfoundation gstreamer_1_0 gstreamer gstreamer_app gstreamer_photography gstreamer_gl gpu_vivante linux_v4l linux_dmabuf mmrenderer pulseaudio
+QMAKE_LIBS_WMF = -lpropsys -lMfcore -lMfplat -lmfuuid -lMf -lOleAut32 -lOle32 -lmsdmo -lUuid -ldmoguids -lamstrmid -lstrmiids

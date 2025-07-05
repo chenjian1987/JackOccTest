@@ -1,0 +1,11 @@
+QT.webenginecore_private.VERSION = 6.3.1
+QT.webenginecore_private.name = QtWebEngineCore
+QT.webenginecore_private.module =
+QT.webenginecore_private.libs = $$QT_MODULE_LIB_BASE
+QT.webenginecore_private.includes = $$QT_MODULE_INCLUDE_BASE/QtWebEngineCore/6.3.1 $$QT_MODULE_INCLUDE_BASE/QtWebEngineCore/6.3.1/QtWebEngineCore
+QT.webenginecore_private.frameworks = 
+QT.webenginecore_private.depends = webenginecore
+QT.webenginecore_private.uses = 
+QT.webenginecore_private.module_config = v2 internal_module
+QT.webenginecore_private.enabled_features = webengine-v8-snapshot-support webengine-pepper-plugins webengine-printing-and-pdf webengine-kerberos webengine-webrtc
+QT.webenginecore_private.disabled_features = webengine-embedded-build webengine-system-alsa webengine-system-pulseaudio webengine-proprietary-codecs webengine-webrtc-pipewire webengine-full-debug-info webengine-sanitizer webengine-system-poppler

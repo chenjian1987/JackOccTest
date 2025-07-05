@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Include\ActionSlots">
+      <UniqueIdentifier>{ce25e5fa-ba95-488c-b5bf-aa430384cad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Define">
+      <UniqueIdentifier>{087a2fb3-c1e9-4bf3-a220-c5f0db32e864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\ifc">
+      <UniqueIdentifier>{320580ae-0eba-48bd-8b28-fc20eef0a144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Ifc">
+      <UniqueIdentifier>{2e103c5c-6a64-4b57-9139-3c540cbba8ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IAppWindow.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IAppWindowFactory.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\AppWindowFactory.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\WinMainSlotsDefine.h">
+      <Filter>Include\ActionSlots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainOccDefines.h">
+      <Filter>Include\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainFrameDefine.h">
+      <Filter>Include\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IfcImportUtils.h">
+      <Filter>Include\ifc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IMainWindow.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IAppWindowFactory.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AppWindowFactory.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HomePage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HomePageActionFun.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeEditDialog.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IfcImportDialog.cpp">
+      <Filter>Source\Ifc</Filter>
+    </ClCompile>
+    <ClCompile Include="IfcImportUtils.cpp">
+      <Filter>Source\Ifc</Filter>
+    </ClCompile>
+    <ClCompile Include="WinParametricBuild.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="MainWindow.h">
+      <Filter>Include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HomePage.h">
+      <Filter>Include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShapeEditDialog.h">
+      <Filter>Include\ActionSlots</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IfcImportDialog.h">
+      <Filter>Include\ifc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinParametricBuild.h">
+      <Filter>Include</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

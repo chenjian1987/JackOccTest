@@ -1,0 +1,2 @@
+bin目录和lib目录为x64 release版本，稍后会删除。
+Win32下的tc未经过详细测试。

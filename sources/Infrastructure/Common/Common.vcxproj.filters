@@ -1,0 +1,381 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Head Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Head Files\Assert">
+      <UniqueIdentifier>{2a270f38-9544-4ca5-a989-45dabdbbb30d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assert">
+      <UniqueIdentifier>{a329bf8e-9db9-4ea5-9d25-ef19b9693e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Define">
+      <UniqueIdentifier>{cc5d1fa0-b357-48d2-aa4c-1b4d30082cae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Config">
+      <UniqueIdentifier>{3de59200-ec5c-4227-a5b6-e6d802b4ea06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{873e23d1-a208-4505-8488-664c0f1ad8ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\FilePath">
+      <UniqueIdentifier>{b0d998da-58e0-4a8a-8acc-f7827d187da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FilePath">
+      <UniqueIdentifier>{c3b3a886-12b0-462c-b192-4ed3269cc4f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Debug">
+      <UniqueIdentifier>{bc756181-53cf-4146-83d2-fea78af9aa2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debug">
+      <UniqueIdentifier>{41ee53b2-1725-4982-a8ae-014a322f6fdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\String">
+      <UniqueIdentifier>{b5d01c0f-fec8-446f-969d-8c083f990248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\String">
+      <UniqueIdentifier>{2c3ec764-73e4-4886-b5d3-e5c3919a2a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Base64">
+      <UniqueIdentifier>{a1396faa-77a0-4e5d-b867-fd957f736b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base64">
+      <UniqueIdentifier>{83dd2221-8066-4857-9b7b-80631db38406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Log">
+      <UniqueIdentifier>{1fa805ab-9032-4a03-adbf-f958ec42a3f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Log">
+      <UniqueIdentifier>{c61a46f9-eeec-4d10-9af6-44b0ce9a034b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\MD5">
+      <UniqueIdentifier>{378bb464-8ae8-498f-94ff-0012e898cf39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MD5">
+      <UniqueIdentifier>{8b2d13c6-07db-41b3-907f-d31dd3c6e788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Memory">
+      <UniqueIdentifier>{937c273a-b230-4b31-ae39-37a073eaa33d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory">
+      <UniqueIdentifier>{323f86a6-f918-4e1a-ad49-ebfbeadd8bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Color">
+      <UniqueIdentifier>{f101860e-7921-499c-a51c-f1b0c0400f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Color">
+      <UniqueIdentifier>{f4bb4061-37b1-4607-a5d7-05cf699234f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Timer">
+      <UniqueIdentifier>{595a2ec1-80e7-4349-9b19-987f1ac0c4de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timer">
+      <UniqueIdentifier>{ff1ac353-2b3c-4f64-8940-0ec02b65055f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Head Files\Element">
+      <UniqueIdentifier>{69ade066-76a6-44d9-ac34-a2d932271094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Element">
+      <UniqueIdentifier>{e4d28f47-2a86-4c72-903b-314abaa453d5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\AssertHelper.h">
+      <Filter>Head Files\Assert</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JCommonDefine.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JQuickCast.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\EnableCompileWarning_The_LAST_IncludeInCpp.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\IConfigRecord.h">
+      <Filter>Head Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\ConfigRecord.h">
+      <Filter>Head Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\IBehaviorConfig.h">
+      <Filter>Head Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\BehaviorConfig.h">
+      <Filter>Head Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\FilePath.h">
+      <Filter>Head Files\FilePath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\FileSystem.h">
+      <Filter>Head Files\FilePath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\FileUtils.h">
+      <Filter>Head Files\FilePath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\DebugMessage.h">
+      <Filter>Head Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\CrashHelper.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\DebugCrash.h">
+      <Filter>Head Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\DebugMessageMgrImpl.h">
+      <Filter>Head Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\IDebugWarningDisplayer.h">
+      <Filter>Head Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\TransferOwnership.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\simdutf8check.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\StringUtils.h">
+      <Filter>Head Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\UniqueString.h">
+      <Filter>Head Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\base64.h">
+      <Filter>Head Files\Base64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\BasicConfigUtils.h">
+      <Filter>Head Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\FilePathManager.h">
+      <Filter>Head Files\FilePath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\Log.h">
+      <Filter>Head Files\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\LogBase.h">
+      <Filter>Head Files\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\LogType.h">
+      <Filter>Head Files\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\OneTimeInitializer.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\LogManager.h">
+      <Filter>Head Files\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Md5.h">
+      <Filter>Source Files\MD5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\RawMemory.h">
+      <Filter>Head Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\Color.h">
+      <Filter>Head Files\Color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\Constants.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\CommandParameters.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\DateTime.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JsonUtils.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\RuntimeId.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\ShellUtils.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\StlContainerUtils.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\UnitHelper.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\WeakReferenceable.h">
+      <Filter>Head Files\Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\IObject.h">
+      <Filter>Head Files\Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\ElementId.h">
+      <Filter>Head Files\Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\Singleton.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JColorUtils.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JGuid.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JTimer.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JTypeDefs.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JDefines.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JDevService.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\ClassId.h">
+      <Filter>Head Files\Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JString.h">
+      <Filter>Head Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JMD5.h">
+      <Filter>Head Files\MD5</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JAssert.h">
+      <Filter>Head Files\Assert</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JNew.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\JCassert.h">
+      <Filter>Head Files\Assert</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\OwnerPtr.h">
+      <Filter>Head Files\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\WeakPtr.h">
+      <Filter>Head Files\Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Common\EnvironmentVariables.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssertHelper.cpp">
+      <Filter>Source Files\Assert</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigRecord.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IConfigRecord.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="BehaviorConfig.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="FileUtils.cpp">
+      <Filter>Source Files\FilePath</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>Source Files\FilePath</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FilePath.cpp">
+      <Filter>Source Files\FilePath</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="UniqueString.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="IBehaviorConfig.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassId.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>Source Files\Base64</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicConfigUtils.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="FilePathManager.cpp">
+      <Filter>Source Files\FilePath</Filter>
+    </ClCompile>
+    <ClCompile Include="LogBase.cpp">
+      <Filter>Source Files\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="LogManager.cpp">
+      <Filter>Source Files\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Md5.cpp">
+      <Filter>Source Files\MD5</Filter>
+    </ClCompile>
+    <ClCompile Include="RawMemory.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Source Files\Color</Filter>
+    </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IObject.cpp">
+      <Filter>Source Files\Element</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementId.cpp">
+      <Filter>Source Files\Element</Filter>
+    </ClCompile>
+    <ClCompile Include="WeakReferenceable.cpp">
+      <Filter>Source Files\Element</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugMessage.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugMessageImpl.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="IDebugWarningDisplayer.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="JAssert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JColorUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JGuid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JMD5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+</Project>
