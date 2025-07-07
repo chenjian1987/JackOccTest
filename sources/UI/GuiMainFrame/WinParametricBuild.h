@@ -30,7 +30,7 @@ public:
         Handle(AIS_InteractiveContext) context,
         Handle(V3d_Viewer) v3dViewer,
         Handle(V3d_View) v3dView,
-        QWidget* parent = nullptr);
+        QWidget* parent, std::function<void(const QString&)> func);
 
 private slots:
     void onDrawLine();
@@ -70,6 +70,10 @@ private:
     // ¹¤¾ß
     bool parsePoint(QLineEdit* xEdit, QLineEdit* yEdit, QLineEdit* zEdit, gp_Pnt& pt, const QString& tip);
     bool parseDouble(QLineEdit* edit, double& value, const QString& tip);
+
+
+private:
+    std::function<void(const QString&)> m_outputFunc;
 };
 
 #endif // WINPARAMETRICBUILD_H

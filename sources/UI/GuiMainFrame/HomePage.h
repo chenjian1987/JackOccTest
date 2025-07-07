@@ -39,6 +39,7 @@ namespace JackC
         virtual void ShowMaximized();
         virtual void ShowMinimized();
 
+        void AppendOutput(const QString& text);
 
     protected:
         virtual void showEvent(QShowEvent *event) override;
@@ -55,7 +56,11 @@ namespace JackC
         void mouseMoveEvent(QMouseEvent* event);
         void wheelEvent(QWheelEvent* event);
 
+        void InitOriginMarker();
+
     private:
+        MainWindow* m_mainPage;
+
         QWidget *m_pOcctViewContainer; 
         Handle(Aspect_DisplayConnection) m_displayConnection;
         Handle(OpenGl_GraphicDriver) m_graphicDriver;

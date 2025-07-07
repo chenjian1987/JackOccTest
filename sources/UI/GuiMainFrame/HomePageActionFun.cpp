@@ -59,15 +59,17 @@
 #include "IfcImportUtils.h"
 #include "WinParametricBuild.h"
 
+#include "HomePage.h"
 
 
 
-HomePageActionFun::HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent)
+HomePageActionFun::HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent, std::function<void(const QString&)> func)
 {
     m_context=context;
     m_v3dViewer=v3dViewer;
     m_v3dView=v3dView;
     m_parent=parent;
+    m_outputFunc=std::move(func);
 }
 
 
@@ -304,7 +306,7 @@ void HomePageActionFun::TestEditShape()
 }
 void HomePageActionFun::TestBuildBaseMode()
 {
-    WinParametricBuild* dlg=new WinParametricBuild(m_context,m_v3dViewer,m_v3dView,m_parent);
+    WinParametricBuild* dlg=new WinParametricBuild(m_context,m_v3dViewer,m_v3dView,m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }

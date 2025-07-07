@@ -5,10 +5,11 @@
 
 
 
-WinParametricBuild::WinParametricBuild(Handle(AIS_InteractiveContext) context,Handle(V3d_Viewer) v3dViewer,Handle(V3d_View) v3dView,QWidget* parent): QDialog(parent),
+WinParametricBuild::WinParametricBuild(Handle(AIS_InteractiveContext) context,Handle(V3d_Viewer) v3dViewer,Handle(V3d_View) v3dView,QWidget* parent, std::function<void(const QString&)> func): QDialog(parent),
     m_context(context), m_v3dViewer(v3dViewer), m_v3dView(v3dView)
 {
     setupUI();
+    m_outputFunc = std::move(func);
 }
 
 
@@ -161,6 +162,18 @@ void WinParametricBuild::drawLine(const gp_Pnt& p1, const gp_Pnt& p2)
     aisShape->SetColor(Quantity_NOC_RED);
     aisShape->SetWidth(2.0);
     m_context->Display(aisShape, Standard_True);
+    if (m_outputFunc)
+    {
+        m_outputFunc(
+            QStringLiteral("绘制线段：\n  起点 ( %1, %2, %3 )\n  终点 ( %4, %5, %6 )")
+            .arg(p1.X(), 0, 'f', 3)
+            .arg(p1.Y(), 0, 'f', 3)
+            .arg(p1.Z(), 0, 'f', 3)
+            .arg(p2.X(), 0, 'f', 3)
+            .arg(p2.Y(), 0, 'f', 3)
+            .arg(p2.Z(), 0, 'f', 3)
+        );
+    }
 }
 
 void WinParametricBuild::drawCircle(const gp_Pnt& center, double radius)
@@ -172,6 +185,17 @@ void WinParametricBuild::drawCircle(const gp_Pnt& center, double radius)
     aisShape->SetColor(Quantity_NOC_BLUE1);
     aisShape->SetWidth(2.0);
     m_context->Display(aisShape, Standard_True);
+
+    if (m_outputFunc)
+    {
+        m_outputFunc(
+            QStringLiteral("绘制圆：\n  圆心 ( %1, %2, %3 )\n  半径 %4")
+            .arg(center.X(), 0, 'f', 3)
+            .arg(center.Y(), 0, 'f', 3)
+            .arg(center.Z(), 0, 'f', 3)
+            .arg(radius, 0, 'f', 3)
+        );
+    }
 }
 
 void WinParametricBuild::drawSphere(const gp_Pnt& center, double radius)
@@ -180,6 +204,16 @@ void WinParametricBuild::drawSphere(const gp_Pnt& center, double radius)
     Handle(AIS_Shape) aisShape = new AIS_Shape(sphere);
     aisShape->SetColor(Quantity_NOC_GREEN3);
     m_context->Display(aisShape, Standard_True);
+    if (m_outputFunc)
+    {
+        m_outputFunc(
+            QStringLiteral("绘制球体：\n  球心 ( %1, %2, %3 )\n  半径 %4")
+            .arg(center.X(), 0, 'f', 3)
+            .arg(center.Y(), 0, 'f', 3)
+            .arg(center.Z(), 0, 'f', 3)
+            .arg(radius, 0, 'f', 3)
+        );
+    }
 }
 
 void WinParametricBuild::drawBox(const gp_Pnt& minPt, const gp_Pnt& maxPt)
@@ -188,6 +222,18 @@ void WinParametricBuild::drawBox(const gp_Pnt& minPt, const gp_Pnt& maxPt)
     Handle(AIS_Shape) aisShape = new AIS_Shape(box);
     aisShape->SetColor(Quantity_NOC_GREEN1);
     m_context->Display(aisShape, Standard_True);
+    if (m_outputFunc)
+    {
+        m_outputFunc(
+            QStringLiteral("绘制立方体：\n  最小点 ( %1, %2, %3 )\n  最大点 ( %4, %5, %6 )")
+            .arg(minPt.X(), 0, 'f', 3)
+            .arg(minPt.Y(), 0, 'f', 3)
+            .arg(minPt.Z(), 0, 'f', 3)
+            .arg(maxPt.X(), 0, 'f', 3)
+            .arg(maxPt.Y(), 0, 'f', 3)
+            .arg(maxPt.Z(), 0, 'f', 3)
+        );
+    }
 }
 
 

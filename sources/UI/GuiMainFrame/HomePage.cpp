@@ -38,7 +38,8 @@ HomePage::HomePage(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, fla
     setFocusPolicy(Qt::StrongFocus);
     setUpdatesEnabled(false); // 防止Qt干扰渲染
 
-    
+    InitUI();
+    m_mainPage =(MainWindow*) parent;
 }
 HomePage::~HomePage() {}
 
@@ -146,20 +147,18 @@ void HomePage::wheelEvent(QWheelEvent* event)
 void HomePage::InitUI()
 {
     m_pOcctViewContainer = new QWidget(this);
-
     m_pOcctViewContainer->setAutoFillBackground(false);
     m_pOcctViewContainer->setAttribute(Qt::WA_NoSystemBackground);
     m_pOcctViewContainer->setAttribute(Qt::WA_PaintOnScreen);
     m_pOcctViewContainer->setBackgroundRole(QPalette::NoRole);
     m_pOcctViewContainer->setFocusPolicy(Qt::StrongFocus);
-    m_pOcctViewContainer->setUpdatesEnabled(false); // 防止Qt干扰渲染
+    m_pOcctViewContainer->setUpdatesEnabled(false);
+
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(m_pOcctViewContainer);
 
-    m_pOcctViewContainer->show();
-    this->setLayout(layout);
 }
 
 void HomePage::Initialize() 
@@ -171,8 +170,7 @@ void HomePage::Initialize()
         m_displayConnection = new Aspect_DisplayConnection();
         m_graphicDriver = new OpenGl_GraphicDriver(m_displayConnection);
 
-        WId winHandle = (WId)winId(); //m_pOcctViewContainer->winId();
-        //m_occtWindow = new WNT_Window(reinterpret_cast<Aspect_Handle>(winId));
+        WId winHandle = m_pOcctViewContainer->winId();
 
         m_occtWindow = new WNT_Window((Aspect_Handle)winHandle);
         if (m_occtWindow.IsNull()) 
@@ -230,7 +228,8 @@ void HomePage::Initialize()
         m_v3dView->Redraw();
         m_v3dView->MustBeResized();
     }
-    opHomePageActionFun = NEW_AS_OWNER_PTR(HomePageActionFun,m_context, m_v3dViewer, m_v3dView,this);
+    opHomePageActionFun = NEW_AS_OWNER_PTR(HomePageActionFun,m_context, m_v3dViewer, m_v3dView,this, [this](const QString& text) { this->AppendOutput(text); });
+    InitOriginMarker();
 }
 void HomePage::InitGrid()
 {
@@ -303,6 +302,28 @@ void HomePage::ShowMinimized()
     QWidget::showMinimized();
 }
 
+void HomePage::AppendOutput(const QString& text)
+{
+    m_mainPage->AppendOutput(text);
+}
 
 
+void HomePage::InitOriginMarker()
+{
+    // 创建一个 Geom_Point
+    Handle(Geom_Point) geomPoint = new Geom_CartesianPoint(gp_Pnt(0.0, 0.0, 0.0));
 
+    // 用 Geom_Point 创建 AIS_Point
+    Handle(AIS_Point) aisPoint = new AIS_Point(geomPoint);
+
+    // 设置显示样式
+    Handle(Prs3d_PointAspect) pointAspect = new Prs3d_PointAspect(
+        Aspect_TOM_POINT,
+        Quantity_NOC_RED,
+        5.0 // 点大小
+    );
+    aisPoint->Attributes()->SetPointAspect(pointAspect);
+
+    // 显示
+    m_context->Display(aisPoint, Standard_True);
+}

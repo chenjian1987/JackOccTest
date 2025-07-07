@@ -102,6 +102,6 @@
 
 #include <Geom2d_BSplineCurve.hxx>
 #include <Geom_Surface.hxx>
-#include <Geom_Plane.hxx>
+#include <Geom_CartesianPoint.hxx>
 #include <GeomAPI.hxx>
-#include <Geom_BSplineCurve.hxx>
+#include <AIS_Point.hxx>

@@ -11,7 +11,7 @@
 #include "IMainWindow.h"
 #include "GuiMainFrameDefine.h"
 #include "WinMainSlotsDefine.h"
-
+#include "QPlainTextEdit.h"
 
 
 
@@ -35,6 +35,7 @@ namespace JackC
 
     public:
         virtual bool Initialize() override;// ≥ı ºªØ
+        void AppendOutput(const QString& text);
 
     private slots:
         void onActionSimpleBuildAndTranslate(); 
@@ -55,6 +56,8 @@ namespace JackC
 
 
     private:
+        QPlainTextEdit* m_outputWindow = nullptr;
+
         // MDI«¯”Ú°£
         QMdiArea* m_pMDIArea;
         HomePage* m_pHomePage;

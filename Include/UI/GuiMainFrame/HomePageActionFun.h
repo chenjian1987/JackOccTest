@@ -16,10 +16,11 @@
 
 class QWidget;
 
+
 class HomePageActionFun
 {
 public:
-    HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView,QWidget* parent );
+    HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView,QWidget* parent , std::function<void(const QString&)> func);
 
 public:
     void TestSimpleBuildAndTranslate(); 
@@ -52,4 +53,5 @@ private:
     Handle(V3d_View) m_v3dView;
 
     QWidget* m_parent;
+    std::function<void(const QString&)> m_outputFunc;
 };

@@ -92,12 +92,25 @@ bool MainWindow::Initialize()
 
     HomePage* pHomePage = NEW_AS_QT(HomePage, this);
     m_pHomePage = pHomePage;
-    QVBoxLayout* pVLayout = NEW_AS_QT_LAYOUT(QVBoxLayout, this);
+
+    // 创建容器
+    QWidget* central = new QWidget(this);
+    QVBoxLayout* pVLayout = new QVBoxLayout(central);
     pVLayout->setContentsMargins(0, 0, 0, 0);
     pVLayout->setSpacing(0);
-    pVLayout->addWidget(pHomePage);
-    setCentralWidget(pHomePage);
-    pHomePage->ShowMaximized();
+
+    // 主视图
+    pVLayout->addWidget(pHomePage, 1);
+
+    // 日志
+    m_outputWindow = new QPlainTextEdit(central);
+    m_outputWindow->setReadOnly(true);
+    m_outputWindow->setFixedHeight(150);
+    m_outputWindow->setStyleSheet("background-color: white; color: black; font-family: Consolas;");
+
+    pVLayout->addWidget(m_outputWindow, 0);
+
+    setCentralWidget(central);
     return true;
 }
 
@@ -206,6 +219,16 @@ void MainWindow::createActions()
     m_actionImportIfc = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("导入IFC"), m_panelSolid);
     connect(m_actionImportIfc, &QAction::triggered, this, &MainWindow::onActionImportIfc);
     m_ifcDataManager->addSmallAction(m_actionImportIfc);
+}
+
+
+
+void MainWindow::AppendOutput(const QString& text)
+{
+    if (m_outputWindow)
+    {
+        m_outputWindow->appendPlainText(text);
+    }
 }
 
 
