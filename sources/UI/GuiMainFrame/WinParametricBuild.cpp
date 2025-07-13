@@ -131,25 +131,25 @@ void WinParametricBuild::onDrawBox()
 }
 void WinParametricBuild::onClear()
 {
-        // 获取所有正在显示的交互对象
-        AIS_ListOfInteractive list;
-        m_context->DisplayedObjects(list);
+    // 获取所有正在显示的交互对象
+    AIS_ListOfInteractive list;
+    m_context->DisplayedObjects(list);
     
-        std::vector<Handle(AIS_InteractiveObject)> toRemove;
-        for (AIS_ListOfInteractive::Iterator it(list); it.More(); it.Next())
+    std::vector<Handle(AIS_InteractiveObject)> toRemove;
+    for (AIS_ListOfInteractive::Iterator it(list); it.More(); it.Next())
+    {
+        Handle(AIS_InteractiveObject) obj = it.Value();
+        if (!obj.IsNull() && obj->IsKind(STANDARD_TYPE(AIS_Shape)))
         {
-            Handle(AIS_InteractiveObject) obj = it.Value();
-            if (!obj.IsNull() && obj->IsKind(STANDARD_TYPE(AIS_Shape)))
-            {
-                toRemove.push_back(obj);
-            }
+            toRemove.push_back(obj);
         }
+    }
     
-        for (const auto& obj : toRemove)
-            m_context->Remove(obj, Standard_False);
+    for (const auto& obj : toRemove)
+        m_context->Remove(obj, Standard_False);
     
-        m_context->UpdateCurrentViewer();
     m_context->UpdateCurrentViewer();
+    
 }
 
 

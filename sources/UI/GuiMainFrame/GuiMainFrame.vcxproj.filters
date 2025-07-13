@@ -82,6 +82,9 @@
     <ClCompile Include="WinParametricBuild.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="WinPointLineRelation.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -97,6 +100,9 @@
       <Filter>Include\ifc</Filter>
     </CustomBuild>
     <CustomBuild Include="WinParametricBuild.h">
+      <Filter>Include</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinPointLineRelation.h">
       <Filter>Include</Filter>
     </CustomBuild>
   </ItemGroup>

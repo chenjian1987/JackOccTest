@@ -68,10 +68,21 @@
     { \
         HOMEPAGE->OP->TestBackCoreView(); \
     } \
-    \
+    void WIN::onActionTopCoreView() \
+    { \
+        HOMEPAGE->OP->TestTopCoreView(); \
+    } \
+    void WIN::onActionBottomCoreView() \
+    { \
+        HOMEPAGE->OP->TestBottomCoreView(); \
+    } \
     \
     \
     void WIN::onActionImportIfc() \
     { \
         HOMEPAGE->OP->ImportIfc(); \
-    } 
+    } \
+    void WIN::onActionPointLineRelation() \
+    { \
+        HOMEPAGE->OP->PointLineRelation(); \
+    }

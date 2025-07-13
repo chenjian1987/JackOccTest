@@ -60,6 +60,7 @@
 #include "WinParametricBuild.h"
 
 #include "HomePage.h"
+#include "WinPointLineRelation.h"
 
 
 
@@ -294,7 +295,14 @@ void HomePageActionFun::TestRightCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Right);
 }
-
+void HomePageActionFun::TestTopCoreView()
+{
+    SetStandardView(m_v3dView, EnumCoreViewControlType::Top);
+}
+void HomePageActionFun::TestBottomCoreView()
+{
+    SetStandardView(m_v3dView, EnumCoreViewControlType::Bottom);
+}
 
 void HomePageActionFun::TestEditShape()
 {
@@ -426,4 +434,12 @@ void HomePageActionFun::ImportIfc(const QString filePath)
             IfcImportUtils::DisplayAllMeshes(item, m_context);
         }
     }
+}
+
+
+void HomePageActionFun::PointLineRelation()
+{
+    WinPointLineRelation* dlg = new WinPointLineRelation(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
 }

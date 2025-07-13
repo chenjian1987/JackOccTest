@@ -129,8 +129,8 @@ void MainWindow::createToolBars()
 {
     SARibbonBar* mainPageRibbon = ribbonBar();
     SARibbonCategory* categoryPanelTestBRep= new SARibbonCategory();
-    categoryPanelTestBRep->setCategoryName(QString::fromLocal8Bit("测试BRep"));
-    categoryPanelTestBRep->setObjectName("测试BRep");
+    categoryPanelTestBRep->setCategoryName(QString::fromLocal8Bit("建模"));
+    categoryPanelTestBRep->setObjectName("建模");
     categoryPanelTestBRep->setFont(QFont(QString::fromLocal8Bit("微软雅黑"), 10));
     mainPageRibbon->addCategoryPage(categoryPanelTestBRep);
 
@@ -139,6 +139,8 @@ void MainWindow::createToolBars()
     //brep solid
     m_panelSolid = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("测试BRep Solid"));
     m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("    互操作 & 互编辑   "));
+    m_panelRelationship= categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("           模型关系              "));
+
 
     //视图
     SARibbonBar* barView=ribbonBar();
@@ -197,6 +199,11 @@ void MainWindow::createActions()
     connect(m_actionBuildBaseMode, &QAction::triggered, this, &MainWindow::onActionBuildBaseMode);
     m_panelEdit->addSmallAction(m_actionBuildBaseMode);
 
+    
+    m_actionPointLineRelation = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" 点与线关系"), m_panelEdit);
+    connect(m_actionPointLineRelation, &QAction::triggered, this, &MainWindow::onActionPointLineRelation);
+    m_panelRelationship->addSmallAction(m_actionPointLineRelation);
+
 
     // view
     m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("左视图"), m_panelSolid);
@@ -214,6 +221,15 @@ void MainWindow::createActions()
     m_actionBackCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("后视图"), m_panelSolid);
     connect(m_actionBackCoreView, &QAction::triggered, this, &MainWindow::onActionBackCoreView);
     m_coreViewControl->addSmallAction(m_actionBackCoreView);
+
+    m_actionTopCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("俯视图"), m_panelSolid);
+    connect(m_actionTopCoreView, &QAction::triggered, this, &MainWindow::onActionTopCoreView);
+    m_coreViewControl->addSmallAction(m_actionTopCoreView);
+
+    m_actionBottomCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("仰视图"), m_panelSolid);
+    connect(m_actionBottomCoreView, &QAction::triggered, this, &MainWindow::onActionBottomCoreView);
+    m_coreViewControl->addSmallAction(m_actionBottomCoreView);
+
 
     //数据中心
     m_actionImportIfc = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("导入IFC"), m_panelSolid);

@@ -187,10 +187,19 @@ void HomePage::Initialize()
             m_occtWindow->Map();
         }
         m_context = new AIS_InteractiveContext(m_v3dViewer);
-        //添加右上角cube框    
-        auto view_cube = new AIS_ViewCube();    
-        auto transform_pers = new Graphic3d_TransformPers(Graphic3d_TMF_TriedronPers, Aspect_TOTP_RIGHT_UPPER, Graphic3d_Vec2i(85, 85));    
-        view_cube->SetTransformPersistence(transform_pers);    
+        //添加右上角cube框   
+        auto view_cube = new AIS_ViewCube();
+        // 改颜色
+        view_cube->SetBoxColor(Quantity_NOC_GRAY80);   // Cube主色
+        view_cube->SetTextColor(Quantity_NOC_BLACK);   // 标签文字
+        view_cube->SetFontHeight(12.0);                // 字体大小
+        view_cube->SetInnerColor(Quantity_NOC_GRAY60);
+        auto transform_pers = new Graphic3d_TransformPers(
+            Graphic3d_TMF_TriedronPers,
+            Aspect_TOTP_RIGHT_UPPER,
+            Graphic3d_Vec2i(85, 85)
+        );
+        view_cube->SetTransformPersistence(transform_pers);
         m_context->Display(view_cube, Standard_True);
 
         //设置显示模式    
@@ -235,9 +244,9 @@ void HomePage::InitGrid()
 {
     m_v3dViewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
     // 设置网格参数：逻辑原点和步长（模型单位）
-    m_v3dViewer->SetRectangularGridValues(0.0, 0.0, 10.0, 10.0, 0.0);
+    m_v3dViewer->SetRectangularGridValues(0.0, 0.0, 100.0, 100.0, 0.0);
     // 设置网格在屏幕上的显示比例（像素单位）
-    m_v3dViewer->SetRectangularGridGraphicValues(100.0, 100.0, 0.0);
+    m_v3dViewer->SetRectangularGridGraphicValues(10000.0, 10000.0, 0.0);
     // 启用视图内的网格显示
     m_v3dView->SetGridActivity(Standard_True);
 }

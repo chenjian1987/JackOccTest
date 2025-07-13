@@ -32,12 +32,16 @@ public:
     void TestRightCoreView(); 
     void TestFrontCoreView(); 
     void TestBackCoreView(); 
+    void TestTopCoreView();
+    void TestBottomCoreView();
     
     void TestCreateSimpleBSplineCurve(); 
     void TestCreateRectangle();
 
     void ImportIfc();
     void ImportIfc(const QString str);
+
+    void PointLineRelation();
 
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;

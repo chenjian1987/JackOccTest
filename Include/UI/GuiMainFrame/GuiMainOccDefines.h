@@ -105,3 +105,11 @@
 #include <Geom_CartesianPoint.hxx>
 #include <GeomAPI.hxx>
 #include <AIS_Point.hxx>
+#include <GeomAPI_PointsToBSpline.hxx>
+#include <GeomAPI_Interpolate.hxx>
+#include <TColgp_HArray1OfPnt.hxx>
+#include <GeomAPI.hxx>
+#include <GeomAPI_Interpolate.hxx>
+#include <GeomAdaptor_Curve.hxx>
+#include <Extrema_ExtPC.hxx>
+#include <ShapeAnalysis_Curve.hxx>

@@ -42,13 +42,20 @@ namespace JackC
         void onActionSimpleTopExp(); 
         void onActionCreateSimpleBSplineCurve(); 
         void onActionCreateRectangle(); 
+
         void onActionLeftCoreView(); 
         void onActionRightCoreView(); 
         void onActionFrontCoreView(); 
         void onActionBackCoreView();
+        void onActionTopCoreView();
+        void onActionBottomCoreView();
+
         void onActionEditShape();
         void onActionBuildBaseMode();
         void onActionImportIfc();
+
+        void onActionPointLineRelation();
+
     private:
         void createActions();
         void createMenus();
@@ -71,6 +78,7 @@ namespace JackC
         SARibbonPannel* m_panelCurve;
         SARibbonPannel* m_panelSolid;
         SARibbonPannel* m_panelEdit;
+        SARibbonPannel* m_panelRelationship;
 
         QAction* m_actionSimpleBSplineCurve;
         QAction*  m_actionSimpleSolidTranslate;
@@ -78,6 +86,7 @@ namespace JackC
         QAction* m_actionInclineRectangle;
         QAction* m_actionEditShape;
         QAction* m_actionBuildBaseMode;
+        QAction* m_actionPointLineRelation;
         
         //view
         SARibbonPannel* m_coreViewControl;
@@ -85,6 +94,8 @@ namespace JackC
         QAction* m_actionRightCoreView;
         QAction* m_actionFrontCoreView;
         QAction* m_actionBackCoreView;
+        QAction* m_actionTopCoreView;
+        QAction* m_actionBottomCoreView;
 
         // DataCenter
         SARibbonPannel* m_ifcDataManager;

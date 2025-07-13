@@ -28,6 +28,11 @@
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IfcImportUtils.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\WinMainSlotsDefine.h" />
+    <CustomBuild Include="WinPointLineRelation.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <CustomBuild Include="WinParametricBuild.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
       <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
@@ -65,6 +70,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="ShapeEditDialog.cpp" />
     <ClCompile Include="WinParametricBuild.cpp" />
+    <ClCompile Include="WinPointLineRelation.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
