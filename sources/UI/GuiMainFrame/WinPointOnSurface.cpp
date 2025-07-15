@@ -331,11 +331,79 @@ void WinPointOnSurface::drawPoint(const gp_Pnt& p, Quantity_NameOfColor color, c
 void WinPointOnSurface::drawPlane(const gp_Pnt& point, const gp_Dir& normal)
 {
     gp_Pln plane(point, normal);
+    gp_Dir uDir;
+    if (std::abs(normal.Z()) > 0.9)
+    {
+        uDir = gp_Dir(1, 0, 0);
+    }
+    else
+    {
+        uDir = normal.Crossed(gp_Dir(0, 0, 1));
+    }
+    gp_Dir vDir = normal.Crossed(uDir);
+    
+    BRepBuilderAPI_MakePolygon poly;
+    poly.Add(point.Translated(gp_Vec(uDir) * -500 + gp_Vec(vDir) * -500));
+    poly.Add(point.Translated(gp_Vec(uDir) * 500 + gp_Vec(vDir) * -500));
+    poly.Add(point.Translated(gp_Vec(uDir) * 500 + gp_Vec(vDir) * 500));
+    poly.Add(point.Translated(gp_Vec(uDir) * -500 + gp_Vec(vDir) * 500));
 
+    poly.Close();
 
+    TopoDS_Face face = BRepBuilderAPI_MakeFace(poly.Wire());
+    Handle(AIS_Shape) aisShape = new AIS_Shape(face);
+    aisShape->SetTransparency(0.5);
+    aisShape->SetColor(Quantity_NOC_BLUE1);
+    m_context->Display(aisShape, Standard_True);
+    m_myObjects.append(aisShape);
+    m_myObjects.append(aisShape);
+}
+// 绘制球面 (增加可视化效果)
+void WinPointOnSurface::drawSphere(const gp_Pnt& center, double radius)
+{
+    BRepPrimAPI_MakeSphere makeSphere(center, radius);
+    makeSphere.Build();
+    if (makeSphere.IsDone())
+    {
+        Handle(AIS_Shape) aisShape = new AIS_Shape(makeSphere.Shape());
+        aisShape->SetColor(Quantity_NOC_RED);
+        aisShape->SetTransparency(0.3);
+        aisShape->SetDisplayMode(AIS_Shaded); // 使用着色模式
+        m_context->Display(aisShape, Standard_True);
+        m_myObjects.append(aisShape);
 
+        // 添加球心点
+        drawPoint(center, Quantity_NOC_BLACK, "Center");
+    }
 }
 
+// 绘制圆柱面 (修复方向和尺寸问题)
+void WinPointOnSurface::drawCylinder(const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius, double height)
+{
+    // 确保高度合理
+    if (height < 1e-5) height = 100.0;
+
+    gp_Ax2 cylinderAxis(axisPoint, axisDir);
+    BRepPrimAPI_MakeCylinder makeCylinder(cylinderAxis, radius, height);
+    makeCylinder.Build();
+    if (makeCylinder.IsDone())
+    {
+        Handle(AIS_Shape) aisShape = new AIS_Shape(makeCylinder.Shape());
+        aisShape->SetColor(Quantity_NOC_GREEN);
+        aisShape->SetTransparency(0.3);
+        aisShape->SetDisplayMode(AIS_Shaded);
+        m_context->Display(aisShape, true);
+        m_myObjects.append(aisShape);
+
+        // 添加轴点
+        drawPoint(axisPoint, Quantity_NOC_BLACK, "Axis");
+    }
+}
+
+void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoints) 
+{
+
+}
 
 
 // 平面检查

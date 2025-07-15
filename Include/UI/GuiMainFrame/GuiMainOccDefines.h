@@ -127,3 +127,4 @@
 #include <TColgp_Array2OfPnt.hxx>
 #include <TColStd_Array1OfReal.hxx>
 #include <TColStd_Array1OfInteger.hxx>
+#include <BRepBuilderAPI_MakePolygon.hxx>

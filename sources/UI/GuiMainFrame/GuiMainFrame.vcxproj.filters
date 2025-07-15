@@ -56,9 +56,6 @@
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="WinPointOnSurface.h">
-      <Filter>Include\Relationship</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IMainWindow.cpp">
@@ -115,6 +112,9 @@
       <Filter>Include</Filter>
     </CustomBuild>
     <CustomBuild Include="WinPointLineRelation.h">
+      <Filter>Include\Relationship</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinPointOnSurface.h">
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
   </ItemGroup>
