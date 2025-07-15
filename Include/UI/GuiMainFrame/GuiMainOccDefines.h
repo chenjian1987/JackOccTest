@@ -113,3 +113,17 @@
 #include <GeomAdaptor_Curve.hxx>
 #include <Extrema_ExtPC.hxx>
 #include <ShapeAnalysis_Curve.hxx>
+#include "AIS_TextLabel.hxx"
+#include <BRepBuilderAPI_MakeFace.hxx>  // 用于投影计算
+#include <Geom_Plane.hxx>            // 用于平面
+#include <Geom_BSplineSurface.hxx>   // 用于B样条曲面
+#include <GeomAPI_ProjectPointOnSurf.hxx> // 用于投影计算
+#include <Geom_CartesianPoint.hxx>   // 用于点
+#include <AIS_Shape.hxx>             // 用于绘制形状
+#include <AIS_Point.hxx>             // 用于绘制点
+#include <Prs3d_LineAspect.hxx>      // 用于绘制线条
+#include <BRepPrimAPI_MakeSphere.hxx> 
+#include <BRepPrimAPI_MakeCylinder.hxx>
+#include <TColgp_Array2OfPnt.hxx>
+#include <TColStd_Array1OfReal.hxx>
+#include <TColStd_Array1OfInteger.hxx>

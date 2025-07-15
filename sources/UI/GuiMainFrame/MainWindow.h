@@ -55,6 +55,7 @@ namespace JackC
         void onActionImportIfc();
 
         void onActionPointLineRelation();
+        void onActionPointOnFace();
 
     private:
         void createActions();
@@ -87,6 +88,7 @@ namespace JackC
         QAction* m_actionEditShape;
         QAction* m_actionBuildBaseMode;
         QAction* m_actionPointLineRelation;
+        QAction* m_actionPointOnFace;
         
         //view
         SARibbonPannel* m_coreViewControl;

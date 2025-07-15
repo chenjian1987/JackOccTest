@@ -299,7 +299,7 @@ void HomePage::InitTrihedron()
     m_context->Display(aisTrihedron, Standard_True);
     m_context->Redisplay(aisTrihedron, Standard_True);
 
-
+    
 }
 
 void HomePage::ShowMaximized()

@@ -1,5 +1,5 @@
 ﻿#include <QLabel>
-#include "AIS_TextLabel.hxx"
+
 #include "BRepBuilderAPI_MakeEdge.hxx"
 #include "Geom_Line.hxx"
 #include "Geom_Circle.hxx"

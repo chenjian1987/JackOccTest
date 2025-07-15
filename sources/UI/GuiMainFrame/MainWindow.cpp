@@ -204,6 +204,10 @@ void MainWindow::createActions()
     connect(m_actionPointLineRelation, &QAction::triggered, this, &MainWindow::onActionPointLineRelation);
     m_panelRelationship->addSmallAction(m_actionPointLineRelation);
 
+    m_actionPointOnFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" 点在面上 "), m_panelEdit);
+    connect(m_actionPointOnFace, &QAction::triggered, this, &MainWindow::onActionPointOnFace);
+    m_panelRelationship->addSmallAction(m_actionPointOnFace);
+
 
     // view
     m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("左视图"), m_panelSolid);

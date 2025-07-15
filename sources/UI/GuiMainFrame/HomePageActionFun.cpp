@@ -61,6 +61,7 @@
 
 #include "HomePage.h"
 #include "WinPointLineRelation.h"
+#include "WinPointOnSurface.h"
 
 
 
@@ -440,6 +441,13 @@ void HomePageActionFun::ImportIfc(const QString filePath)
 void HomePageActionFun::PointLineRelation()
 {
     WinPointLineRelation* dlg = new WinPointLineRelation(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+}
+
+void HomePageActionFun::PointOnFace()
+{
+    WinPointOnSurface* dlg = new WinPointOnSurface(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }

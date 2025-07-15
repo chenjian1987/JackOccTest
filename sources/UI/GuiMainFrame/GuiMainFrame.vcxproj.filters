@@ -21,6 +21,12 @@
     <Filter Include="Source\Ifc">
       <UniqueIdentifier>{2e103c5c-6a64-4b57-9139-3c540cbba8ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Relationship">
+      <UniqueIdentifier>{40059b29-2362-4d3a-9abf-3ab85f690765}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Relationship">
+      <UniqueIdentifier>{f2fa9f5a-dbb4-44fa-a3ac-5750ddf6613a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h">
@@ -49,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="WinPointOnSurface.h">
+      <Filter>Include\Relationship</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,7 +92,10 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="WinPointLineRelation.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Relationship</Filter>
+    </ClCompile>
+    <ClCompile Include="WinPointOnSurface.cpp">
+      <Filter>Source\Relationship</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +115,7 @@
       <Filter>Include</Filter>
     </CustomBuild>
     <CustomBuild Include="WinPointLineRelation.h">
-      <Filter>Include</Filter>
+      <Filter>Include\Relationship</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

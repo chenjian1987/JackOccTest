@@ -85,4 +85,8 @@
     void WIN::onActionPointLineRelation() \
     { \
         HOMEPAGE->OP->PointLineRelation(); \
+    } \
+    void WIN::onActionPointOnFace() \
+    { \
+        HOMEPAGE->OP->PointOnFace(); \
     }

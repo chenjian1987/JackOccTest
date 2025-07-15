@@ -42,6 +42,7 @@ public:
     void ImportIfc(const QString str);
 
     void PointLineRelation();
+    void PointOnFace();
 
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
