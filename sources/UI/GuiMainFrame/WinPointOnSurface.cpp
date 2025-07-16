@@ -400,10 +400,101 @@ void WinPointOnSurface::drawCylinder(const gp_Pnt& axisPoint, const gp_Dir& axis
     }
 }
 
-void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoints) 
+void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoints)
 {
+    // 检查控制点数量
+    if (controlPoints.size() < 4 || controlPoints.size() % 2 != 0) {
+        QMessageBox::warning(this, QString::fromLocal8Bit("错误"),  QString(QString::fromLocal8Bit("控制点数量必须是偶数且≥4\n当前数量: %1")).arg(controlPoints.size()));
+        return;
+    }
+    // 网格尺寸：2行 (U方向) × numV 列 (V方向)
+    const int numU = 2;
+    const int numV = controlPoints.size() / 2;
 
+    // 修复1：创建控制点网格 - 使用正确的矩形排列
+    TColgp_Array2OfPnt poles(1, numU, 1, numV);
+    for (int u = 1; u <= numU; ++u) {
+        for (int v = 1; v <= numV; ++v) {
+            // 修复2：正确的索引计算
+            int index;
+            if (u == 1) {
+                // 第一行：左下->右下 (v=1->左下, v=2->右下)
+                index = (v - 1);
+            }
+            else {
+                // 第二行：左上->右上 (v=1->左上, v=2->右上)
+                index = (numV * 2 - v);
+            }
+            poles.SetValue(u, v, controlPoints[index]);
+        }
+    }
+
+    // 设置B样条曲面的次数
+    const int degreeU = 1;
+    const int degreeV = 1;
+
+    // U方向节点
+    TColStd_Array1OfReal knotsU(1, 2);
+    knotsU.SetValue(1, 0.0);
+    knotsU.SetValue(2, 1.0);
+    TColStd_Array1OfInteger multsU(1, 2);
+    multsU.SetValue(1, 2);
+    multsU.SetValue(2, 2);
+
+    // V方向节点
+    TColStd_Array1OfReal knotsV(1, numV);
+    TColStd_Array1OfInteger multsV(1, numV);
+
+    knotsV.SetValue(1, 0.0);
+    multsV.SetValue(1, 2);
+
+    if (numV > 1) {
+        knotsV.SetValue(numV, 1.0);
+        multsV.SetValue(numV, 2);
+    }
+
+    if (numV > 2) {
+        for (int i = 2; i <= numV - 1; ++i) {
+            double knotValue = static_cast<double>(i - 1) / static_cast<double>(numV - 1);
+            knotsV.SetValue(i, knotValue);
+            multsV.SetValue(i, 1);
+        }
+    }
+
+    try {
+        // 构造B样条曲面
+        Handle(Geom_BSplineSurface) bsplineSurface = new Geom_BSplineSurface(
+            poles, knotsU, knotsV, multsU, multsV, degreeU, degreeV,
+            Standard_False, Standard_False
+        );
+
+        // 创建拓扑面
+        TopoDS_Face face = BRepBuilderAPI_MakeFace(bsplineSurface, Precision::Confusion());
+
+        // 显示曲面
+        Handle(AIS_Shape) aisShape = new AIS_Shape(face);
+        aisShape->SetColor(Quantity_NOC_YELLOW);
+        aisShape->SetTransparency(0.4);
+        m_context->Display(aisShape, Standard_True);
+        m_myObjects.append(aisShape);
+
+        // 绘制控制点
+        for (size_t i = 0; i < controlPoints.size(); ++i) {
+            drawPoint(controlPoints[i], Quantity_NOC_MAGENTA,
+                QString("CP%1").arg(i + 1));
+        }
+    }
+    catch (Standard_Failure const& anException) {
+        QString error = QString::fromLocal8Bit("创建B样条曲面失败: ");
+        error += QString::fromUtf8(anException.GetMessageString());
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), error);
+        if (m_outputFunc) {
+            m_outputFunc(error);
+        }
+    }
 }
+
+
 
 
 // 平面检查
@@ -431,10 +522,18 @@ void WinPointOnSurface::onComputePlane()
     if (isOnPlane)
     {
         m_labelResultPlane->setText(QString::fromLocal8Bit("点在平面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点在平面上") );
+        }
     }
     else
     {
         m_labelResultPlane->setText(QString::fromLocal8Bit("点不在平面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点在不平面上"));
+        }
     }
 }
 
@@ -461,10 +560,18 @@ void WinPointOnSurface::onComputeSphere()
     if (isOnSphere)
     {
         m_labelResultSphere->setText(QString::fromLocal8Bit("点在球面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点在球面上"));
+        }
     }
     else
     {
         m_labelResultSphere->setText(QString::fromLocal8Bit("点不在球面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点不在球面上"));
+        }
     }
 }
 
@@ -493,10 +600,18 @@ void WinPointOnSurface::onComputeCylinder()
     if (isOnCylinder)
     {
         m_labelResultCylinder->setText(QString::fromLocal8Bit("点在圆柱面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点在圆柱面上"));
+        }
     }
     else
     {
         m_labelResultCylinder->setText(QString::fromLocal8Bit("点不在圆柱面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点不在圆柱面上"));
+        }
     }
 }
 
@@ -524,9 +639,17 @@ void WinPointOnSurface::onComputeBSpline()
     if (isOnBSpline)
     {
         m_labelResultBSpline->setText(QString::fromLocal8Bit("点在B样条曲面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点在B样条曲面上"));
+        }
     }
     else {
         m_labelResultBSpline->setText(QString::fromLocal8Bit("点不在B样条曲面上"));
+        if (m_outputFunc)
+        {
+            m_outputFunc(QString::fromLocal8Bit("点不在B样条曲面上"));
+        }
     }
 }
 
@@ -542,6 +665,83 @@ bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double 
     // 距离小于容差则认为点在平面上
     return distance <= Tolerance;
 }
+
+
+bool WinPointOnSurface::checkPointOnPlane_Distance(const gp_Pnt& point, double A, double B, double C, double D)
+{
+    gp_Pln plane(A, B, C, D);
+    double distance = plane.Distance(point);
+    return distance <= Tolerance;
+}
+bool WinPointOnSurface::checkPointOnPlane_Math(const gp_Pnt& point, double A, double B, double C, double D)
+{
+    double val = A * point.X() + B * point.Y() + C * point.Z() + D;
+    return std::abs(val) <= Tolerance;
+}
+bool WinPointOnSurface::checkPointOnPlane_Project(const gp_Pnt& point, double A, double B, double C, double D)
+{
+
+}
+bool checkPointOnPlane_ShapeAnalysis(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_Extrema(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_Adaptor(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_FaceClassifier(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_DistShapeShape(const gp_Pnt& point, double A, double B, double C, double D);
+bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 检查点是否在球面上
 bool WinPointOnSurface::checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius)

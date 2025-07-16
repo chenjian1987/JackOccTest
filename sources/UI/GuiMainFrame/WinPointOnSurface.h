@@ -49,6 +49,19 @@ private:
     std::vector<gp_Pnt> parseControlPoints(const QString& input);
 
     bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D);
+
+    bool checkPointOnPlane_Distance(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_Math(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_Project(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_ShapeAnalysis(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_Extrema(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_Adaptor(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_FaceClassifier(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_DistShapeShape(const gp_Pnt& point, double A, double B, double C, double D);
+    bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
+
+
     bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius);
     bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius);
     bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints);
