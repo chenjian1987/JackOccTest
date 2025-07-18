@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTabWidget>
+#include <QComboBox>
 #include <AIS_InteractiveContext.hxx>
 #include <V3d_Viewer.hxx>
 #include <V3d_View.hxx>
@@ -13,10 +14,42 @@
 #include <gp_Pnt.hxx>
 #include <gp_Dir.hxx>
 #include <functional>
+#include <Geom_Plane.hxx>
+#include <Geom_BSplineSurface.hxx>
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepClass_FaceClassifier.hxx>
+#include <BRepExtrema_DistShapeShape.hxx>
+#include <GeomAPI_ProjectPointOnSurf.hxx>
+#include <ShapeAnalysis_Surface.hxx>
+#include <Extrema_ExtPS.hxx>
+#include <GeomAdaptor_Surface.hxx>
+#include <GeomLProp_SLProps.hxx>
+#include <TopoDS_Vertex.hxx>
+#include <TopAbs_State.hxx>
+
+
+#include "GeomPointPlanRelationshipUtility.h"
+#include "OwnerPtr.h"
 
 
 
+using namespace JackC;
 
+
+// 容差值
+const double Tolerance = Precision::Confusion();
+
+// 计算方法的枚举
+enum ComputationMethod {
+    METHOD_DistanceInterface,        // 距离接口
+    METHOD_Math,                     // 数学方式
+    METHOD_Projector,                // 投影器
+    METHOD_AnalysisTool,             // 分析工具
+    METHOD_Extrema,                  // 极值计算
+    METHOD_GeomAdaptor,              // GeomAdaptor
+    METHOD_FaceClassifier,           // 面域分类器
+    METHOD_DistShapeShape            // 距离计算
+};
 
 class WinPointOnSurface : public QDialog
 {
@@ -48,20 +81,10 @@ private:
     bool parseDouble(QLineEdit* edit, double& value, const QString& tip);
     std::vector<gp_Pnt> parseControlPoints(const QString& input);
 
-    bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D);
+    // 平面检查的多种方法
+    bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method);
 
-    bool checkPointOnPlane_Distance(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_Math(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_Project(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_ShapeAnalysis(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_Extrema(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_Adaptor(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_FaceClassifier(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_DistShapeShape(const gp_Pnt& point, double A, double B, double C, double D);
-    bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
-
-
+    // 其他曲面类型的检查方法
     bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius);
     bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius);
     bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints);
@@ -88,6 +111,7 @@ private:
     QLineEdit* m_planeA, * m_planeB, * m_planeC, * m_planeD;
     QPushButton* m_btnComputePlane, * m_btnClearPlane;
     QLabel* m_labelResultPlane;
+    QComboBox* m_comboMethodPlane;  
 
     // 球面标签页控件
     QLineEdit* m_pointX_sphere, * m_pointY_sphere, * m_pointZ_sphere;
@@ -95,6 +119,7 @@ private:
     QLineEdit* m_sphereRadius;
     QPushButton* m_btnComputeSphere, * m_btnClearSphere;
     QLabel* m_labelResultSphere;
+    QComboBox* m_comboMethodSphere;  
 
     // 圆柱面标签页控件
     QLineEdit* m_pointX_cylinder, * m_pointY_cylinder, * m_pointZ_cylinder;
@@ -102,15 +127,23 @@ private:
     QLineEdit* m_cylinderRadius, * m_cylinderHeight;
     QPushButton* m_btnComputeCylinder, * m_btnClearCylinder;
     QLabel* m_labelResultCylinder;
+    QComboBox* m_comboMethodCylinder;  
 
     // B样条曲面标签页控件
     QLineEdit* m_pointX_bspline, * m_pointY_bspline, * m_pointZ_bspline;
     QLineEdit* m_bsplineControlPoints;
     QPushButton* m_btnComputeBSpline, * m_btnClearBSpline;
     QLabel* m_labelResultBSpline;
+    QComboBox* m_comboMethodBSpline;  
 
     // 标签页
     QWidget* m_tabPlane, * m_tabSphere, * m_tabCylinder, * m_tabBSpline;
+
+
+private:
+    OwnerPtr<GeomPointPlanRelationshipUtility> op_pointPlaneRelationshipUtil;
+
+
 };
 
 #endif // WINPOINTONSURFACE_H

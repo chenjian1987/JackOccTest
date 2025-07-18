@@ -46,6 +46,7 @@ for %%d in ("tls" "platforms" "Resource") do (
 
 :: 复制单个文件
 call :copyfile "%ROOTDIR%thirdParty\freetype-2.5.5-vc14-64\bin\freetype.dll" "%OUTDIR%"
+call :copyfile "%ROOTDIR%thirdParty\JackUtility\dll\JackCGeometryUtility.dll" "%OUTDIR%"
 
 :: Qt 核心库
 for %%f in (Concurrent Core Gui Help Widgets Network Core5Compat) do (

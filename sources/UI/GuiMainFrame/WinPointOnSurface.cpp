@@ -11,19 +11,17 @@
 #include <QTabWidget>
 
 #include "GuiMainOccDefines.h"
+#include "JNew.h"
 
-// 容差值
-const double Tolerance = Precision::Confusion();
 
-WinPointOnSurface::WinPointOnSurface(Handle(AIS_InteractiveContext) context,
-    Handle(V3d_Viewer) v3dViewer,
-    Handle(V3d_View) v3dView,
-    QWidget* parent,
-    std::function<void(const QString&)> func)
-    : QDialog(parent), m_context(context), m_v3dView(v3dView),
-    m_v3dViewer(v3dViewer), m_outputFunc(func)
+
+
+WinPointOnSurface::WinPointOnSurface(Handle(AIS_InteractiveContext) context,Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent,std::function<void(const QString&)> func)
+    : QDialog(parent), m_context(context), m_v3dView(v3dView),   m_v3dViewer(v3dViewer), m_outputFunc(func)
 {
     setupUI();
+
+    op_pointPlaneRelationshipUtil = NEW_AS_OWNER_PTR(GeomPointPlanRelationshipUtility);
 }
 
 void WinPointOnSurface::setupUI()
@@ -55,8 +53,6 @@ void WinPointOnSurface::setupUI()
     mainLayout->addWidget(tabWidget);
     setLayout(mainLayout);
 }
-
-
 
 // 创建点坐标输入布局
 QWidget* WinPointOnSurface::createPointInputLayout(QLineEdit*& x, QLineEdit*& y, QLineEdit*& z)
@@ -99,6 +95,18 @@ void WinPointOnSurface::setupPlaneTab(QWidget* tab)
     planeLayout->addWidget(m_planeD);
     planeLayout->setContentsMargins(0, 0, 0, 0);
 
+    // 计算方法选择
+    QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
+    m_comboMethodPlane = new QComboBox;
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("gp_Pln 距离接口"), METHOD_DistanceInterface);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("数学方程计算"), METHOD_Math);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("投影器 (GeomAPI_ProjectPointOnSurf)"), METHOD_Projector);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("分析工具 (ShapeAnalysis_Surface)"), METHOD_AnalysisTool);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("极值计算 (Extrema_ExtPS)"), METHOD_Extrema);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("GeomAdaptor (GeomLProp_SLProps)"), METHOD_GeomAdaptor);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("面域分类器 (BRepClass_FaceClassifier)"), METHOD_FaceClassifier);
+    m_comboMethodPlane->addItem(QString::fromLocal8Bit("距离计算 (BRepExtrema_DistShapeShape)"), METHOD_DistShapeShape);
+
     // 计算按钮
     m_btnComputePlane = new QPushButton(QString::fromLocal8Bit("计算"));
     connect(m_btnComputePlane, &QPushButton::clicked, this, &WinPointOnSurface::onComputePlane);
@@ -113,6 +121,7 @@ void WinPointOnSurface::setupPlaneTab(QWidget* tab)
     QFormLayout* formLayout = new QFormLayout;
     formLayout->addRow(QString::fromLocal8Bit("点坐标:"), pointInput);
     formLayout->addRow(QString::fromLocal8Bit("平面参数 A, B, C, D:"), planeParams);
+    formLayout->addRow(methodLabel, m_comboMethodPlane);
 
     QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addWidget(m_btnComputePlane);
@@ -140,6 +149,14 @@ void WinPointOnSurface::setupSphereTab(QWidget* tab)
     radiusLayout->addWidget(new QLabel(QString::fromLocal8Bit("半径:")));
     radiusLayout->addWidget(m_sphereRadius);
 
+    // 计算方法选择
+    QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
+    m_comboMethodSphere = new QComboBox;
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("距离球心法"), 0);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("投影法"), 1);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("极值计算"), 2);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("面域分类器"), 3);
+
     // 计算按钮
     m_btnComputeSphere = new QPushButton(QString::fromLocal8Bit("计算"));
     connect(m_btnComputeSphere, &QPushButton::clicked, this, &WinPointOnSurface::onComputeSphere);
@@ -155,6 +172,7 @@ void WinPointOnSurface::setupSphereTab(QWidget* tab)
     formLayout->addRow(QString::fromLocal8Bit("点坐标:"), pointInput);
     formLayout->addRow(QString::fromLocal8Bit("球心坐标:"), centerInput);
     formLayout->addRow(QString::fromLocal8Bit("球面参数:"), radiusInput);
+    formLayout->addRow(methodLabel, m_comboMethodSphere);
 
     QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addWidget(m_btnComputeSphere);
@@ -185,6 +203,14 @@ void WinPointOnSurface::setupCylinderTab(QWidget* tab)
     paramsLayout->addWidget(new QLabel(QString::fromLocal8Bit("高度:")));
     paramsLayout->addWidget(m_cylinderHeight);
 
+    // 计算方法选择
+    QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
+    m_comboMethodCylinder = new QComboBox;
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("垂直距离法"), 0);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("投影法"), 1);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("极值计算"), 2);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("面域分类器"), 3);
+
     // 计算按钮
     m_btnComputeCylinder = new QPushButton(QString::fromLocal8Bit("计算"));
     connect(m_btnComputeCylinder, &QPushButton::clicked, this, &WinPointOnSurface::onComputeCylinder);
@@ -200,6 +226,7 @@ void WinPointOnSurface::setupCylinderTab(QWidget* tab)
     formLayout->addRow(QString::fromLocal8Bit("点坐标:"), pointInput);
     formLayout->addRow(QString::fromLocal8Bit("轴心坐标:"), axisInput);
     formLayout->addRow(QString::fromLocal8Bit("圆柱面参数:"), paramsInput);
+    formLayout->addRow(methodLabel, m_comboMethodCylinder);
 
     QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addWidget(m_btnComputeCylinder);
@@ -224,6 +251,14 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
     controlLayout->addWidget(new QLabel(QString::fromLocal8Bit("控制点:")));
     controlLayout->addWidget(m_bsplineControlPoints);
 
+    // 计算方法选择
+    QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
+    m_comboMethodBSpline = new QComboBox;
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("投影法"), 0);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("极值计算"), 1);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("面域分类器"), 2);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("距离计算"), 3);
+
     // 计算按钮
     m_btnComputeBSpline = new QPushButton(QString::fromLocal8Bit("计算"));
     connect(m_btnComputeBSpline, &QPushButton::clicked, this, &WinPointOnSurface::onComputeBSpline);
@@ -238,6 +273,7 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
     QFormLayout* formLayout = new QFormLayout;
     formLayout->addRow(QString::fromLocal8Bit("点坐标:"), pointInput);
     formLayout->addRow(QString::fromLocal8Bit("B样条控制点:"), controlPointsWidget);
+    formLayout->addRow(methodLabel, m_comboMethodBSpline);
 
     QHBoxLayout* btnLayout = new QHBoxLayout;
     btnLayout->addWidget(m_btnComputeBSpline);
@@ -248,6 +284,8 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
     mainLayout->addLayout(btnLayout);
     mainLayout->addWidget(m_labelResultBSpline);
 }
+
+
 
 
 
@@ -326,7 +364,6 @@ void WinPointOnSurface::drawPoint(const gp_Pnt& p, Quantity_NameOfColor color, c
     m_context->Display(label, Standard_False);
     m_myObjects.append(label);
 }
-
 
 void WinPointOnSurface::drawPlane(const gp_Pnt& point, const gp_Dir& normal)
 {
@@ -511,6 +548,10 @@ void WinPointOnSurface::onComputePlane()
     if (!parseDouble(m_planeC, c, QString::fromLocal8Bit("平面参数C"))) return;
     if (!parseDouble(m_planeD, d, QString::fromLocal8Bit("平面参数D"))) return;
 
+    // 获取选择的计算方法
+    int method = m_comboMethodPlane->currentData().toInt();
+    QString methodName = m_comboMethodPlane->currentText();
+
     // 绘制平面和点
     gp_Pnt planePoint(0, 0, d); // 平面上的一个点
     gp_Dir normal(a, b, c); // 法向量
@@ -518,24 +559,67 @@ void WinPointOnSurface::onComputePlane()
     drawPoint(point, Quantity_NOC_GREEN, QString::fromLocal8Bit("点"));
 
     // 检查点是否在平面上
-    bool isOnPlane = checkPointOnPlane(point, a, b, c, d);
+    bool isOnPlane = checkPointOnPlane(point, a, b, c, d, method);
     if (isOnPlane)
     {
-        m_labelResultPlane->setText(QString::fromLocal8Bit("点在平面上"));
+        m_labelResultPlane->setText(QString::fromLocal8Bit("点在平面上 (方法: %1)").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点在平面上") );
+            m_outputFunc(QString::fromLocal8Bit("点在平面上 (方法: %1)").arg(methodName));
         }
     }
     else
     {
-        m_labelResultPlane->setText(QString::fromLocal8Bit("点不在平面上"));
+        m_labelResultPlane->setText(QString::fromLocal8Bit("点不在平面上 (方法: %1)").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点在不平面上"));
+            m_outputFunc(QString::fromLocal8Bit("点不在平面上 (方法: %1)").arg(methodName));
         }
     }
 }
+
+// 检查点是否在平面上 - 使用多种方法
+bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method)
+{
+    switch (method) 
+    {
+    case METHOD_DistanceInterface:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistance(point, A, B, C, D);
+    case METHOD_Math:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByMath(point, A, B, C, D);
+    case METHOD_Projector:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByProject(point, A, B, C, D);
+    case METHOD_AnalysisTool:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByShapeAnalysis(point, A, B, C, D);
+    case METHOD_Extrema:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByExtrema(point, A, B, C, D);
+    case METHOD_GeomAdaptor:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByGeomAdaptor(point, A, B, C, D);
+    case METHOD_FaceClassifier:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByFaceClassifier(point, A, B, C, D);
+    case METHOD_DistShapeShape:
+        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistShapeShape(point, A, B, C, D);
+    default:
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 球面检查
 void WinPointOnSurface::onComputeSphere()
@@ -653,94 +737,6 @@ void WinPointOnSurface::onComputeBSpline()
     }
 }
 
-// 检查点是否在平面上
-bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D)
-{
-    // 创建平面几何体
-    gp_Pln plane(A, B, C, D);
-
-    // 计算点到平面的距离
-    double distance = plane.Distance(point);
-
-    // 距离小于容差则认为点在平面上
-    return distance <= Tolerance;
-}
-
-
-bool WinPointOnSurface::checkPointOnPlane_Distance(const gp_Pnt& point, double A, double B, double C, double D)
-{
-    gp_Pln plane(A, B, C, D);
-    double distance = plane.Distance(point);
-    return distance <= Tolerance;
-}
-bool WinPointOnSurface::checkPointOnPlane_Math(const gp_Pnt& point, double A, double B, double C, double D)
-{
-    double val = A * point.X() + B * point.Y() + C * point.Z() + D;
-    return std::abs(val) <= Tolerance;
-}
-bool WinPointOnSurface::checkPointOnPlane_Project(const gp_Pnt& point, double A, double B, double C, double D)
-{
-
-}
-bool checkPointOnPlane_ShapeAnalysis(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_Extrema(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_Adaptor(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_FaceClassifier(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_DistShapeShape(const gp_Pnt& point, double A, double B, double C, double D);
-bool checkPointOnPlane_FClass(const gp_Pnt& point, double A, double B, double C, double D);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // 检查点是否在球面上
@@ -852,3 +848,18 @@ bool WinPointOnSurface::checkPointOnBSplineSurface(const gp_Pnt& point, const st
     return distCalculator.IsDone() &&
         distCalculator.Value() <= Tolerance;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

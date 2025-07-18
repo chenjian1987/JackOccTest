@@ -23,8 +23,15 @@ set JACKC_SOLUTION_PDB_DIR=%JACKC_SOLUTION_DIR%pdb\%PLATFORM%\%Configuration%
 set JACKC_SOLUTION_3DPARTY_DIR=%JACKC_SOLUTION_DIR%thirdParty
 
 
+set JACKC_GEOMETRY_UT_INC_DIR=%JACKC_SOLUTION_DIR%thirdParty\JackUtility\inc
+set JACKC_GEOMETRY_UT_LIB_DIR=%JACKC_SOLUTION_DIR%thirdParty\JackUtility\lib
+
+
+
 set JACKC_PUGXML_INC_DIR=%JACKC_SOLUTION_DIR%thirdParty\pugixml\include
 set JACKC_PUGXML_LIB_DIR=%JACKC_SOLUTION_DIR%thirdParty\pugixml\lib\%PLATFORM%\%Configuration%
+
+
 
 set JACKC_JSONCPP_INC_DIR=%JACKC_SOLUTION_DIR%thirdParty\jsoncpp\include
 set JACKC_JSONCPP_LIB_DIR=%JACKC_SOLUTION_DIR%thirdParty\jsoncpp\lib\%PLATFORM%\%Configuration%
