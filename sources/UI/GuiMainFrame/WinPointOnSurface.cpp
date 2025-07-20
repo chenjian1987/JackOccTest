@@ -288,7 +288,6 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
 
 
 
-
 void WinPointOnSurface::onClear()
 {
     for (const auto& obj : m_myObjects)
