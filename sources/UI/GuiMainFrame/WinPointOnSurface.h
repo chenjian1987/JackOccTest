@@ -29,6 +29,7 @@
 
 
 #include "GeomPointPlanRelationshipUtility.h"
+#include "GeomPointSurfaceRelationshipUtility.h"
 #include "OwnerPtr.h"
 
 
@@ -36,8 +37,6 @@
 using namespace JackC;
 
 
-// 容差值
-const double Tolerance = Precision::Confusion();
 
 // 计算方法的枚举
 enum ComputationMethod {
@@ -85,9 +84,9 @@ private:
     bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method);
 
     // 其他曲面类型的检查方法
-    bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius);
-    bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius);
-    bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints);
+    bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method);
+    bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius, int method);
+    bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method);
 
 private slots:
     void onComputePlane();
@@ -142,7 +141,7 @@ private:
 
 private:
     OwnerPtr<GeomPointPlanRelationshipUtility> op_pointPlaneRelationshipUtil;
-
+    OwnerPtr<GeomPointSurfaceRelationshipUtility> op_pointSurfaceRelationUtil;
 
 };
 

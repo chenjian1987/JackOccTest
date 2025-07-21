@@ -132,6 +132,15 @@
 
 #include <ShapeAnalysis_Surface.hxx>
 #include <BRepTopAdaptor_FClass2d.hxx>
-#include <gp_Pln.hxx>
-#include <gp_Pnt.hxx>
+#include <Geom_SphericalSurface.hxx>
+#include <Geom_CylindricalSurface.hxx>
+#include <GeomAPI_ProjectPointOnSurf.hxx>
+#include <GeomAdaptor_Surface.hxx>
+#include <Extrema_ExtPS.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeVertex.hxx>
+#include <BRepClass_FaceClassifier.hxx>
+#include <BRepExtrema_DistShapeShape.hxx>
+#include <ShapeAnalysis_Surface.hxx>
+#include <gp_Lin.hxx>
+#include <cmath>

@@ -22,6 +22,7 @@ WinPointOnSurface::WinPointOnSurface(Handle(AIS_InteractiveContext) context,Hand
     setupUI();
 
     op_pointPlaneRelationshipUtil = NEW_AS_OWNER_PTR(GeomPointPlanRelationshipUtility);
+    op_pointSurfaceRelationUtil = NEW_AS_OWNER_PTR(GeomPointSurfaceRelationshipUtility);
 }
 
 void WinPointOnSurface::setupUI()
@@ -153,9 +154,11 @@ void WinPointOnSurface::setupSphereTab(QWidget* tab)
     QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
     m_comboMethodSphere = new QComboBox;
     m_comboMethodSphere->addItem(QString::fromLocal8Bit("距离球心法"), 0);
-    m_comboMethodSphere->addItem(QString::fromLocal8Bit("投影法"), 1);
-    m_comboMethodSphere->addItem(QString::fromLocal8Bit("极值计算"), 2);
-    m_comboMethodSphere->addItem(QString::fromLocal8Bit("面域分类器"), 3);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("投影法 GeomAPI_ProjectPointOnSurf"), 1);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("极值计算 Extrema_ExtPS"), 2);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("面分析计算 ShapeAnalysis_Surface"), 3);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("面域分类器 BRepClass_FaceClassifier"), 4);
+    m_comboMethodSphere->addItem(QString::fromLocal8Bit("Topo距离计算 BRepExtrema_DistShapeShape"), 5);
 
     // 计算按钮
     m_btnComputeSphere = new QPushButton(QString::fromLocal8Bit("计算"));
@@ -206,10 +209,12 @@ void WinPointOnSurface::setupCylinderTab(QWidget* tab)
     // 计算方法选择
     QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
     m_comboMethodCylinder = new QComboBox;
-    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("垂直距离法"), 0);
-    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("投影法"), 1);
-    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("极值计算"), 2);
-    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("面域分类器"), 3);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("距离中心线法"), 0);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("投影法 GeomAPI_ProjectPointOnSurf"), 1);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("极值计算 Extrema_ExtPS"), 2);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("面分析计算 ShapeAnalysis_Surface"), 3);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("面域分类器 BRepClass_FaceClassifier"), 4);
+    m_comboMethodCylinder->addItem(QString::fromLocal8Bit("Topo距离计算 BRepExtrema_DistShapeShape"), 5);
 
     // 计算按钮
     m_btnComputeCylinder = new QPushButton(QString::fromLocal8Bit("计算"));
@@ -254,10 +259,11 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
     // 计算方法选择
     QLabel* methodLabel = new QLabel(QString::fromLocal8Bit("计算方法:"));
     m_comboMethodBSpline = new QComboBox;
-    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("投影法"), 0);
-    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("极值计算"), 1);
-    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("面域分类器"), 2);
-    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("距离计算"), 3);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("投影法  GeomAPI_ProjectPointOnSurf"), 0);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("极值计算  Extrema_ExtPS"), 1);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("面分析计算 ShapeAnalysis_Surface"), 2);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("面域分类器  BRepClass_FaceClassifier"), 3);
+    m_comboMethodBSpline->addItem(QString::fromLocal8Bit("Topo距离计算 BRepExtrema_DistShapeShape"), 4);
 
     // 计算按钮
     m_btnComputeBSpline = new QPushButton(QString::fromLocal8Bit("计算"));
@@ -605,22 +611,6 @@ bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 球面检查
 void WinPointOnSurface::onComputeSphere()
 {
@@ -636,25 +626,28 @@ void WinPointOnSurface::onComputeSphere()
     double sphereRadius;
     if (!parseDouble(m_sphereRadius, sphereRadius, QString::fromLocal8Bit("球面半径"))) return;
 
+    // 获取选择的计算方法
+    int method = m_comboMethodSphere->currentData().toInt();
+    QString methodName = m_comboMethodSphere->currentText();
     // 绘制球面和点
     drawSphere(sphereCenter, sphereRadius);
     drawPoint(point, Quantity_NOC_BLUE, QString::fromLocal8Bit("点"));
 
-    bool isOnSphere = checkPointOnSphere(point, sphereCenter, sphereRadius);
+    bool isOnSphere = checkPointOnSphere(point, sphereCenter, sphereRadius, method);
     if (isOnSphere)
     {
-        m_labelResultSphere->setText(QString::fromLocal8Bit("点在球面上"));
+        m_labelResultSphere->setText(QString::fromLocal8Bit("点在球面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点在球面上"));
+            m_outputFunc(QString::fromLocal8Bit("点在球面上").arg(methodName));
         }
     }
     else
     {
-        m_labelResultSphere->setText(QString::fromLocal8Bit("点不在球面上"));
+        m_labelResultSphere->setText(QString::fromLocal8Bit("点不在球面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点不在球面上"));
+            m_outputFunc(QString::fromLocal8Bit("点不在球面上").arg(methodName));
         }
     }
 }
@@ -676,28 +669,84 @@ void WinPointOnSurface::onComputeCylinder()
     if (!parseDouble(m_cylinderRadius, cylinderRadius, QString::fromLocal8Bit("圆柱面半径"))) return;
     if (!parseDouble(m_cylinderHeight, cylinderHeight, QString::fromLocal8Bit("圆柱面高度"))) return;
 
+    // 获取选择的计算方法
+    int method = m_comboMethodSphere->currentData().toInt();
+    QString methodName = m_comboMethodSphere->currentText();
+
     // 绘制圆柱面和点
     drawCylinder(cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius, cylinderHeight);
     drawPoint(point, Quantity_NOC_RED, QString::fromLocal8Bit("点"));
 
-    bool isOnCylinder = checkPointOnCylinder(point, cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius);
+    bool isOnCylinder = checkPointOnCylinder(point, cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius, method);
     if (isOnCylinder)
     {
-        m_labelResultCylinder->setText(QString::fromLocal8Bit("点在圆柱面上"));
+        m_labelResultCylinder->setText(QString::fromLocal8Bit("点在圆柱面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点在圆柱面上"));
+            m_outputFunc(QString::fromLocal8Bit("点在圆柱面上").arg(methodName));
         }
     }
     else
     {
-        m_labelResultCylinder->setText(QString::fromLocal8Bit("点不在圆柱面上"));
+        m_labelResultCylinder->setText(QString::fromLocal8Bit("点不在圆柱面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点不在圆柱面上"));
+            m_outputFunc(QString::fromLocal8Bit("点不在圆柱面上").arg(methodName));
         }
     }
 }
+
+// 检查点是否在球面上
+bool WinPointOnSurface::checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method)
+{
+    switch (method)
+    {
+    case 0:
+        return op_pointSurfaceRelationUtil->OnSphereByDistance(point, center,radius);
+    case 1:
+        return op_pointSurfaceRelationUtil->OnSphereByProject(point, center, radius);
+    case 2:
+        return op_pointSurfaceRelationUtil->OnSphereByExtrema(point, center, radius);
+
+    case 3:
+        return op_pointSurfaceRelationUtil->OnSphereByShapeAnalysis(point, center, radius);
+
+    case 4:
+        return op_pointSurfaceRelationUtil->OnSphereByFaceClassifier(point, center, radius);
+
+    case 5:
+        return op_pointSurfaceRelationUtil->OnSphereByDistShapeShape(point, center, radius);
+    default:
+        return false;
+    }
+}
+
+// 检查点是否在圆柱面上
+bool WinPointOnSurface::checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius, int method)
+{
+    switch (method)
+    {
+    case 0:
+        return op_pointSurfaceRelationUtil->OnCylinderByDistance(point, axisPoint, axisDir, radius);
+    case 1:
+        return op_pointSurfaceRelationUtil->OnCylinderByProject(point, axisPoint, axisDir, radius);
+    case 2:
+        return op_pointSurfaceRelationUtil->OnCylinderByExtrema(point, axisPoint, axisDir, radius);
+
+    case 3:
+        return op_pointSurfaceRelationUtil->OnCylinderByShapeAnalysis(point, axisPoint, axisDir, radius);
+
+    case 4:
+        return op_pointSurfaceRelationUtil->OnCylinderByFaceClassifier(point, axisPoint, axisDir, radius);
+
+    case 5:
+        return op_pointSurfaceRelationUtil->OnCylinderByDistShapeShape(point, axisPoint, axisDir, radius);
+    default:
+        return false;
+    }
+}
+
+
 
 // B样条曲面检查
 void WinPointOnSurface::onComputeBSpline()
@@ -715,138 +764,54 @@ void WinPointOnSurface::onComputeBSpline()
         return;
     }
 
+    // 获取选择的计算方法
+    int method = m_comboMethodSphere->currentData().toInt();
+    QString methodName = m_comboMethodSphere->currentText();
+
     // 绘制B样条曲面和点
     drawBSplineSurface(controlPoints);
     drawPoint(point, Quantity_NOC_MAGENTA, QString::fromLocal8Bit("点"));
 
-    bool isOnBSpline = checkPointOnBSplineSurface(point, controlPoints);
+    bool isOnBSpline = checkPointOnBSplineSurface(point, controlPoints, method);
     if (isOnBSpline)
     {
-        m_labelResultBSpline->setText(QString::fromLocal8Bit("点在B样条曲面上"));
+        m_labelResultBSpline->setText(QString::fromLocal8Bit("点在B样条曲面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点在B样条曲面上"));
+            m_outputFunc(QString::fromLocal8Bit("点在B样条曲面上").arg(methodName));
         }
     }
     else {
-        m_labelResultBSpline->setText(QString::fromLocal8Bit("点不在B样条曲面上"));
+        m_labelResultBSpline->setText(QString::fromLocal8Bit("点不在B样条曲面上").arg(methodName));
         if (m_outputFunc)
         {
-            m_outputFunc(QString::fromLocal8Bit("点不在B样条曲面上"));
+            m_outputFunc(QString::fromLocal8Bit("点不在B样条曲面上").arg(methodName));
         }
     }
-}
-
-
-
-// 检查点是否在球面上
-bool WinPointOnSurface::checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius)
-{
-    // 计算点到球心的距离
-    double distance = point.Distance(center);
-
-    // 计算距离与半径的差值
-    double diff = std::abs(distance - radius);
-
-    // 差值小于容差则认为点在球面上
-    return diff <= Tolerance;
-}
-
-// 检查点是否在圆柱面上
-bool WinPointOnSurface::checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius)
-{
-    // 创建圆柱轴线的方向向量
-    gp_Vec axisVec(axisDir);
-
-    // 计算点到轴线的向量
-    gp_Vec pointToAxis(axisPoint, point);
-
-    // 计算点到轴线的投影长度
-    double projectionLength = pointToAxis.Dot(axisVec);
-
-    // 计算投影点坐标
-    gp_Pnt projectionPoint = axisPoint.Translated(axisVec * projectionLength);
-
-    // 计算点到轴线的垂直距离
-    double distance = point.Distance(projectionPoint);
-
-    // 计算距离与半径的差值
-    double diff = std::abs(distance - radius);
-
-    // 差值小于容差则认为点在圆柱面上
-    return diff <= Tolerance;
 }
 
 // 检查点是否在B样条曲面上
-bool WinPointOnSurface::checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints)
+bool WinPointOnSurface::checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method)
 {
-    // 检查控制点数量是否足够
-    if (controlPoints.size() < 4) {
+    switch (method)
+    {
+    case 0:
+        return op_pointSurfaceRelationUtil->OnBSplineByProjection(point, controlPoints);
+
+    case 1:
+        return op_pointSurfaceRelationUtil->OnBSplineByExtrema(point, controlPoints);
+
+    case 2:
+        return op_pointSurfaceRelationUtil->OnBSplineByShapeAnalysis(point, controlPoints);
+
+    case 3:
+        return op_pointSurfaceRelationUtil->OnBSplineByFaceClassifier(point, controlPoints);
+
+    case 4:
+        return op_pointSurfaceRelationUtil->OnBSplineByDistShapeShape(point, controlPoints);
+    default:
         return false;
     }
-
-    // 确定网格尺寸（简单实现：2x2网格）
-    const int numU = 2;
-    const int numV = 2;
-
-    // 创建二维控制点数组
-    TColgp_Array2OfPnt poles(1, numU, 1, numV);
-
-    // 将一维数组转换为二维网格
-    for (int u = 1; u <= numU; ++u) {
-        for (int v = 1; v <= numV; ++v) {
-            int index = (u - 1) * numV + (v - 1);
-            if (index < static_cast<int>(controlPoints.size())) {
-                poles.SetValue(u, v, controlPoints[index]);
-            }
-        }
-    }
-
-    // 创建均匀参数化的节点序列
-    TColStd_Array1OfReal knotsU(1, 2);
-    knotsU.SetValue(1, 0.0);
-    knotsU.SetValue(2, 1.0);
-
-    TColStd_Array1OfReal knotsV(1, 2);
-    knotsV.SetValue(1, 0.0);
-    knotsV.SetValue(2, 1.0);
-
-    // 创建重数数组（两端全重数）
-    TColStd_Array1OfInteger multsU(1, 2);
-    multsU.SetValue(1, numU);
-    multsU.SetValue(2, numU);
-
-    TColStd_Array1OfInteger multsV(1, 2);
-    multsV.SetValue(1, numV);
-    multsV.SetValue(2, numV);
-
-    // 创建B样条曲面（线性B样条）
-    const int degreeU = 1;
-    const int degreeV = 1;
-
-    Handle(Geom_BSplineSurface) bsplineSurface = new Geom_BSplineSurface(
-        poles,
-        knotsU, knotsV,
-        multsU, multsV,
-        degreeU, degreeV,
-        Standard_False, Standard_False
-    );
-
-    // 将几何曲面转换为拓扑形状
-    TopoDS_Face face = BRepBuilderAPI_MakeFace(bsplineSurface, Tolerance);
-
-    // 创建点对应的拓扑顶点
-    TopoDS_Vertex vertex = BRepBuilderAPI_MakeVertex(point);
-
-    // 计算点到曲面的最小距离
-    BRepExtrema_DistShapeShape distCalculator;
-    distCalculator.LoadS1(vertex);
-    distCalculator.LoadS2(face);
-    distCalculator.Perform();
-
-    // 检查是否计算成功且距离在容差范围内
-    return distCalculator.IsDone() &&
-        distCalculator.Value() <= Tolerance;
 }
 
 
