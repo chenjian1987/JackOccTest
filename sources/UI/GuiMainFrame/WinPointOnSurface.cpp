@@ -252,7 +252,7 @@ void WinPointOnSurface::setupBSplineTab(QWidget* tab)
     // B样条控制点输入框
     QWidget* controlPointsWidget = new QWidget;
     QHBoxLayout* controlLayout = new QHBoxLayout(controlPointsWidget);
-    m_bsplineControlPoints = new QLineEdit("0,0,0; 10,0,0; 10,10,0; 0,10,0");
+    m_bsplineControlPoints = new QLineEdit("0,0,0; 10,0,5; 0,10,5; 10,10,10");
     controlLayout->addWidget(new QLabel(QString::fromLocal8Bit("控制点:")));
     controlLayout->addWidget(m_bsplineControlPoints);
 
@@ -445,33 +445,20 @@ void WinPointOnSurface::drawCylinder(const gp_Pnt& axisPoint, const gp_Dir& axis
 void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoints)
 {
     // 检查控制点数量
-    if (controlPoints.size() < 4 || controlPoints.size() % 2 != 0) {
-        QMessageBox::warning(this, QString::fromLocal8Bit("错误"),  QString(QString::fromLocal8Bit("控制点数量必须是偶数且≥4\n当前数量: %1")).arg(controlPoints.size()));
+    if (controlPoints.size() != 4) {
+        QMessageBox::warning(this, QString::fromLocal8Bit("错误"),
+            QString(QString::fromLocal8Bit("此函数仅支持4个控制点，当前数量: %1")).arg(controlPoints.size()));
         return;
     }
-    // 网格尺寸：2行 (U方向) × numV 列 (V方向)
-    const int numU = 2;
-    const int numV = controlPoints.size() / 2;
 
-    // 修复1：创建控制点网格 - 使用正确的矩形排列
-    TColgp_Array2OfPnt poles(1, numU, 1, numV);
-    for (int u = 1; u <= numU; ++u) {
-        for (int v = 1; v <= numV; ++v) {
-            // 修复2：正确的索引计算
-            int index;
-            if (u == 1) {
-                // 第一行：左下->右下 (v=1->左下, v=2->右下)
-                index = (v - 1);
-            }
-            else {
-                // 第二行：左上->右上 (v=1->左上, v=2->右上)
-                index = (numV * 2 - v);
-            }
-            poles.SetValue(u, v, controlPoints[index]);
-        }
-    }
+    // 构造控制点网格（2行2列）：
+    // CP1 = 左下，CP2 = 右下，CP3 = 左上，CP4 = 右上
+    TColgp_Array2OfPnt poles(1, 2, 1, 2);
+    poles.SetValue(1, 1, controlPoints[0]); // 左下
+    poles.SetValue(2, 1, controlPoints[1]); // 右下
+    poles.SetValue(1, 2, controlPoints[2]); // 左上
+    poles.SetValue(2, 2, controlPoints[3]); // 右上
 
-    // 设置B样条曲面的次数
     const int degreeU = 1;
     const int degreeV = 1;
 
@@ -484,33 +471,21 @@ void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoi
     multsU.SetValue(2, 2);
 
     // V方向节点
-    TColStd_Array1OfReal knotsV(1, numV);
-    TColStd_Array1OfInteger multsV(1, numV);
-
+    TColStd_Array1OfReal knotsV(1, 2);
     knotsV.SetValue(1, 0.0);
+    knotsV.SetValue(2, 1.0);
+    TColStd_Array1OfInteger multsV(1, 2);
     multsV.SetValue(1, 2);
-
-    if (numV > 1) {
-        knotsV.SetValue(numV, 1.0);
-        multsV.SetValue(numV, 2);
-    }
-
-    if (numV > 2) {
-        for (int i = 2; i <= numV - 1; ++i) {
-            double knotValue = static_cast<double>(i - 1) / static_cast<double>(numV - 1);
-            knotsV.SetValue(i, knotValue);
-            multsV.SetValue(i, 1);
-        }
-    }
+    multsV.SetValue(2, 2);
 
     try {
-        // 构造B样条曲面
+        // 构造 B 样条曲面
         Handle(Geom_BSplineSurface) bsplineSurface = new Geom_BSplineSurface(
             poles, knotsU, knotsV, multsU, multsV, degreeU, degreeV,
             Standard_False, Standard_False
         );
 
-        // 创建拓扑面
+        // 构造拓扑面
         TopoDS_Face face = BRepBuilderAPI_MakeFace(bsplineSurface, Precision::Confusion());
 
         // 显示曲面
@@ -520,7 +495,7 @@ void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoi
         m_context->Display(aisShape, Standard_True);
         m_myObjects.append(aisShape);
 
-        // 绘制控制点
+        // 显示控制点
         for (size_t i = 0; i < controlPoints.size(); ++i) {
             drawPoint(controlPoints[i], Quantity_NOC_MAGENTA,
                 QString("CP%1").arg(i + 1));
@@ -535,7 +510,6 @@ void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoi
         }
     }
 }
-
 
 
 
@@ -769,7 +743,7 @@ void WinPointOnSurface::onComputeBSpline()
 
     // 绘制B样条曲面和点
     drawBSplineSurface(controlPoints);
-    drawPoint(point, Quantity_NOC_MAGENTA, QString::fromLocal8Bit("点"));
+    drawPoint(point, Quantity_NOC_GREEN, QString::fromLocal8Bit("点"));
 
     bool isOnBSpline = checkPointOnBSplineSurface(point, controlPoints, method);
     if (isOnBSpline)
