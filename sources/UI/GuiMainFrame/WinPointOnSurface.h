@@ -81,12 +81,14 @@ private:
     std::vector<gp_Pnt> parseControlPoints(const QString& input);
 
     // 平面检查的多种方法
-    bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method);
+    bool checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method, bool& isOnPlane, gp_Pnt& nearPoint, double& distance);
 
     // 其他曲面类型的检查方法
-    bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method);
-    bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius, int method);
-    bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method);
+    bool checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method, bool& isOnSphere, gp_Pnt& nearPoint, double& distance);
+    bool checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir,
+            double radius, int method, bool& isOnCylinder, gp_Pnt& nearPoint, double& distance);
+    bool checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method,
+        bool& isOnBSpline, gp_Pnt& nearPoint, double& distance);
 
 private slots:
     void onComputePlane();

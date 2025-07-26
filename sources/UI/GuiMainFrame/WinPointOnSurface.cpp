@@ -513,7 +513,6 @@ void WinPointOnSurface::drawBSplineSurface(const std::vector<gp_Pnt>& controlPoi
 
 
 
-// 平面检查
 void WinPointOnSurface::onComputePlane()
 {
     onClear(); // 清空之前的图形
@@ -532,57 +531,86 @@ void WinPointOnSurface::onComputePlane()
     QString methodName = m_comboMethodPlane->currentText();
 
     // 绘制平面和点
-    gp_Pnt planePoint(0, 0, d); // 平面上的一个点
-    gp_Dir normal(a, b, c); // 法向量
+    gp_Pnt planePoint(0, 0, d); // 平面上的一点（可选方式）
+    gp_Dir normal(a, b, c);
     drawPlane(planePoint, normal);
     drawPoint(point, Quantity_NOC_GREEN, QString::fromLocal8Bit("点"));
 
-    // 检查点是否在平面上
-    bool isOnPlane = checkPointOnPlane(point, a, b, c, d, method);
-    if (isOnPlane)
+    // --- 修改后的检查函数调用 ---
+    bool isOnPlane = false;
+    gp_Pnt nearPoint;
+    double distance = 0.0;
+
+    bool hasNear = checkPointOnPlane(point, a, b, c, d, method, isOnPlane, nearPoint, distance);
+
+    // 绘制最近点（红色）和距离文字
+    if (hasNear)
     {
-        m_labelResultPlane->setText(QString::fromLocal8Bit("点在平面上 (方法: %1)").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点在平面上 (方法: %1)").arg(methodName));
-        }
+        drawPoint(nearPoint, Quantity_NOC_RED, QString::fromLocal8Bit("最近点"));
     }
-    else
+
+    // 合并显示文字
+    QString baseResult = isOnPlane
+        ? QString::fromLocal8Bit("点在平面上 (方法: %1)").arg(methodName)
+        : QString::fromLocal8Bit("点不在平面上 (方法: %1)").arg(methodName);
+
+    QString distInfo = hasNear
+        ? QString::fromLocal8Bit("，最近距离: %1").arg(distance, 0, 'f', 6)
+        : "";
+
+    QString resultText = baseResult + distInfo;
+
+    // 显示
+    m_labelResultPlane->setText(resultText);
+    if (m_outputFunc)
     {
-        m_labelResultPlane->setText(QString::fromLocal8Bit("点不在平面上 (方法: %1)").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点不在平面上 (方法: %1)").arg(methodName));
-        }
+        m_outputFunc(resultText);
     }
 }
 
-// 检查点是否在平面上 - 使用多种方法
-bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method)
+bool WinPointOnSurface::checkPointOnPlane(const gp_Pnt& point, double A, double B, double C, double D, int method, bool& isOnPlane, gp_Pnt& nearPoint, double& distance)
 {
-    switch (method) 
+    isOnPlane = false;
+    bool hasNearPoint = false;
+
+    switch (method)
     {
     case METHOD_DistanceInterface:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistance(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistance(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByDistance(point, A, B, C, D, nearPoint, distance);
+        break;
     case METHOD_Math:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByMath(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByMath(point, A, B, C, D);
+        break; // 没有最近点支持
     case METHOD_Projector:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByProject(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByProject(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByProject(point, A, B, C, D, nearPoint, distance);
+        break;
     case METHOD_AnalysisTool:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByShapeAnalysis(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByShapeAnalysis(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByShapeAnalysis(point, A, B, C, D, nearPoint, distance);
+        break;
     case METHOD_Extrema:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByExtrema(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByExtrema(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByExt(point, A, B, C, D, nearPoint, distance);
+        break;
     case METHOD_GeomAdaptor:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByGeomAdaptor(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByGeomAdaptor(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByGeomSLProp(point, A, B, C, D, nearPoint, distance);
+        break;
     case METHOD_FaceClassifier:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByFaceClassifier(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByFaceClassifier(point, A, B, C, D);
+        break; // 没有最近点支持
     case METHOD_DistShapeShape:
-        return op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistShapeShape(point, A, B, C, D);
+        isOnPlane = op_pointPlaneRelationshipUtil->IsPointOnPlaneByDistShapeShape(point, A, B, C, D);
+        hasNearPoint = op_pointPlaneRelationshipUtil->GetNearPointDistanceByDistShapeShape(point, A, B, C, D, nearPoint, distance);
+        break;
     default:
         return false;
     }
-}
 
+    return hasNearPoint;
+}
 
 // 球面检查
 void WinPointOnSurface::onComputeSphere()
@@ -593,8 +621,7 @@ void WinPointOnSurface::onComputeSphere()
     if (!parsePoint(m_pointX_sphere, m_pointY_sphere, m_pointZ_sphere, point, QString::fromLocal8Bit("点坐标"))) return;
 
     gp_Pnt sphereCenter;
-    if (!parsePoint(m_sphereCenterX, m_sphereCenterY, m_sphereCenterZ, sphereCenter, QString::fromLocal8Bit("球心坐标")))
-        return;
+    if (!parsePoint(m_sphereCenterX, m_sphereCenterY, m_sphereCenterZ, sphereCenter, QString::fromLocal8Bit("球心坐标"))) return;
 
     double sphereRadius;
     if (!parseDouble(m_sphereRadius, sphereRadius, QString::fromLocal8Bit("球面半径"))) return;
@@ -602,33 +629,85 @@ void WinPointOnSurface::onComputeSphere()
     // 获取选择的计算方法
     int method = m_comboMethodSphere->currentData().toInt();
     QString methodName = m_comboMethodSphere->currentText();
+
     // 绘制球面和点
     drawSphere(sphereCenter, sphereRadius);
     drawPoint(point, Quantity_NOC_BLUE, QString::fromLocal8Bit("点"));
 
-    bool isOnSphere = checkPointOnSphere(point, sphereCenter, sphereRadius, method);
-    if (isOnSphere)
+    // 检查是否在球面上，并获取最近点和距离
+    bool isOnSphere = false;
+    gp_Pnt nearPoint;
+    double distance = 0.0;
+
+    bool hasNear = checkPointOnSphere(point, sphereCenter, sphereRadius, method, isOnSphere, nearPoint, distance);
+
+    // 绘制最近点
+    if (hasNear)
     {
-        m_labelResultSphere->setText(QString::fromLocal8Bit("点在球面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点在球面上").arg(methodName));
-        }
+        drawPoint(nearPoint, Quantity_NOC_RED, QString::fromLocal8Bit("最近点"));
     }
-    else
+
+    // 构造显示文本
+    QString baseResult = isOnSphere
+        ? QString::fromLocal8Bit("点在球面上 (方法: %1)").arg(methodName)
+        : QString::fromLocal8Bit("点不在球面上 (方法: %1)").arg(methodName);
+
+    QString distInfo = hasNear
+        ? QString::fromLocal8Bit("，最近距离: %1").arg(distance, 0, 'f', 6)
+        : "";
+
+    QString resultText = baseResult + distInfo;
+
+    m_labelResultSphere->setText(resultText);
+    if (m_outputFunc)
     {
-        m_labelResultSphere->setText(QString::fromLocal8Bit("点不在球面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点不在球面上").arg(methodName));
-        }
+        m_outputFunc(resultText);
     }
 }
+
+// 检查点是否在球面上
+bool WinPointOnSurface::checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method, bool& isOnSphere, gp_Pnt& nearPoint, double& distance)
+{
+    isOnSphere = false;
+    bool hasNear = false;
+
+    switch (method)
+    {
+    case 0: // Distance
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByDistance(point, center, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetSphereNearPointDistanceByDistance(point, center, radius, nearPoint, distance);
+        break;
+    case 1: // Project
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByProject(point, center, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetSphereNearPointDistanceByProject(point, center, radius, nearPoint, distance);
+        break;
+    case 2: // Extrema
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByExtrema(point, center, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetSphereNearPointDistanceByExtrema(point, center, radius, nearPoint, distance);
+        break;
+    case 3: // ShapeAnalysis
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByShapeAnalysis(point, center, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetSphereNearPointDistanceByAnalysis(point, center, radius, nearPoint, distance);
+        break;
+    case 4: // FaceClassifier
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByFaceClassifier(point, center, radius);
+        break; // 不支持最近点
+    case 5: // DistShapeShape
+        isOnSphere = op_pointSurfaceRelationUtil->OnSphereByDistShapeShape(point, center, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetSphereNearPointDistanceByDistShapeShape(point, center, radius, nearPoint, distance);
+        break;
+    default:
+        return false;
+    }
+
+    return hasNear;
+}
+
 
 // 圆柱面检查
 void WinPointOnSurface::onComputeCylinder()
 {
-    onClear(); // 清空之前的图形
+    onClear(); // 清空之前图形
 
     gp_Pnt point;
     if (!parsePoint(m_pointX_cylinder, m_pointY_cylinder, m_pointZ_cylinder, point, QString::fromLocal8Bit("点坐标")))
@@ -642,82 +721,80 @@ void WinPointOnSurface::onComputeCylinder()
     if (!parseDouble(m_cylinderRadius, cylinderRadius, QString::fromLocal8Bit("圆柱面半径"))) return;
     if (!parseDouble(m_cylinderHeight, cylinderHeight, QString::fromLocal8Bit("圆柱面高度"))) return;
 
-    // 获取选择的计算方法
-    int method = m_comboMethodSphere->currentData().toInt();
+    // 获取计算方法
+    int method = m_comboMethodSphere->currentData().toInt(); // 注意是否使用独立下拉框 m_comboMethodCylinder
     QString methodName = m_comboMethodSphere->currentText();
 
     // 绘制圆柱面和点
     drawCylinder(cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius, cylinderHeight);
     drawPoint(point, Quantity_NOC_RED, QString::fromLocal8Bit("点"));
 
-    bool isOnCylinder = checkPointOnCylinder(point, cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius, method);
-    if (isOnCylinder)
+    // 调用统一接口
+    bool isOnCylinder = false;
+    gp_Pnt nearPoint;
+    double distance = 0.0;
+    bool hasNear = checkPointOnCylinder(point, cylinderAxisPoint, gp_Dir(0, 0, 1), cylinderRadius, method, isOnCylinder, nearPoint, distance);
+
+    if (hasNear)
     {
-        m_labelResultCylinder->setText(QString::fromLocal8Bit("点在圆柱面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点在圆柱面上").arg(methodName));
-        }
+        drawPoint(nearPoint, Quantity_NOC_GREEN, QString::fromLocal8Bit("最近点"));
     }
-    else
+
+    QString baseResult = isOnCylinder
+        ? QString::fromLocal8Bit("点在圆柱面上 (方法: %1)").arg(methodName)
+        : QString::fromLocal8Bit("点不在圆柱面上 (方法: %1)").arg(methodName);
+
+    QString distInfo = hasNear
+        ? QString::fromLocal8Bit("，最近距离: %1").arg(distance, 0, 'f', 6)
+        : "";
+
+    QString resultText = baseResult + distInfo;
+
+    m_labelResultCylinder->setText(resultText);
+    if (m_outputFunc)
     {
-        m_labelResultCylinder->setText(QString::fromLocal8Bit("点不在圆柱面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点不在圆柱面上").arg(methodName));
-        }
+        m_outputFunc(resultText);
     }
 }
 
-// 检查点是否在球面上
-bool WinPointOnSurface::checkPointOnSphere(const gp_Pnt& point, const gp_Pnt& center, double radius, int method)
+bool WinPointOnSurface::checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir,
+    double radius, int method, bool& isOnCylinder, gp_Pnt& nearPoint, double& distance)
 {
+    isOnCylinder = false;
+    bool hasNear = false;
+
     switch (method)
     {
-    case 0:
-        return op_pointSurfaceRelationUtil->OnSphereByDistance(point, center,radius);
-    case 1:
-        return op_pointSurfaceRelationUtil->OnSphereByProject(point, center, radius);
-    case 2:
-        return op_pointSurfaceRelationUtil->OnSphereByExtrema(point, center, radius);
-
-    case 3:
-        return op_pointSurfaceRelationUtil->OnSphereByShapeAnalysis(point, center, radius);
-
-    case 4:
-        return op_pointSurfaceRelationUtil->OnSphereByFaceClassifier(point, center, radius);
-
-    case 5:
-        return op_pointSurfaceRelationUtil->OnSphereByDistShapeShape(point, center, radius);
+    case 0: // Distance
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByDistance(point, axisPoint, axisDir, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetCylinderNearPointDisByDistance(point, axisPoint, axisDir, radius, nearPoint, distance);
+        break;
+    case 1: // Project
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByProject(point, axisPoint, axisDir, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetCylinderNearPointDisByProject(point, axisPoint, axisDir, radius, nearPoint, distance);
+        break;
+    case 2: // Extrema
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByExtrema(point, axisPoint, axisDir, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetCylinderNearPointDisByExtrema(point, axisPoint, axisDir, radius, nearPoint, distance);
+        break;
+    case 3: // ShapeAnalysis
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByShapeAnalysis(point, axisPoint, axisDir, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetCylinderNearPointDisByAnalysis(point, axisPoint, axisDir, radius, nearPoint, distance);
+        break;
+    case 4: // FaceClassifier
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByFaceClassifier(point, axisPoint, axisDir, radius);
+        break; // 不支持最近点
+    case 5: // DistShapeShape
+        isOnCylinder = op_pointSurfaceRelationUtil->OnCylinderByDistShapeShape(point, axisPoint, axisDir, radius);
+        hasNear = op_pointSurfaceRelationUtil->GetCylinderNearPointDisByDistShape(point, axisPoint, axisDir, radius, nearPoint, distance);
+        break;
     default:
         return false;
     }
+
+    return hasNear;
 }
 
-// 检查点是否在圆柱面上
-bool WinPointOnSurface::checkPointOnCylinder(const gp_Pnt& point, const gp_Pnt& axisPoint, const gp_Dir& axisDir, double radius, int method)
-{
-    switch (method)
-    {
-    case 0:
-        return op_pointSurfaceRelationUtil->OnCylinderByDistance(point, axisPoint, axisDir, radius);
-    case 1:
-        return op_pointSurfaceRelationUtil->OnCylinderByProject(point, axisPoint, axisDir, radius);
-    case 2:
-        return op_pointSurfaceRelationUtil->OnCylinderByExtrema(point, axisPoint, axisDir, radius);
-
-    case 3:
-        return op_pointSurfaceRelationUtil->OnCylinderByShapeAnalysis(point, axisPoint, axisDir, radius);
-
-    case 4:
-        return op_pointSurfaceRelationUtil->OnCylinderByFaceClassifier(point, axisPoint, axisDir, radius);
-
-    case 5:
-        return op_pointSurfaceRelationUtil->OnCylinderByDistShapeShape(point, axisPoint, axisDir, radius);
-    default:
-        return false;
-    }
-}
 
 
 
@@ -737,54 +814,76 @@ void WinPointOnSurface::onComputeBSpline()
         return;
     }
 
-    // 获取选择的计算方法
-    int method = m_comboMethodSphere->currentData().toInt();
+    // 获取计算方法
+    int method = m_comboMethodSphere->currentData().toInt();  // 建议改为 m_comboMethodBSpline
     QString methodName = m_comboMethodSphere->currentText();
 
-    // 绘制B样条曲面和点
+    // 绘制B样条面和点
     drawBSplineSurface(controlPoints);
     drawPoint(point, Quantity_NOC_GREEN, QString::fromLocal8Bit("点"));
 
-    bool isOnBSpline = checkPointOnBSplineSurface(point, controlPoints, method);
-    if (isOnBSpline)
+    // 判断 + 获取最近点和距离
+    bool isOnBSpline = false;
+    gp_Pnt nearPoint;
+    double distance = 0.0;
+    bool hasNear = checkPointOnBSplineSurface(point, controlPoints, method, isOnBSpline, nearPoint, distance);
+
+    // 绘制最近点
+    if (hasNear)
     {
-        m_labelResultBSpline->setText(QString::fromLocal8Bit("点在B样条曲面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点在B样条曲面上").arg(methodName));
-        }
+        drawPoint(nearPoint, Quantity_NOC_RED, QString::fromLocal8Bit("最近点"));
     }
-    else {
-        m_labelResultBSpline->setText(QString::fromLocal8Bit("点不在B样条曲面上").arg(methodName));
-        if (m_outputFunc)
-        {
-            m_outputFunc(QString::fromLocal8Bit("点不在B样条曲面上").arg(methodName));
-        }
+
+    QString baseResult = isOnBSpline
+        ? QString::fromLocal8Bit("点在B样条曲面上 (方法: %1)").arg(methodName)
+        : QString::fromLocal8Bit("点不在B样条曲面上 (方法: %1)").arg(methodName);
+
+    QString distInfo = hasNear
+        ? QString::fromLocal8Bit("，最近距离: %1").arg(distance, 0, 'f', 6)
+        : "";
+
+    QString resultText = baseResult + distInfo;
+
+    m_labelResultBSpline->setText(resultText);
+    if (m_outputFunc)
+    {
+        m_outputFunc(resultText);
     }
 }
 
 // 检查点是否在B样条曲面上
-bool WinPointOnSurface::checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method)
+bool WinPointOnSurface::checkPointOnBSplineSurface(const gp_Pnt& point, const std::vector<gp_Pnt>& controlPoints, int method,
+    bool& isOnBSpline, gp_Pnt& nearPoint, double& distance)
 {
+    isOnBSpline = false;
+    bool hasNear = false;
+
     switch (method)
     {
-    case 0:
-        return op_pointSurfaceRelationUtil->OnBSplineByProjection(point, controlPoints);
-
-    case 1:
-        return op_pointSurfaceRelationUtil->OnBSplineByExtrema(point, controlPoints);
-
-    case 2:
-        return op_pointSurfaceRelationUtil->OnBSplineByShapeAnalysis(point, controlPoints);
-
-    case 3:
-        return op_pointSurfaceRelationUtil->OnBSplineByFaceClassifier(point, controlPoints);
-
-    case 4:
-        return op_pointSurfaceRelationUtil->OnBSplineByDistShapeShape(point, controlPoints);
+    case 0: // 投影
+        isOnBSpline = op_pointSurfaceRelationUtil->OnBSplineByProjection(point, controlPoints);
+        hasNear = op_pointSurfaceRelationUtil->GetBSplineNearPointDisByProject(point, controlPoints, nearPoint, distance);
+        break;
+    case 1: // 极值
+        isOnBSpline = op_pointSurfaceRelationUtil->OnBSplineByExtrema(point, controlPoints);
+        hasNear = op_pointSurfaceRelationUtil->GetBSplineNearPointDisByExtrema(point, controlPoints, nearPoint, distance);
+        break;
+    case 2: // ShapeAnalysis
+        isOnBSpline = op_pointSurfaceRelationUtil->OnBSplineByShapeAnalysis(point, controlPoints);
+        hasNear = op_pointSurfaceRelationUtil->GetBSplineNearPointDisByShapeAnalysis(point, controlPoints, nearPoint, distance);
+        break;
+    case 3: // FaceClassifier
+        isOnBSpline = op_pointSurfaceRelationUtil->OnBSplineByFaceClassifier(point, controlPoints);
+        break; // 不支持最近点
+    case 4: // DistShapeShape
+        isOnBSpline = op_pointSurfaceRelationUtil->OnBSplineByDistShapeShape(point, controlPoints);
+        hasNear = op_pointSurfaceRelationUtil->GetBSplineNearPointDisByDistShapeShape(point, controlPoints, nearPoint, distance);
+        break;
     default:
         return false;
     }
+
+    return hasNear;
 }
 
 
