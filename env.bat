@@ -1,3 +1,4 @@
+
 @echo off
 
 set PLATFORM=x64
