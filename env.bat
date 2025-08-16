@@ -28,7 +28,6 @@ set JACKC_GEOMETRY_UT_INC_DIR=%JACKC_SOLUTION_DIR%thirdParty\JackUtility\inc
 set JACKC_GEOMETRY_UT_LIB_DIR=%JACKC_SOLUTION_DIR%thirdParty\JackUtility\lib
 
 
-
 set JACKC_PUGXML_INC_DIR=%JACKC_SOLUTION_DIR%thirdParty\pugixml\include
 set JACKC_PUGXML_LIB_DIR=%JACKC_SOLUTION_DIR%thirdParty\pugixml\lib\%PLATFORM%\%Configuration%
 
