@@ -44,6 +44,8 @@ public:
     void PointLineRelation();
     void PointOnFace();
 
+    void NearestPointsLine2Line();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 

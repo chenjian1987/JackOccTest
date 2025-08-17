@@ -89,4 +89,8 @@
     void WIN::onActionPointOnFace() \
     { \
         HOMEPAGE->OP->PointOnFace(); \
+    } \
+    void WIN::onActionLine2Line() \
+    { \
+        HOMEPAGE->OP->NearestPointsLine2Line(); \
     }

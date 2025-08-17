@@ -57,6 +57,8 @@ namespace JackC
         void onActionPointLineRelation();
         void onActionPointOnFace();
 
+        void onActionLine2Line();
+
     private:
         void createActions();
         void createMenus();
@@ -89,6 +91,7 @@ namespace JackC
         QAction* m_actionBuildBaseMode;
         QAction* m_actionPointLineRelation;
         QAction* m_actionPointOnFace;
+        QAction* m_actionLine2Line;
         
         //view
         SARibbonPannel* m_coreViewControl;

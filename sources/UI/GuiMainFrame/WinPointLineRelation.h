@@ -22,6 +22,9 @@
 #include <gp_Vec.hxx>
 #include <gp_Lin.hxx>
 
+
+
+
 class WinPointLineRelation : public QDialog
 {
     Q_OBJECT

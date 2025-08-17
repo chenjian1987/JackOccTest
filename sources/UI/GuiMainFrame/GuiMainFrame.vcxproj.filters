@@ -94,6 +94,9 @@
     <ClCompile Include="WinPointOnSurface.cpp">
       <Filter>Source\Relationship</Filter>
     </ClCompile>
+    <ClCompile Include="WinSegmentDistance.cpp">
+      <Filter>Source\Relationship</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -115,6 +118,9 @@
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
     <CustomBuild Include="WinPointOnSurface.h">
+      <Filter>Include\Relationship</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinSegmentDistance.h">
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
   </ItemGroup>

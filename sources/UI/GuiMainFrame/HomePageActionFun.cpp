@@ -62,6 +62,7 @@
 #include "HomePage.h"
 #include "WinPointLineRelation.h"
 #include "WinPointOnSurface.h"
+#include "WinSegmentDistance.h"
 
 
 
@@ -284,22 +285,27 @@ void HomePageActionFun::TestFrontCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Front);
 }
+
 void HomePageActionFun::TestBackCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Back);
 }
+
 void HomePageActionFun::TestLeftCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Left);
 }
+
 void HomePageActionFun::TestRightCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Right);
 }
+
 void HomePageActionFun::TestTopCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Top);
 }
+
 void HomePageActionFun::TestBottomCoreView()
 {
     SetStandardView(m_v3dView, EnumCoreViewControlType::Bottom);
@@ -313,6 +319,7 @@ void HomePageActionFun::TestEditShape()
         ApplyTransformToSelected(dlg.getType(), dlg.getVector(), dlg.getValue(), dlg.getMirrorPlane());
     }
 }
+
 void HomePageActionFun::TestBuildBaseMode()
 {
     WinParametricBuild* dlg=new WinParametricBuild(m_context,m_v3dViewer,m_v3dView,m_parent, m_outputFunc);
@@ -448,6 +455,13 @@ void HomePageActionFun::PointLineRelation()
 void HomePageActionFun::PointOnFace()
 {
     WinPointOnSurface* dlg = new WinPointOnSurface(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+}
+
+void HomePageActionFun::NearestPointsLine2Line()
+{
+    WinSegmentDistance* dlg = new WinSegmentDistance(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }

@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget* parent) :SARibbonMainWindow(parent), m_isAppClos
     QFont   font(fontFamily);
     setFont(font);
 }
+
 MainWindow::~MainWindow()
 {
 }
@@ -113,7 +114,6 @@ bool MainWindow::Initialize()
     setCentralWidget(central);
     return true;
 }
-
 
 
 void MainWindow::createMenus()
@@ -207,6 +207,10 @@ void MainWindow::createActions()
     m_actionPointOnFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" 点在面上 "), m_panelEdit);
     connect(m_actionPointOnFace, &QAction::triggered, this, &MainWindow::onActionPointOnFace);
     m_panelRelationship->addSmallAction(m_actionPointOnFace);
+
+    m_actionLine2Line = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" 直线段与直线段 "), m_panelEdit);
+    connect(m_actionLine2Line, &QAction::triggered, this, &MainWindow::onActionLine2Line);
+    m_panelRelationship->addSmallAction(m_actionLine2Line);
 
 
     // view
