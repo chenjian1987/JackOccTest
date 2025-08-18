@@ -93,4 +93,8 @@
     void WIN::onActionLine2Line() \
     { \
         HOMEPAGE->OP->NearestPointsLine2Line(); \
+    } \
+    void WIN::onActionLine2BSplineCurve() \
+    { \
+        HOMEPAGE->OP->NearestPointsLine2BSplineCurve(); \
     }

@@ -28,6 +28,11 @@
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IfcImportUtils.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\WinMainSlotsDefine.h" />
+    <CustomBuild Include="WinSegmentBSplineDistance.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+    </CustomBuild>
     <CustomBuild Include="WinSegmentDistance.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
@@ -82,6 +87,7 @@
     <ClCompile Include="WinParametricBuild.cpp" />
     <ClCompile Include="WinPointLineRelation.cpp" />
     <ClCompile Include="WinPointOnSurface.cpp" />
+    <ClCompile Include="WinSegmentBSplineDistance.cpp" />
     <ClCompile Include="WinSegmentDistance.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

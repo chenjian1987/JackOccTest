@@ -119,9 +119,10 @@ bool MainWindow::Initialize()
 void MainWindow::createMenus()
 {
     SARibbonBar* menu_TestBrep = ribbonBar();
-    menu_TestBrep->setRibbonStyle(SARibbonBar::RibbonStyle::RibbonStyleCompactThreeRow);
+    menu_TestBrep->setRibbonStyle(SARibbonBar::RibbonStyle::RibbonStyleLooseThreeRow);
     menu_TestBrep->setFont(QFont("微软雅黑", 10));
     menu_TestBrep->applicationButton()->setVisible(false);
+    menu_TestBrep->setEnableWordWrap(true);
 }
 
 
@@ -139,8 +140,8 @@ void MainWindow::createToolBars()
     //brep solid
     m_panelSolid = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("测试BRep Solid"));
     m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("    互操作 & 互编辑   "));
-    m_panelRelationship= categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("           模型关系              "));
-
+    m_panelRelationship= categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("模型关系"));
+    m_panelRelationship->setMinimumWidth(1000);
 
     //视图
     SARibbonBar* barView=ribbonBar();
@@ -211,6 +212,10 @@ void MainWindow::createActions()
     m_actionLine2Line = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" 直线段与直线段 "), m_panelEdit);
     connect(m_actionLine2Line, &QAction::triggered, this, &MainWindow::onActionLine2Line);
     m_panelRelationship->addSmallAction(m_actionLine2Line);
+
+    m_actionLine2BSplineCurve = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("直线与B样条"), m_panelEdit);
+    connect(m_actionLine2BSplineCurve, &QAction::triggered, this, &MainWindow::onActionLine2BSplineCurve);
+    m_panelRelationship->addSmallAction(m_actionLine2BSplineCurve);
 
 
     // view

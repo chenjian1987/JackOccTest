@@ -58,6 +58,7 @@ namespace JackC
         void onActionPointOnFace();
 
         void onActionLine2Line();
+        void onActionLine2BSplineCurve();
 
     private:
         void createActions();
@@ -92,6 +93,7 @@ namespace JackC
         QAction* m_actionPointLineRelation;
         QAction* m_actionPointOnFace;
         QAction* m_actionLine2Line;
+        QAction* m_actionLine2BSplineCurve;
         
         //view
         SARibbonPannel* m_coreViewControl;

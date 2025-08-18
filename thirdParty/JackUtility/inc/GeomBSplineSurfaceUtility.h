@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "GeometryUtilityDefine.h"
 #include "GeometryUtilityOccDefine.h"
 

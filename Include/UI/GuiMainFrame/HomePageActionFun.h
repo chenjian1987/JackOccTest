@@ -45,6 +45,7 @@ public:
     void PointOnFace();
 
     void NearestPointsLine2Line();
+    void NearestPointsLine2BSplineCurve();
 
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;

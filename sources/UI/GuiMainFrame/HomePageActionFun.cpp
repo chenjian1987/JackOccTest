@@ -63,6 +63,7 @@
 #include "WinPointLineRelation.h"
 #include "WinPointOnSurface.h"
 #include "WinSegmentDistance.h"
+#include "WinSegmentBSplineDistance.h"
 
 
 
@@ -462,6 +463,13 @@ void HomePageActionFun::PointOnFace()
 void HomePageActionFun::NearestPointsLine2Line()
 {
     WinSegmentDistance* dlg = new WinSegmentDistance(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+}
+
+void HomePageActionFun::NearestPointsLine2BSplineCurve()
+{
+    WinSegmentBSplineDistance* dlg = new WinSegmentBSplineDistance(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }
