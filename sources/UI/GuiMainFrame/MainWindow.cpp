@@ -217,6 +217,9 @@ void MainWindow::createActions()
     connect(m_actionLine2BSplineCurve, &QAction::triggered, this, &MainWindow::onActionLine2BSplineCurve);
     m_panelRelationship->addSmallAction(m_actionLine2BSplineCurve);
 
+    m_actionSegmentPlaneIntersection = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("线段与平面相交"), m_panelEdit);
+    connect(m_actionSegmentPlaneIntersection, &QAction::triggered, this, &MainWindow::onActionSegPlaneIntersection);
+    m_panelRelationship->addSmallAction(m_actionSegmentPlaneIntersection);
 
     // view
     m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("左视图"), m_panelSolid);

@@ -14,22 +14,13 @@
 #include "GuiMainOccDefines.h"
 
 
-WinPointLineRelation::WinPointLineRelation(
-    Handle(AIS_InteractiveContext) context,
-    Handle(V3d_Viewer) v3dViewer,
-    Handle(V3d_View) v3dView,
-    QWidget* parent,
-    std::function<void(const QString&)> func)
-    : QDialog(parent),
-    m_context(context),
-    m_v3dViewer(v3dViewer),
-    m_v3dView(v3dView),
-    m_outputFunc(func)
+WinPointLineRelation::WinPointLineRelation( Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer,  Handle(V3d_View) v3dView, QWidget* parent,std::function<void(const QString&)> func)
+    : QDialog(parent), m_context(context), m_v3dViewer(v3dViewer), m_v3dView(v3dView), m_outputFunc(func)
 {
     setupUI();
 }
 
-// --------------------- UI -----------------------
+
 void WinPointLineRelation::setupUI()
 {
     setWindowTitle(QString::fromLocal8Bit("点与曲线关系工具"));

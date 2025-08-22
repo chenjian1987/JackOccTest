@@ -240,6 +240,7 @@ void HomePage::Initialize()
     opHomePageActionFun = NEW_AS_OWNER_PTR(HomePageActionFun,m_context, m_v3dViewer, m_v3dView,this, [this](const QString& text) { this->AppendOutput(text); });
     InitOriginMarker();
 }
+
 void HomePage::InitGrid()
 {
     m_v3dViewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
@@ -250,6 +251,7 @@ void HomePage::InitGrid()
     // 启用视图内的网格显示
     m_v3dView->SetGridActivity(Standard_True);
 }
+
 void HomePage::InitTrihedron()
 {
     gp_Ax2 axis(gp::Origin(), gp::DZ(), gp::DX());
@@ -306,6 +308,7 @@ void HomePage::ShowMaximized()
 {
     QWidget::showMaximized();
 }
+
 void HomePage::ShowMinimized()
 {
     QWidget::showMinimized();

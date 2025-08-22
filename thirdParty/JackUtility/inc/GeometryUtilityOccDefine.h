@@ -140,7 +140,19 @@
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeVertex.hxx>
 #include <BRepClass_FaceClassifier.hxx>
-#include <BRepExtrema_DistShapeShape.hxx>
-#include <ShapeAnalysis_Surface.hxx>
+#include <IntAna_IntConicQuad.hxx>
+#include <BRepAlgoAPI_Section.hxx>
 #include <gp_Lin.hxx>
 #include <cmath>
+
+#include "IntCurvesFace_ShapeIntersector.hxx"
+
+#include <GeomAPI_IntCS.hxx>    //曲线--曲面相交
+#include <GeomAPI_IntSS.hxx>    //曲面--曲面相交
+#include <GeomAPI_ExtremaCurveCurve.hxx>    //曲线--曲线极值
+#include <GeomAPI_ProjectPointOnSurf.hxx>   //点到面的投影
+
+#include <Extrema_ExtCS.hxx>    //曲线--曲面极值
+#include <Extrema_POnCurv.hxx> 
+#include <Extrema_POnSurf.hxx>
+

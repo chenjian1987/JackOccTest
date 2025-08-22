@@ -97,4 +97,8 @@
     void WIN::onActionLine2BSplineCurve() \
     { \
         HOMEPAGE->OP->NearestPointsLine2BSplineCurve(); \
+    } \
+    void WIN::onActionSegPlaneIntersection() \
+    { \
+        HOMEPAGE->OP->SegPlaneIntersection(); \
     }
