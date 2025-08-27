@@ -60,6 +60,7 @@ namespace JackC
         void onActionLine2Line();
         void onActionLine2BSplineCurve();
         void onActionSegPlaneIntersection();
+        void onActionArcBSplineIntersect();
 
     private:
         void createActions();
@@ -96,6 +97,7 @@ namespace JackC
         QAction* m_actionLine2Line;
         QAction* m_actionLine2BSplineCurve;
         QAction* m_actionSegmentPlaneIntersection;
+        QAction* m_actionArcBsplineInteersect;
         
         //view
         SARibbonPannel* m_coreViewControl;

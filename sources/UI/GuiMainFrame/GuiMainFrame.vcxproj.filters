@@ -103,6 +103,9 @@
     <ClCompile Include="WinSegmentPlaneIntersection.cpp">
       <Filter>Source\Relationship</Filter>
     </ClCompile>
+    <ClCompile Include="WinArcBSurfIntersect.cpp">
+      <Filter>Source\Relationship</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -133,6 +136,9 @@
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
     <CustomBuild Include="WinSegmentPlaneIntersection.h">
+      <Filter>Include\Relationship</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinArcBSurfIntersect.h">
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
   </ItemGroup>

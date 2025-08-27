@@ -101,4 +101,8 @@
     void WIN::onActionSegPlaneIntersection() \
     { \
         HOMEPAGE->OP->SegPlaneIntersection(); \
+    } \
+    void WIN::onActionArcBSplineIntersect() \
+    { \
+        HOMEPAGE->OP->ArcBSplineIntersect(); \
     }

@@ -156,3 +156,5 @@
 #include <Extrema_POnCurv.hxx> 
 #include <Extrema_POnSurf.hxx>
 
+#include <IntTools_EdgeFace.hxx>
+#include <GeomAPI_ExtremaCurveSurface.hxx>

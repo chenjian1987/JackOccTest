@@ -51,9 +51,5 @@ public:
     bool IntersectSegmentPlaneUsingIntAnaIntConicQuad(const gp_Pnt& p1, const gp_Pnt& p2, const gp_Pln& plane, gp_Pnt& intersectPt);
 
 
-public:
-    //圆弧线与B样条的相交点
-
-
 
 };

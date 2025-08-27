@@ -65,6 +65,7 @@
 #include "WinSegmentDistance.h"
 #include "WinSegmentBSplineDistance.h"
 #include "WinSegmentPlaneIntersection.h"
+#include "WinArcBSurfIntersect.h"
 
 
 
@@ -479,6 +480,13 @@ void HomePageActionFun::NearestPointsLine2BSplineCurve()
 void HomePageActionFun::SegPlaneIntersection()
 {
     WinSegmentPlaneIntersection* dlg = new WinSegmentPlaneIntersection(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+}
+
+void HomePageActionFun::ArcBSplineIntersect()
+{
+    WinArcBSurfIntersect* dlg = new WinArcBSurfIntersect(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }

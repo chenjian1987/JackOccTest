@@ -48,6 +48,7 @@ public:
     void NearestPointsLine2BSplineCurve();
 
     void SegPlaneIntersection();
+    void ArcBSplineIntersect();
 
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
