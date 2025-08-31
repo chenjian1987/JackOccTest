@@ -106,6 +106,9 @@
     <ClCompile Include="WinArcBSurfIntersect.cpp">
       <Filter>Source\Relationship</Filter>
     </ClCompile>
+    <ClCompile Include="WinArcFaceIntersectBSplineFace.cpp">
+      <Filter>Source\Relationship</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -139,6 +142,9 @@
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
     <CustomBuild Include="WinArcBSurfIntersect.h">
+      <Filter>Include\Relationship</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WinArcFaceIntersectBSplineFace.h">
       <Filter>Include\Relationship</Filter>
     </CustomBuild>
   </ItemGroup>

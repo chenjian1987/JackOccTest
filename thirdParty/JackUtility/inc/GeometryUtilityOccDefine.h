@@ -158,3 +158,6 @@
 
 #include <IntTools_EdgeFace.hxx>
 #include <GeomAPI_ExtremaCurveSurface.hxx>
+#include <IntTools_PntOn2Faces.hxx>
+
+#include <TopTools_ListIteratorOfListOfShape.hxx>

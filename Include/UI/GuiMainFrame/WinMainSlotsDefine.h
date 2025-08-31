@@ -105,4 +105,8 @@
     void WIN::onActionArcBSplineIntersect() \
     { \
         HOMEPAGE->OP->ArcBSplineIntersect(); \
+    } \
+    void WIN::onActionArcFaceIntersectBSplineFace() \
+    { \
+         HOMEPAGE->OP->ArcFaceIntersectBSplineFace(); \
     }

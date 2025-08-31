@@ -225,6 +225,11 @@ void MainWindow::createActions()
     connect(m_actionArcBsplineInteersect, &QAction::triggered, this, &MainWindow::onActionArcBSplineIntersect);
     m_panelRelationship->addSmallAction(m_actionArcBsplineInteersect);
 
+    //圆弧曲面与B样条曲面相交
+    m_actionArcFaceIntersectBSplineFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("圆弧曲面与B样条曲面相交"), m_panelEdit);
+    connect(m_actionArcFaceIntersectBSplineFace, &QAction::triggered, this, &MainWindow::onActionArcFaceIntersectBSplineFace);
+    m_panelRelationship->addSmallAction(m_actionArcFaceIntersectBSplineFace);
+
 
     // view
     m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("左视图"), m_panelSolid);

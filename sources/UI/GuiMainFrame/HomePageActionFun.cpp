@@ -66,7 +66,7 @@
 #include "WinSegmentBSplineDistance.h"
 #include "WinSegmentPlaneIntersection.h"
 #include "WinArcBSurfIntersect.h"
-
+#include "WinArcFaceIntersectBSplineFace.h"
 
 
 HomePageActionFun::HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent, std::function<void(const QString&)> func)
@@ -487,6 +487,14 @@ void HomePageActionFun::SegPlaneIntersection()
 void HomePageActionFun::ArcBSplineIntersect()
 {
     WinArcBSurfIntersect* dlg = new WinArcBSurfIntersect(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
+}
+
+
+void HomePageActionFun::ArcFaceIntersectBSplineFace()
+{
+    WinArcFaceIntersectBSplineFace* dlg = new WinArcFaceIntersectBSplineFace(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
 }

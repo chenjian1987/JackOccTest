@@ -50,6 +50,8 @@ public:
     void SegPlaneIntersection();
     void ArcBSplineIntersect();
 
+    void ArcFaceIntersectBSplineFace();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 

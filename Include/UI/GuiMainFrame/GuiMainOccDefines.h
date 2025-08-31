@@ -120,7 +120,7 @@
 #include <GeomAPI_ProjectPointOnSurf.hxx> // 用于投影计算
 #include <Geom_CartesianPoint.hxx>   // 用于点
 #include <AIS_Shape.hxx>             // 用于绘制形状
-#include <AIS_Point.hxx>             // 用于绘制点
+
 #include <Prs3d_LineAspect.hxx>      // 用于绘制线条
 #include <BRepPrimAPI_MakeSphere.hxx> 
 #include <BRepPrimAPI_MakeCylinder.hxx>
