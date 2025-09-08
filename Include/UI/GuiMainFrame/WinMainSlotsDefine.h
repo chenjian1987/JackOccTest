@@ -109,4 +109,10 @@
     void WIN::onActionArcFaceIntersectBSplineFace() \
     { \
          HOMEPAGE->OP->ArcFaceIntersectBSplineFace(); \
+    } \
+    \
+    \
+    void WIN::onActionHelloOCAF() \
+    { \
+         HOMEPAGE->OP->HelloOCAF(); \
     }

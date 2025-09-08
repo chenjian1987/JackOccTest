@@ -64,6 +64,8 @@ namespace JackC
 
         void onActionArcFaceIntersectBSplineFace();
 
+        void onActionHelloOCAF();
+
     private:
         void createActions();
         void createMenus();
@@ -115,5 +117,7 @@ namespace JackC
         SARibbonPannel* m_ifcDataManager;
         QAction* m_actionImportIfc;
 
+        SARibbonPannel* m_ocafManager;
+        QAction* m_actionHelloOCAF;
     };
 }

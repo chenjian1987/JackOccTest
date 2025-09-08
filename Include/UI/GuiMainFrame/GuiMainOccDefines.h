@@ -128,3 +128,10 @@
 #include <TColStd_Array1OfReal.hxx>
 #include <TColStd_Array1OfInteger.hxx>
 #include <BRepBuilderAPI_MakePolygon.hxx>
+
+
+
+#include <TDocStd_Application.hxx>
+#include <TDataStd_Real.hxx>
+#include <TDataStd_Name.hxx>
+#include <TNaming_Builder.hxx>

@@ -343,6 +343,8 @@ void HomePageActionFun::ApplyTransformToSelected( ShapeEditDialog::TransformType
     }
     TopoDS_Shape shape = selectedShape->Shape();
     gp_Trsf trsf;
+    TopLoc_Location location=m_context->Location(selectedShape);
+    const gp_Trsf& pt = location.Transformation();
 
     if (type == ShapeEditDialog::Translate)
     {
@@ -374,14 +376,21 @@ void HomePageActionFun::ApplyTransformToSelected( ShapeEditDialog::TransformType
         else // XY面
             trsf.SetMirror(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)));
     }
-    m_context->Remove(selectedShape, Standard_True);
-    TopoDS_Shape result = BRepBuilderAPI_Transform(shape, trsf, true).Shape();
+    //m_context->Remove(selectedShape, Standard_True);
+    //TopoDS_Shape result = BRepBuilderAPI_Transform(shape, trsf, true).Shape();
 
-    Handle(AIS_Shape) newShape = new AIS_Shape(result);
-    newShape->SetColor(Quantity_NOC_DARKSEAGREEN1);
-    newShape->SetWidth(selectedShape->Width());
-    m_context->Display(newShape, Standard_True);
+    m_context->SetLocation(selectedShape, trsf);
+
+    //Handle(AIS_Shape) newShape = new AIS_Shape(result);
+    //newShape->SetColor(Quantity_NOC_DARKSEAGREEN1);
+    //newShape->SetWidth(selectedShape->Width());
+    //m_context->Display(newShape, Standard_True);
     m_context->UpdateCurrentViewer();
+
+ 
+    selectedShape->SetColor(Quantity_NOC_DARKSEAGREEN1);
+    selectedShape->SetWidth(selectedShape->Width());
+    m_context->Display(selectedShape, Standard_True);
 
 }
 
@@ -497,4 +506,67 @@ void HomePageActionFun::ArcFaceIntersectBSplineFace()
     WinArcFaceIntersectBSplineFace* dlg = new WinArcFaceIntersectBSplineFace(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
+}
+
+
+
+// -----OCAF----//
+void HomePageActionFun::HelloOCAF()
+{
+    try 
+    {
+        // 1. 创建应用程序实例 - 正确方式
+        Handle(TDocStd_Application) app = new TDocStd_Application();
+
+        // 2. 创建新文档
+        Handle(TDocStd_Document) doc;
+        TCollection_ExtendedString format("BinOcaf");
+        app->NewDocument(format, doc);
+
+        if (doc.IsNull()) {
+            std::cerr << "Failed to create document" << std::endl;
+            return ;
+        }
+
+        // 3. 获取根标签
+        TDF_Label rootLabel = doc->Main();
+
+        // 4. 创建参数标签
+        TDF_Label paramLabel = rootLabel.FindChild(1, Standard_True);
+        Handle(TDataStd_Real) lengthAttr = TDataStd_Real::Set(paramLabel, 50.0);
+        Handle(TDataStd_Name) paramName = TDataStd_Name::Set(paramLabel, "BoxLength");
+
+        // 5. 创建形状标签
+        TDF_Label shapeLabel = rootLabel.FindChild(2, Standard_True);
+        TNaming_Builder shapeBuilder(shapeLabel);
+
+        // 创建几何形状
+        BRepPrimAPI_MakeBox boxMaker(50.0, 30.0, 20.0);
+        boxMaker.Build();
+
+        if (boxMaker.IsDone()) {
+            shapeBuilder.Generated(boxMaker.Shape());
+            Handle(TDataStd_Name) shapeName = TDataStd_Name::Set(shapeLabel, "MyBox");
+            std::cout << "Box shape created successfully" << std::endl;
+        }
+
+        // 6. 保存文档
+        TCollection_ExtendedString filename("C:/temp/my_document.cbf");
+        PCDM_StoreStatus status = app->SaveAs(doc, filename);
+
+        if (status == PCDM_SS_OK) {
+            std::cout << "Document saved successfully" << std::endl;
+        }
+        else {
+            std::cerr << "Failed to save document. Status: " << status << std::endl;
+        }
+
+        return ;
+    }
+    catch (Standard_Failure& e)
+    {
+        std::cerr << "Exception occurred: " << e.GetMessageString() << std::endl;
+        return ;
+    }
+
 }

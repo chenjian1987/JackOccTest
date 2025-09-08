@@ -52,6 +52,8 @@ public:
 
     void ArcFaceIntersectBSplineFace();
 
+    void HelloOCAF();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 

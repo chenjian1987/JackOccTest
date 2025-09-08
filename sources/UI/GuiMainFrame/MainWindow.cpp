@@ -162,6 +162,7 @@ void MainWindow::createToolBars()
     dataCenterBarView->addCategoryPage(dataCenterView);
 
     m_ifcDataManager = dataCenterView->addPannel(QString::fromLocal8Bit("IFC"));
+    m_ocafManager = dataCenterView->addPannel(QString::fromLocal8Bit("OCAF"));
 }
 
 
@@ -261,6 +262,11 @@ void MainWindow::createActions()
     m_actionImportIfc = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("导入IFC"), m_panelSolid);
     connect(m_actionImportIfc, &QAction::triggered, this, &MainWindow::onActionImportIfc);
     m_ifcDataManager->addSmallAction(m_actionImportIfc);
+
+    //OCAF
+    m_actionHelloOCAF = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("Hello OCAF-创建TDocStd_Document"), m_panelSolid);
+    connect(m_actionHelloOCAF, &QAction::triggered, this, &MainWindow::onActionHelloOCAF);
+    m_ocafManager->addSmallAction(m_actionHelloOCAF);
 }
 
 
