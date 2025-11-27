@@ -63,6 +63,7 @@ namespace JackC
         void onActionArcBSplineIntersect();
 
         void onActionArcFaceIntersectBSplineFace();
+        void onActionMatrixTranslate();
 
         void onActionHelloOCAF();
 
@@ -89,6 +90,7 @@ namespace JackC
         SARibbonPannel* m_panelSolid;
         SARibbonPannel* m_panelEdit;
         SARibbonPannel* m_panelRelationship;
+        SARibbonPannel* m_panelMatrixTranslate;     //×ø±êÏµ×ª»»
 
         QAction* m_actionSimpleBSplineCurve;
         QAction*  m_actionSimpleSolidTranslate;
@@ -103,6 +105,7 @@ namespace JackC
         QAction* m_actionSegmentPlaneIntersection;
         QAction* m_actionArcBsplineInteersect;
         QAction* m_actionArcFaceIntersectBSplineFace;
+        QAction* m_actionMatrixTranslate;
         
         //view
         SARibbonPannel* m_coreViewControl;

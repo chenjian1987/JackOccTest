@@ -1,148 +1,64 @@
-#include<vector>
-#include<tuple>
-
+Ôªø#include <vector>
+#include <tuple>
 
 #include "HomePage.h"
 #include "IMainWindow.h"
 #include "MainWindow.h"
 #include "JNew.h"
 
-#include <QLabel>
-#include <QResizeEvent>
-#include <QLayout>
-#include <QPushButton>
 #include <QApplication>
 #include <QScreen>
-#include <QMdiArea>
+#include <QLabel>
 #include <QListView>
-
-
-#include "GuiMainOccDefines.h"
+#include <QResizeEvent>
+#include <QHBoxLayout>
 
 #include <cmath>
 #include <DebugMessage.h>
+#include "GeometryUtilityOccDefine.h"
 
 using namespace JackC;
 
 
 
 
-HomePage::HomePage(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags)
+
+HomePage::HomePage(QWidget* parent, Qt::WindowFlags flags)
+    : QWidget(parent, flags)
 {
     setAttribute(Qt::WA_NativeWindow);
-
     setAutoFillBackground(false);
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_PaintOnScreen);
     setBackgroundRole(QPalette::NoRole);
     setFocusPolicy(Qt::StrongFocus);
-    setUpdatesEnabled(false); // ∑¿÷πQt∏…»≈‰÷»æ
+    setUpdatesEnabled(false); 
 
     InitUI();
-    m_mainPage =(MainWindow*) parent;
+    m_mainPage = qobject_cast<MainWindow*>(parent);
+
+    m_panSpeed = std::max<qreal>(1.0, devicePixelRatioF());
 }
+
 HomePage::~HomePage() {}
 
 
 
-void HomePage::showEvent(QShowEvent* event) 
+void HomePage::showEvent(QShowEvent* event)
 {
+    QWidget::showEvent(event);
     Initialize();
-
-
 }
-void HomePage::resizeEvent(QResizeEvent* event) 
+
+void HomePage::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
-    if (!m_v3dView.IsNull()) 
+    if (!m_v3dView.IsNull())
     {
         m_v3dView->MustBeResized();
-    }
-    
-}
-
-
-
-//  Û±Í÷–º¸“∆∂Ø£¨ ”“º¸–˝◊™
-void HomePage::mousePressEvent(QMouseEvent* event)
-{
-    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton))
-    {
-        //  Û±Í◊Û”“º¸∆Î∞¥£∫≥ı ºªØ∆Ω“∆
-        m_xmax = event->pos().x();
-        m_ymax = event->pos().y();
-    }
-    else if (event->buttons() & Qt::LeftButton)
-    {
-        // µ„ª˜«∞£¨Ω´ Û±ÍŒª÷√¥´µ›µΩΩªª•ª∑æ≥
-        m_context->MoveTo(event->pos().x(), event->pos().y(), m_v3dView, Standard_True);
-        //  Û±Í◊Ûº¸£∫—°‘Òƒ£–Õ
-        AIS_StatusOfPick t_pick_status = AIS_SOP_NothingSelected;
-        if (qApp->keyboardModifiers() == Qt::ControlModifier)
-        {
-            t_pick_status = m_context->SelectDetected(AIS_SelectionScheme_Add);   // ∂‡—°
-        }
-        else
-        {
-            t_pick_status = m_context->SelectDetected();        // µ•—°
-        }
-        m_v3dView->Update();
-    }
-    else if (event->buttons() & Qt::RightButton)
-    {
-        //  Û±Íπˆ¬÷º¸£∫≥ı ºªØ∆Ω“∆
-        m_xmax = event->pos().x();
-        m_ymax = event->pos().y();
-        //  Û±Íπˆ¬÷º¸£∫≥ı ºªØ–˝◊™
-        m_v3dView->StartRotation(event->pos().x(), event->pos().y());
+        m_v3dView->Redraw();
     }
 }
-//!∏≤–¥ Û±Í∞¥º¸ Õ∑≈ ¬º˛
-void HomePage::mouseReleaseEvent(QMouseEvent* event)
-{
-    m_context->MoveTo(event->pos().x(), event->pos().y(), m_v3dView, Standard_True);
-}
-//!∏≤–¥ Û±Í“∆∂Ø ¬º˛
-void HomePage::mouseMoveEvent(QMouseEvent* event)
-{
-    if  (event->buttons() & Qt::RightButton)
-    {
-        //  Û±Í◊Û”“º¸∆Î∞¥£∫÷¥––∆Ω“∆
-        m_v3dView->Pan(event->pos().x() - m_xmax, m_ymax - event->pos().y());
-        m_xmax = event->pos().x();
-        m_ymax = event->pos().y();
-    }
-    else if (event->buttons() & Qt::MiddleButton)
-    {
-        //  Û±Íπˆ¬÷º¸
-        if (qApp->keyboardModifiers() == Qt::ShiftModifier)    // «“∞¥œ¬Shiftº¸
-        {
-            //  Û±Íπˆ¬÷º¸£∫÷¥––∆Ω“∆
-            m_v3dView->Pan(event->pos().x() - m_xmax, m_ymax - event->pos().y());
-            m_xmax = event->pos().x();
-            m_ymax = event->pos().y();
-        }
-        else
-        {
-            //  Û±Íπˆ¬÷º¸£∫÷¥–––˝◊™
-            m_v3dView->Rotation(event->pos().x(), event->pos().y());
-        }
-    }
-    else
-    {
-        // Ω´ Û±ÍŒª÷√¥´µ›µΩΩªª•ª∑æ≥
-        m_context->MoveTo(event->pos().x(), event->pos().y(), m_v3dView, Standard_True);
-    }
-}
-//!∏≤–¥ Û±Íπˆ¬÷ ¬º˛
-void HomePage::wheelEvent(QWheelEvent* event)
-{
-    m_v3dView->StartZoomAtPoint(event->position().x(), event->position().y());
-    m_v3dView->ZoomAtPoint(0, 0, event->angleDelta().y(), 0); //÷¥––Àı∑≈
-}
-
-
-
 
 void HomePage::InitUI()
 {
@@ -154,155 +70,259 @@ void HomePage::InitUI()
     m_pOcctViewContainer->setFocusPolicy(Qt::StrongFocus);
     m_pOcctViewContainer->setUpdatesEnabled(false);
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    auto* layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(m_pOcctViewContainer);
-
 }
 
-void HomePage::Initialize() 
+void HomePage::Initialize()
 {
-    // Ωˆ≥ı ºªØ“ª¥Œ
-    if (m_context.IsNull()) 
+    if (!m_context.IsNull()) return; // ‰ªÖÂàùÂßãÂåñ‰∏ÄÊ¨°
+
+    // ÂõæÂΩ¢È©±Âä®
+    m_displayConnection = new Aspect_DisplayConnection();
+    m_graphicDriver = new OpenGl_GraphicDriver(m_displayConnection);
+
+    WId winHandle = m_pOcctViewContainer->winId();
+    m_occtWindow = new WNT_Window((Aspect_Handle)winHandle);
+    if (m_occtWindow.IsNull())
     {
-        // ≥ı ºªØÕº–Œ«˝∂Ø
-        m_displayConnection = new Aspect_DisplayConnection();
-        m_graphicDriver = new OpenGl_GraphicDriver(m_displayConnection);
-
-        WId winHandle = m_pOcctViewContainer->winId();
-
-        m_occtWindow = new WNT_Window((Aspect_Handle)winHandle);
-        if (m_occtWindow.IsNull()) 
-        {
-            DBG_WARN(L"Failed to create WNT_Window");
-            return;
-        }
-        m_v3dViewer = new V3d_Viewer(m_graphicDriver);
-        m_v3dViewer->SetDefaultLights();
-        m_v3dViewer->SetLightOn();
-        m_v3dView = m_v3dViewer->CreateView();
-        m_v3dView->SetWindow(m_occtWindow);
-        if (!m_occtWindow->IsMapped()) {
-            m_occtWindow->Map();
-        }
-        m_context = new AIS_InteractiveContext(m_v3dViewer);
-        //ÃÌº””“…œΩ«cubeøÚ   
-        auto view_cube = new AIS_ViewCube();
-        // ∏ƒ—’…´
-        view_cube->SetBoxColor(Quantity_NOC_GRAY80);   // Cube÷˜…´
-        view_cube->SetTextColor(Quantity_NOC_BLACK);   // ±Í«©Œƒ◊÷
-        view_cube->SetFontHeight(12.0);                // ◊÷ÃÂ¥Û–°
-        view_cube->SetInnerColor(Quantity_NOC_GRAY60);
-        auto transform_pers = new Graphic3d_TransformPers(
-            Graphic3d_TMF_TriedronPers,
-            Aspect_TOTP_RIGHT_UPPER,
-            Graphic3d_Vec2i(85, 85)
-        );
-        view_cube->SetTransformPersistence(transform_pers);
-        m_context->Display(view_cube, Standard_True);
-
-        //…Ë÷√œ‘ æƒ£ Ω    
-        m_context->SetDisplayMode(AIS_Shaded, Standard_True);
-        // …Ë÷√ƒ£–Õ∏ﬂ¡¡µƒ∑Á∏Ò    
-        Handle(Prs3d_Drawer) t_hilight_style = m_context->HighlightStyle(); 
-        // ªÒ»°∏ﬂ¡¡∑Á∏Ò    
-        t_hilight_style->SetMethod(Aspect_TOHM_COLOR);  
-        // —’…´œ‘ æ∑Ω Ω   
-        t_hilight_style->SetColor(Quantity_NOC_LIGHTYELLOW);    
-        // …Ë÷√∏ﬂ¡¡—’…´    
-        t_hilight_style->SetDisplayMode(1); 
-        // ’˚ÃÂ∏ﬂ¡¡    
-        t_hilight_style->SetTransparency(0.2f); 
-
-        //…Ë÷√—°‘Òƒ£–Õµƒ∑Á∏Ò    
-        Handle(Prs3d_Drawer) t_select_style = m_context->SelectionStyle();  
-        // ªÒ»°—°‘Ò∑Á∏Ò    
-        t_select_style->SetMethod(Aspect_TOHM_COLOR);  
-        // —’…´œ‘ æ∑Ω Ω    
-        t_select_style->SetColor(Quantity_NOC_LIGHTSEAGREEN);   
-        // …Ë÷√—°‘Ò∫Û—’…´    
-        t_select_style->SetDisplayMode(1); 
-        // ’˚ÃÂ∏ﬂ¡¡    
-        t_select_style->SetTransparency(0.4f); // …Ë÷√Õ∏√˜∂» 
-
-        m_v3dView->SetZoom(10);
-
-        InitGrid();
-        InitTrihedron();
-
-        //  ”Õº  ≈‰
-        m_v3dView->SetBackgroundColor(Quantity_NOC_WHITE);
-        m_v3dView->FitAll();
-        m_v3dView->Redraw();
-        m_v3dView->MustBeResized();
+        DBG_WARN(L"Failed to create WNT_Window");
+        return;
     }
-    opHomePageActionFun = NEW_AS_OWNER_PTR(HomePageActionFun,m_context, m_v3dViewer, m_v3dView,this, [this](const QString& text) { this->AppendOutput(text); });
+
+    // Viewer/View
+    m_v3dViewer = new V3d_Viewer(m_graphicDriver);
+    m_v3dViewer->SetDefaultLights();
+    m_v3dViewer->SetLightOn();
+
+    m_v3dView = m_v3dViewer->CreateView();
+    m_v3dView->SetWindow(m_occtWindow);
+    if (!m_occtWindow->IsMapped()) { m_occtWindow->Map(); }
+
+    // ‰∫§‰∫í‰∏ä‰∏ãÊñá
+    m_context = new AIS_InteractiveContext(m_v3dViewer);
+
+    // Âè≥‰∏äËßí ViewCube
+    Handle(AIS_ViewCube) view_cube = new AIS_ViewCube();
+    view_cube->SetBoxColor(Quantity_NOC_GRAY80);
+    view_cube->SetTextColor(Quantity_NOC_BLACK);
+    view_cube->SetFontHeight(12.0);
+    view_cube->SetInnerColor(Quantity_NOC_GRAY60);
+    Handle(Graphic3d_TransformPers) transform_pers =
+        new Graphic3d_TransformPers(Graphic3d_TMF_TriedronPers,
+            Aspect_TOTP_RIGHT_UPPER,
+            Graphic3d_Vec2i(85, 85));
+    view_cube->SetTransformPersistence(transform_pers);
+    m_context->Display(view_cube, Standard_False);
+
+    // ÊòæÁ§∫/ÈÄâÊã©È´ò‰∫ÆÈ£éÊ†º
+    m_context->SetDisplayMode(AIS_Shaded, Standard_False);
+
+    {
+        Handle(Prs3d_Drawer) hi = m_context->HighlightStyle();
+        hi->SetMethod(Aspect_TOHM_COLOR);
+        hi->SetColor(Quantity_NOC_LIGHTYELLOW);
+        hi->SetDisplayMode(1);
+        hi->SetTransparency(0.2f);
+
+        Handle(Prs3d_Drawer) sel = m_context->SelectionStyle();
+        sel->SetMethod(Aspect_TOHM_COLOR);
+        sel->SetColor(Quantity_NOC_LIGHTSEAGREEN);
+        sel->SetDisplayMode(1);
+        sel->SetTransparency(0.4f);
+    }
+
+    // ËÉåÊôØ‰∏éÂàùÂßãËßÜËßí
+    m_v3dView->SetBackgroundColor(Quantity_NOC_WHITE);
+
+    InitGrid();
+    InitTrihedron();
     InitOriginMarker();
+
+    // ÂàùÂßãÈÄÇÈÖçÔºàÈÅøÂÖç SetZoom(10) ËøôÁßçÁ™ÅÂÖÄÁº©ÊîæÔºâ
+    m_v3dView->FitAll();
+    m_v3dView->ZFitAll();
+    m_v3dView->Redraw();
+    m_v3dView->MustBeResized();
+
+    // Â§ñÈÉ®Âä®‰ΩúÂõûË∞É
+    opHomePageActionFun = NEW_AS_OWNER_PTR(
+        HomePageActionFun, m_context, m_v3dViewer, m_v3dView, this,
+        [this](const QString& text) { this->AppendOutput(text); });
 }
 
 void HomePage::InitGrid()
 {
+    // ÂÖàÁ°Æ‰øùÊøÄÊ¥ªÁöÑÊòØÁü©ÂΩ¢ÁΩëÊ†º + Á∫øÊù°ÊòæÁ§∫
     m_v3dViewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
-    // …Ë÷√Õ¯∏Ò≤Œ ˝£∫¬ﬂº≠‘≠µ„∫Õ≤Ω≥§£®ƒ£–Õµ•Œª£©
-    m_v3dViewer->SetRectangularGridValues(0.0, 0.0, 100.0, 100.0, 0.0);
-    // …Ë÷√Õ¯∏Ò‘⁄∆¡ƒª…œµƒœ‘ æ±»¿˝£®œÒÀÿµ•Œª£©
-    m_v3dViewer->SetRectangularGridGraphicValues(10000.0, 10000.0, 0.0);
-    // ∆Ù”√ ”Õºƒ⁄µƒÕ¯∏Òœ‘ æ
+    // ‰Ω†ÁöÑËÄÅÂèÇÊï∞ÔºöÊØè 100mm/100mm ‰∏ÄÊù°‰∏ªÁΩëÊ†º
+    m_v3dViewer->SetRectangularGridValues(
+        0.0, 0.0,    // ÂéüÁÇπ (X0, Y0)
+        100.0,       // X ÊñπÂêëÊ≠•ÈïøÔºàÊ®°ÂûãÂçï‰ΩçÔºâ
+        100.0,       // Y ÊñπÂêëÊ≠•ÈïøÔºàÊ®°ÂûãÂçï‰ΩçÔºâ
+        0.0          // ÁΩëÊ†ºÊóãËΩ¨Ëßí
+    );
+    m_v3dViewer->SetRectangularGridGraphicValues(
+        10000.0,     // X ÊñπÂêëÂÉèÁ¥†Èó¥Ë∑ù
+        10000.0,     // Y ÊñπÂêëÂÉèÁ¥†Èó¥Ë∑ù
+        0.0
+    );
+
+    // ÊâìÂºÄÁΩëÊ†ºÊòæÁ§∫
     m_v3dView->SetGridActivity(Standard_True);
+    // Á´ãÂàªÈáçÁªòÔºåÁ°Æ‰øùÂèØËßÅ
+    m_v3dView->Redraw();
 }
 
 void HomePage::InitTrihedron()
 {
     gp_Ax2 axis(gp::Origin(), gp::DZ(), gp::DX());
-   
-    // ¥¥Ω®◊¯±Íœµ
     Handle(Geom_Axis2Placement) placement = new Geom_Axis2Placement(axis);
     Handle(AIS_Trihedron) aisTrihedron = new AIS_Trihedron(placement);
 
-    // …Ë÷√◊‘∂®“ÂDrawer∫ÕDatumAspect
-    Handle(Prs3d_Drawer) drawer = new Prs3d_Drawer();
     Handle(Prs3d_DatumAspect) datumAspect = new Prs3d_DatumAspect();
+    datumAspect->SetDrawLabels(Standard_True);
+    datumAspect->SetDrawArrows(Standard_True);
+    datumAspect->SetAxisLength(100.0, 100.0, 100.0);
 
-    // √˜»∑∆Ù”√≤ …´œ‘ æƒ£ Ω£®◊Óπÿº¸µƒ“ª≤Ω£°£©
-    datumAspect->SetDrawLabels(Standard_True);          // œ‘ æ±Í«©
-    datumAspect->SetDrawArrows(Standard_True);          // œ‘ æº˝Õ∑
-    datumAspect->SetAxisLength(100.0, 100.0, 100.0);    // ∏˘æ› µº –Ë«Û…Ë÷√÷·≥§
+    datumAspect->LineAspect(Prs3d_DP_XAxis)->SetWidth(3.0);
+    datumAspect->LineAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);
+    datumAspect->ShadingAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);
+    datumAspect->TextAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);
 
-    // …Ë÷√÷·—’…´
-    datumAspect->LineAspect(Prs3d_DP_XAxis)->SetWidth(5.0);                     // …Ë÷√÷·œﬂøÌ∂»
-    datumAspect->LineAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);        //øÿ÷∆÷·∏ÀÕ‚±ﬂ‘µœﬂµƒ—’…´∫ÕœﬂøÌ
-    datumAspect->ShadingAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);     //øÿ÷∆÷·∏À±æÃÂ—’…´
-    datumAspect->TextAspect(Prs3d_DP_XAxis)->SetColor(Quantity_NOC_RED);        //øÿ÷∆±Í«©Œƒ◊÷—’…´
-
-    datumAspect->LineAspect(Prs3d_DP_YAxis)->SetWidth(5.0);         // …Ë÷√÷·œﬂøÌ∂»
+    datumAspect->LineAspect(Prs3d_DP_YAxis)->SetWidth(3.0);
     datumAspect->LineAspect(Prs3d_DP_YAxis)->SetColor(Quantity_NOC_GREEN);
     datumAspect->ShadingAspect(Prs3d_DP_YAxis)->SetColor(Quantity_NOC_GREEN);
     datumAspect->TextAspect(Prs3d_DP_YAxis)->SetColor(Quantity_NOC_GREEN);
 
-    datumAspect->LineAspect(Prs3d_DP_ZAxis)->SetWidth(5.0);         // …Ë÷√÷·œﬂøÌ∂»
-    datumAspect->LineAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE);
-    datumAspect->ShadingAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE);
-    datumAspect->TextAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE);
+    datumAspect->LineAspect(Prs3d_DP_ZAxis)->SetWidth(3.0);
+    datumAspect->LineAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE1);
+    datumAspect->ShadingAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE1);
+    datumAspect->TextAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_NOC_BLUE1);
 
-
-    // ”¶”√DatumAspectµΩDrawer
+    Handle(Prs3d_Drawer) drawer = new Prs3d_Drawer();
     drawer->SetDatumAspect(datumAspect);
     aisTrihedron->SetAttributes(drawer);
 
-    Handle(Graphic3d_TransformPers) transformPers = new Graphic3d_TransformPers(
-        Graphic3d_TMF_TriedronPers,
-        Aspect_TOTP_LEFT_LOWER,
-        Graphic3d_Vec2i(85, 85)
-    );
-    aisTrihedron->SetTransformPersistence(transformPers);
+    Handle(Graphic3d_TransformPers) tp =
+        new Graphic3d_TransformPers(Graphic3d_TMF_TriedronPers,
+            Aspect_TOTP_LEFT_LOWER,
+            Graphic3d_Vec2i(85, 85));
+    aisTrihedron->SetTransformPersistence(tp);
 
-    // «ø÷∆∏¸–¬œ‘ æ
-    m_context->Display(aisTrihedron, Standard_True);
-    m_context->Redisplay(aisTrihedron, Standard_True);
-
-    
+    m_context->Display(aisTrihedron, Standard_False);
+    m_context->Redisplay(aisTrihedron, Standard_False);
 }
+
+void HomePage::InitOriginMarker()
+{
+    Handle(Geom_Point) geomPoint = new Geom_CartesianPoint(gp_Pnt(0.0, 0.0, 0.0));
+    Handle(AIS_Point)  aisPoint = new AIS_Point(geomPoint);
+    Handle(Prs3d_PointAspect) pointAspect =
+        new Prs3d_PointAspect(Aspect_TOM_POINT, Quantity_NOC_RED, 5.0);
+    aisPoint->Attributes()->SetPointAspect(pointAspect);
+    m_context->Display(aisPoint, Standard_False);
+}
+
+
+
+void HomePage::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (m_context.IsNull() || m_v3dView.IsNull()) return;
+
+    m_rotating = false;
+    m_panning = false;
+
+    m_context->MoveTo((int)event->position().x(), (int)event->position().y(), m_v3dView, Standard_True);
+    m_v3dView->Redraw();
+}
+
+void HomePage::mousePressEvent(QMouseEvent* event)
+{
+    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton))
+    {
+        // Â∑¶Âè≥ÈîÆÈΩêÊåâÔºöÂàùÂßãÂåñÂπ≥Áßª
+        m_xmax = event->pos().x();
+        m_ymax = event->pos().y();
+    }
+    else if (event->button() == Qt::MiddleButton)
+    {
+        // ‰∏≠ÈîÆÊåâ‰∏ãÔºöÂàùÂßãÂåñÂπ≥ÁßªÈîöÁÇπ
+        m_xmax = event->pos().x();
+        m_ymax = event->pos().y();
+    }
+    else if (event->button() == Qt::LeftButton)
+    {
+        // Â∑¶ÈîÆÔºöÈÄâÊã©
+        m_context->MoveTo(event->pos().x(), event->pos().y(), m_v3dView, Standard_True);
+        if (qApp->keyboardModifiers() == Qt::ControlModifier)
+            m_context->SelectDetected(AIS_SelectionScheme_Add);
+        else
+            m_context->SelectDetected();
+        m_v3dView->Redraw();
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        // Âè≥ÈîÆÔºöÂè™ÂÅöÊóãËΩ¨Ôºå‰∏çË¶Å Pan
+        m_v3dView->StartRotation(event->pos().x(), event->pos().y());
+    }
+}
+
+void HomePage::mouseMoveEvent(QMouseEvent* event)
+{
+    if (event->buttons() & Qt::MiddleButton)
+    {
+        // ‰∏≠ÈîÆÊãñÂä®ÔºöÂπ≥ÁßªÔºàÁî®ÂÉèÁ¥†Â∑ÆÔºâ
+        m_v3dView->Pan(event->pos().x() - m_xmax, m_ymax - event->pos().y());
+        m_xmax = event->pos().x();
+        m_ymax = event->pos().y();
+    }
+    else if (event->buttons() & Qt::RightButton)
+    {
+        // Âè≥ÈîÆÊãñÂä®ÔºöÊóãËΩ¨ÔºàËΩ®ËøπÁêÉÔºâ
+        m_v3dView->Rotation(event->pos().x(), event->pos().y());
+    }
+    else
+    {
+        // hover È´ò‰∫Æ
+        m_context->MoveTo(event->pos().x(), event->pos().y(), m_v3dView, Standard_True);
+    }
+}
+
+void HomePage::wheelEvent(QWheelEvent* event)
+{
+    if (m_v3dView.IsNull()) return;
+
+    const int x = static_cast<int>(event->position().x());
+    const int y = static_cast<int>(event->position().y());
+    const int delta = event->angleDelta().y(); // ÊØèÊ†º‰∏ÄËà¨ ¬±120
+    if (delta == 0) return;
+
+    const int steps = delta / 120;
+    m_v3dView->StartZoomAtPoint(x, y);
+    if (steps > 0)
+    {
+        for (int i = 0; i < steps; ++i)
+            m_v3dView->ZoomAtPoint(x, y, x + 1, y + 1);
+    }
+    else
+    {
+        for (int i = 0; i < -steps; ++i)
+            m_v3dView->ZoomAtPoint(x, y, x - 1, y - 1);
+    }
+
+    // Èò≤Ê≠¢Áº©ÊîæÊØî‰æãË∂äÁïåÂØºËá¥‚ÄúÁúã‰∏çÂà∞/ÁúãËµ∑Êù•Ê≤°ÂèçÂ∫î‚Äù
+    const Standard_Real minS = 1e-7, maxS = 1e7;
+    const Standard_Real s = m_v3dView->Scale();
+    if (s < minS) m_v3dView->SetScale(minS);
+    if (s > maxS) m_v3dView->SetScale(maxS);
+
+    m_v3dView->Redraw();
+}
+
+
 
 void HomePage::ShowMaximized()
 {
@@ -316,26 +336,5 @@ void HomePage::ShowMinimized()
 
 void HomePage::AppendOutput(const QString& text)
 {
-    m_mainPage->AppendOutput(text);
-}
-
-
-void HomePage::InitOriginMarker()
-{
-    // ¥¥Ω®“ª∏ˆ Geom_Point
-    Handle(Geom_Point) geomPoint = new Geom_CartesianPoint(gp_Pnt(0.0, 0.0, 0.0));
-
-    // ”√ Geom_Point ¥¥Ω® AIS_Point
-    Handle(AIS_Point) aisPoint = new AIS_Point(geomPoint);
-
-    // …Ë÷√œ‘ æ—˘ Ω
-    Handle(Prs3d_PointAspect) pointAspect = new Prs3d_PointAspect(
-        Aspect_TOM_POINT,
-        Quantity_NOC_RED,
-        5.0 // µ„¥Û–°
-    );
-    aisPoint->Attributes()->SetPointAspect(pointAspect);
-
-    // œ‘ æ
-    m_context->Display(aisPoint, Standard_True);
+    if (m_mainPage) m_mainPage->AppendOutput(text);
 }

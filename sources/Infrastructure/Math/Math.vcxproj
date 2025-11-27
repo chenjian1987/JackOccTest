@@ -10,6 +10,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\MathDefine.h" />
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\Matrix44.h" />
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\Vector3d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Include\Infrastructure\Math\Matrix44.cpp" />
+    <ClCompile Include="Vector3d.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{509971C1-B4CE-40A1-8A53-35D94B0F2570}</ProjectGuid>
     <RootNamespace>Math</RootNamespace>

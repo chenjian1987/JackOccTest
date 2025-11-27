@@ -1,0 +1,8 @@
+#pragma once
+#include "JDefines.h"
+
+#ifdef JACKC_MATH_INTERFACE_HOME;
+#define JACKC_MATH_INTERFACE_EXPORT DLL_EXPORT
+#else
+#define JACKC_MATH_INTERFACE_EXPORT DLL_IMPORT
+#endif

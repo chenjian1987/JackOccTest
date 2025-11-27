@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\AppWindowFactory.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\CoordinateSystemDrawer.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainFrameDefine.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainOccDefines.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h" />
@@ -28,6 +29,11 @@
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IfcImportUtils.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\WinMainSlotsDefine.h" />
+    <CustomBuild Include="Matrix44OperationDialog.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <CustomBuild Include="WinArcFaceIntersectBSplineFace.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(JACKC_QT_DIR)\bin\moc.exe  $(JACKC_SOLUTION_SOURCE_DIR)\UI\GuiMainFrame\%(Filename).h -o moc_%(Filename).cpp</Command>
       <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
@@ -91,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppWindowFactory.cpp" />
+    <ClCompile Include="CoordinateSystemDrawer.cpp" />
     <ClCompile Include="HomePage.cpp" />
     <ClCompile Include="HomePageActionFun.cpp" />
     <ClCompile Include="IAppWindowFactory.cpp" />
@@ -98,6 +105,7 @@
     <ClCompile Include="IfcImportUtils.cpp" />
     <ClCompile Include="IMainWindow.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="Matrix44OperationDialog.cpp" />
     <ClCompile Include="ShapeEditDialog.cpp" />
     <ClCompile Include="WinArcBSurfIntersect.cpp" />
     <ClCompile Include="WinArcFaceIntersectBSplineFace.cpp" />
@@ -221,7 +229,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(JACKC_SOLUTION_BIN_DIR)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR);$(JACKC_PUGXML_LIB_DIR);$(JACKC_JSONCPP_LIB_DIR);$(JACKC_QT_LIB_DIR);$(JACKC_OCC_LIB_DIR);$(JACKC_SARIBBON_LIB_DIR)\Debug;$(JACKC_IFCPP_LIB_DIR);$(JACKC_GEOMETRY_UT_LIB_DIR)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>JackCUiView.lib;JackCAppInterface.lib;JackCCommon.lib;Qt6Widgetsd.lib;Qt6Guid.lib;Qt6Cored.lib;Qt6Core5Compatd.lib;TKernel.lib;TKMath.lib;TKService.lib;TKV3d.lib;TKOpenGl.lib;TKBRep.lib;TKGeomBase.lib;TKGeomAlgo.lib;TKTopAlgo.lib;TKPrim.lib;TKBool.lib;TKBO.lib;TKG3d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;SARibbonBard.lib;pugixml.lib;jsoncpp.lib;TKBin.lib;TKBinL.lib;TKBinTObj.lib;TKBinXCAF.lib;TKCAF.lib;TKCDF.lib;TKFeat.lib;TKFillet.lib;TKG2d.lib;TKHLR.lib;TKLCAF.lib;TKMesh.lib;TKMeshVS.lib;TKOffset.lib;TKShHealing.lib;TKStd.lib;TKStdL.lib;TKTObj.lib;TKVCAF.lib;TKXCAF.lib;TKXMesh.lib;TKXSBase.lib;IfcPlusPlusd.lib;JackCGeometryUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>JackCUiView.lib;JackCAppInterface.lib;JackCCommon.lib;JackCMath.lib;Qt6Widgetsd.lib;Qt6Guid.lib;Qt6Cored.lib;Qt6Core5Compatd.lib;TKernel.lib;TKMath.lib;TKService.lib;TKV3d.lib;TKOpenGl.lib;TKBRep.lib;TKGeomBase.lib;TKGeomAlgo.lib;TKTopAlgo.lib;TKPrim.lib;TKBool.lib;TKBO.lib;TKG3d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;SARibbonBard.lib;pugixml.lib;jsoncpp.lib;TKBin.lib;TKBinL.lib;TKBinTObj.lib;TKBinXCAF.lib;TKCAF.lib;TKCDF.lib;TKFeat.lib;TKFillet.lib;TKG2d.lib;TKHLR.lib;TKLCAF.lib;TKMesh.lib;TKMeshVS.lib;TKOffset.lib;TKShHealing.lib;TKStd.lib;TKStdL.lib;TKTObj.lib;TKVCAF.lib;TKXCAF.lib;TKXMesh.lib;TKXSBase.lib;IfcPlusPlusd.lib;JackCGeometryUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(JACKC_SOLUTION_PDB_DIR)\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(JACKC_SOLUTION_LIB_DIR)/$(TargetName).lib</ImportLibrary>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>

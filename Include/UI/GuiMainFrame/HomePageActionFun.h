@@ -38,6 +38,8 @@ public:
     void TestCreateSimpleBSplineCurve(); 
     void TestCreateRectangle();
 
+    void TestMatrixTranslate();
+
     void ImportIfc();
     void ImportIfc(const QString str);
 

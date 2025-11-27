@@ -27,6 +27,18 @@
     <Filter Include="Include\Relationship">
       <UniqueIdentifier>{f2fa9f5a-dbb4-44fa-a3ac-5750ddf6613a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Utils">
+      <UniqueIdentifier>{6367bfa8-4017-4d58-b8b5-cad4cbae2302}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils">
+      <UniqueIdentifier>{355d9f6a-d694-4838-8897-e4f405582642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MatrixOperator">
+      <UniqueIdentifier>{84de533a-b818-4f73-a269-04769236bc8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\MatrixOperator">
+      <UniqueIdentifier>{2344fa49-3ff6-4105-bd4b-afe619c62a54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h">
@@ -55,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\HomePageActionFun.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\CoordinateSystemDrawer.h">
+      <Filter>Include\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +124,12 @@
     <ClCompile Include="WinArcFaceIntersectBSplineFace.cpp">
       <Filter>Source\Relationship</Filter>
     </ClCompile>
+    <ClCompile Include="CoordinateSystemDrawer.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix44OperationDialog.cpp">
+      <Filter>Source\MatrixOperator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">
@@ -146,6 +167,9 @@
     </CustomBuild>
     <CustomBuild Include="WinArcFaceIntersectBSplineFace.h">
       <Filter>Include\Relationship</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Matrix44OperationDialog.h">
+      <Filter>Include\MatrixOperator</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -115,7 +115,6 @@ bool MainWindow::Initialize()
     return true;
 }
 
-
 void MainWindow::createMenus()
 {
     SARibbonBar* menu_TestBrep = ribbonBar();
@@ -125,28 +124,35 @@ void MainWindow::createMenus()
     menu_TestBrep->setEnableWordWrap(true);
 }
 
-
 void MainWindow::createToolBars()
 {
     SARibbonBar* mainPageRibbon = ribbonBar();
-    SARibbonCategory* categoryPanelTestBRep= new SARibbonCategory();
+    SARibbonCategory* categoryPanelTestBRep = new SARibbonCategory();
     categoryPanelTestBRep->setCategoryName(QString::fromLocal8Bit("建模"));
     categoryPanelTestBRep->setObjectName("建模");
     categoryPanelTestBRep->setFont(QFont(QString::fromLocal8Bit("微软雅黑"), 10));
     mainPageRibbon->addCategoryPage(categoryPanelTestBRep);
+    // 不要设置categoryPanelTestBRep的minimumWidth，因为这会撑大整个类别
 
+    //建模 模型关系 坐标轴转换
     // geom curve
     m_panelCurve = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("测试Geom Curve"));
     //brep solid
     m_panelSolid = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("测试BRep Solid"));
-    m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("    互操作 & 互编辑   "));
-    m_panelRelationship= categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("模型关系"));
-    m_panelRelationship->setMinimumWidth(1000);
+    // 将“互操作 & 互编辑”改为“互操作”
+    m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("互操作"));
+    m_panelRelationship = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("模型关系"));
+    m_panelMatrixTranslate = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("坐标系转换"));
+
+    // 尝试设置面板的固定宽度，单位是像素
+    m_panelEdit->setFixedWidth(100);
+    m_panelRelationship->setFixedWidth(100);
+    m_panelMatrixTranslate->setFixedWidth(100);
 
     //视图
     SARibbonBar* barView=ribbonBar();
     SARibbonCategory* categoryView=new SARibbonCategory();
-    categoryView->setCategoryName(QString::fromLocal8Bit("视图"));
+    categoryView->setCategoryName(QString::fromLocal8Bit("视图中心"));
     categoryView->setObjectName("视图");
     categoryView->setFont(QFont(QString::fromLocal8Bit("微软雅黑"),10));
     barView->addCategoryPage(categoryView);
@@ -165,11 +171,10 @@ void MainWindow::createToolBars()
     m_ocafManager = dataCenterView->addPannel(QString::fromLocal8Bit("OCAF"));
 }
 
-
-
 void MainWindow::createActions() 
 {
     QString exePath =QApplication::applicationDirPath();
+    // 模型编辑
     // geom curve
     QString splitCurvePath= exePath +QString("/Resource/Arc3Points.png");
     m_actionSimpleBSplineCurve = new QAction(QIcon(splitCurvePath), QString::fromLocal8Bit("Simple BSplineCurve"), m_panelCurve);
@@ -231,8 +236,13 @@ void MainWindow::createActions()
     connect(m_actionArcFaceIntersectBSplineFace, &QAction::triggered, this, &MainWindow::onActionArcFaceIntersectBSplineFace);
     m_panelRelationship->addSmallAction(m_actionArcFaceIntersectBSplineFace);
 
+    //坐标系转换
+    m_actionMatrixTranslate = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("基于44矩阵坐标系转换"), m_panelEdit);
+    connect(m_actionMatrixTranslate, &QAction::triggered, this, &MainWindow::onActionMatrixTranslate);
+    m_panelMatrixTranslate->addSmallAction(m_actionMatrixTranslate);
 
-    // view
+
+    // 视图中心
     m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("左视图"), m_panelSolid);
     connect(m_actionLeftCoreView, &QAction::triggered, this, &MainWindow::onActionLeftCoreView);
     m_coreViewControl->addSmallAction(m_actionLeftCoreView);
@@ -268,8 +278,6 @@ void MainWindow::createActions()
     connect(m_actionHelloOCAF, &QAction::triggered, this, &MainWindow::onActionHelloOCAF);
     m_ocafManager->addSmallAction(m_actionHelloOCAF);
 }
-
-
 
 void MainWindow::AppendOutput(const QString& text)
 {

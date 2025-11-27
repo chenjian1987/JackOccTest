@@ -47,7 +47,10 @@
         HOMEPAGE->OP->TestCreateRectangle(); \
     } \
     \
-    \
+    void WIN::onActionMatrixTranslate() \
+    { \
+        HOMEPAGE->OP->TestMatrixTranslate(); \
+    } \
     \
     void WIN::onActionLeftCoreView() \
     { \

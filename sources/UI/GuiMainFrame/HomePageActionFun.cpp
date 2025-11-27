@@ -67,6 +67,7 @@
 #include "WinSegmentPlaneIntersection.h"
 #include "WinArcBSurfIntersect.h"
 #include "WinArcFaceIntersectBSplineFace.h"
+#include "Matrix44OperationDialog.h"
 
 
 HomePageActionFun::HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent, std::function<void(const QString&)> func)
@@ -91,29 +92,6 @@ Handle(AIS_Shape) HomePageActionFun::GetFirstSelectedShape() const
     }
     return Handle(AIS_Shape)(); // 空
 }
-
-//void HomePageActionFun::ClearShape()
-//{
-//    // 获取所有正在显示的交互对象
-//    AIS_ListOfInteractive list;
-//    m_context->DisplayedObjects(list);
-//
-//    std::vector<Handle(AIS_InteractiveObject)> toRemove;
-//    for (AIS_ListOfInteractive::Iterator it(list); it.More(); it.Next())
-//    {
-//        Handle(AIS_InteractiveObject) obj = it.Value();
-//        if (!obj.IsNull() && obj->IsKind(STANDARD_TYPE(AIS_Shape)))
-//        {
-//            toRemove.push_back(obj);
-//        }
-//    }
-//
-//    for (const auto& obj : toRemove)
-//        m_context->Remove(obj, Standard_False);
-//
-//    m_context->UpdateCurrentViewer();
-//}
-
 
 //-------------------------test--------------------------
 void HomePageActionFun::TestSimpleBuildAndTranslate()
@@ -569,4 +547,13 @@ void HomePageActionFun::HelloOCAF()
         return ;
     }
 
+}
+
+
+// -----坐标系转换----//
+void HomePageActionFun::TestMatrixTranslate()
+{
+    Matrix44OperationDialog* dlg = new Matrix44OperationDialog(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->show();
 }
