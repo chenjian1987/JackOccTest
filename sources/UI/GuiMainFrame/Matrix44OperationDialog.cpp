@@ -172,7 +172,6 @@ void Matrix44OperationDialog::applyMatrixOperation()
         double dz = zSpin->value();
         newMatrix = newMatrix * Matrix44::Translation(dx, dy, dz);
 
-        //updateCoordinateSystem(newMatrix);
         updateMatrixDisplay(newMatrix);
         updatePointDisplay(newMatrix);  // 更新点显示
     }
@@ -189,32 +188,14 @@ void Matrix44OperationDialog::applyMatrixOperation()
         }
         newMatrix = newMatrix * Matrix44::Rotate(axis, angle);
 
-        //updateCoordinateSystem(newMatrix);
         updateMatrixDisplay(newMatrix);
         updatePointDisplay(newMatrix);  // 更新点显示
     }
     else if (typeCombo->currentIndex() == 3 || typeCombo->currentIndex() == 4) // 左乘或右乘
     {
-        //Matrix44 matrix2 = getSecondInputMatrix();
-        //if (typeCombo->currentIndex() == 3) // 左乘
-        //{
-        //    newMatrix = oldMatrix * matrix2;
-        //}
-        //else // 右乘
-        //{
-        //    newMatrix = matrix2 * oldMatrix;
-        //}
-        //updateCoordinateSystem(newMatrix);
         updateMatrixDisplay(newMatrix);
         updatePointDisplay(newMatrix);  // 更新点显示
     }
-}
-
-void Matrix44OperationDialog::updateCoordinateSystem(const Matrix44& newMatrix)
-{
-    m_context->Erase(m_ansMatTrihedron, Standard_True);
-    m_ansMatTrihedron = drawer->Draw("Transformed", newMatrix, 8, 45.0, CoordinateSystemDrawer::ScaleMode::FromMatrix, true);
-    m_v3dView->Redraw();
 }
 
 void Matrix44OperationDialog::updateMatrixDisplay(const Matrix44& newMatrix)
@@ -242,7 +223,6 @@ void Matrix44OperationDialog::updateMatrixDisplay(const Matrix44& newMatrix)
     matrixOutputText->setText(matrixText);
 }
 
-// 新增：更新点显示
 void Matrix44OperationDialog::updatePointDisplay(const Matrix44& matrix)
 {
     // 清除之前的点
@@ -296,13 +276,11 @@ Matrix44 Matrix44OperationDialog::getSecondInputMatrix()
     return inputMatrix;
 }
 
-// 新增：获取输入点坐标
 Vector3d Matrix44OperationDialog::getInputPoint()
 {
     return Vector3d(pointXSpin->value(), pointYSpin->value(), pointZSpin->value());
 }
 
-// 新增：点坐标变化时的处理
 void Matrix44OperationDialog::onPointInputChanged()
 {
     // 当点坐标变化时，重新应用当前操作以更新显示
