@@ -42,6 +42,7 @@ namespace JackC
         void onActionSimpleTopExp(); 
         void onActionCreateSimpleBSplineCurve(); 
         void onActionCreateRectangle(); 
+        void onActionTestSimpleSewing();   //测试简单缝合
 
         void onActionLeftCoreView(); 
         void onActionRightCoreView(); 
@@ -96,6 +97,8 @@ namespace JackC
         QAction*  m_actionSimpleSolidTranslate;
         QAction* m_actionTopExp;
         QAction* m_actionInclineRectangle;
+        QAction* m_actionSewingSimpleTest;  //测试简单的缝合
+
         QAction* m_actionEditShape;
         QAction* m_actionBuildBaseMode;
         QAction* m_actionPointLineRelation;

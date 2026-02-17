@@ -195,6 +195,11 @@ void MainWindow::createActions()
     connect(m_actionInclineRectangle, &QAction::triggered, this, &MainWindow::onActionCreateRectangle);
     m_panelSolid->addSmallAction(m_actionInclineRectangle);
 
+    //²âÊÔ ·ìºÏBRepBuilderAPI_Sewing
+    m_actionSewingSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Test·ìºÏ"), m_panelSolid);
+    connect(m_actionSewingSimpleTest, &QAction::triggered, this, &MainWindow::onActionTestSimpleSewing);
+    m_panelSolid->addSmallAction(m_actionSewingSimpleTest);
+
     //edit 
     QString rotationSolidPath = exePath + QString("/Resource/ExternalCommands.png");
     m_actionEditShape = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("»¥²Ù×÷"), m_panelEdit);

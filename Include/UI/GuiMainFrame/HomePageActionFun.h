@@ -27,6 +27,7 @@ public:
     void TestSimpleTopExp(); 
     void TestEditShape(); 
     void TestBuildBaseMode();
+    void TestSimpleSewing();   //测试简单缝合
     
     void TestLeftCoreView(); 
     void TestRightCoreView(); 
@@ -62,6 +63,12 @@ private:
     void SetStandardView(const Handle(V3d_View)& view, EnumCoreViewControlType v);
 
     void ApplyTransformToSelected(ShapeEditDialog::TransformType type, QVector3D vec, double value, int mirrorPlane);
+
+    //缝合
+    TopoDS_Shape SewMeshFaces(const TopoDS_Shape& rawFaces, double tolerance);
+
+    //分析模型
+    void InspectModel(const std::string& name, const TopoDS_Shape& shape);
 
 
 private:

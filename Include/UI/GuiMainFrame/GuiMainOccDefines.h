@@ -135,3 +135,26 @@
 #include <TDataStd_Real.hxx>
 #include <TDataStd_Name.hxx>
 #include <TNaming_Builder.hxx>
+
+// OCCT 核心头文件
+#include <TopoDS.hxx>
+#include <TopoDS_Shape.hxx>
+#include <TopoDS_Compound.hxx>
+#include <TopoDS_Face.hxx>
+#include <TopoDS_Shell.hxx>
+#include <TopoDS_Edge.hxx>
+
+// 建模与缝合工具
+#include <BRep_Builder.hxx>
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
+#include <BRepTools.hxx> // 用于保存文件
+
+
+
+// 拓扑遍历与分析
+#include <ShapeAnalysis_FreeBounds.hxx>
+#include <TopTools_HSequenceOfShape.hxx>
+#include <ShapeAnalysis_FreeBounds.hxx> 
+#include <TopoDS.hxx>
+#include <BRepBuilderAPI_Transform.hxx>

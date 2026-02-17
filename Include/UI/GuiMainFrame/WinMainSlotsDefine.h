@@ -46,6 +46,12 @@
     { \
         HOMEPAGE->OP->TestCreateRectangle(); \
     } \
+    void WIN::onActionTestSimpleSewing() \
+    { \
+        HOMEPAGE->OP->TestSimpleSewing(); \
+    } \
+    \
+    \
     \
     void WIN::onActionMatrixTranslate() \
     { \

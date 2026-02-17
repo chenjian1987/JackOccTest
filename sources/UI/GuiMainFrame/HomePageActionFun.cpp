@@ -53,7 +53,23 @@
 #include <ifcpp/IFC4X3/include/IfcExtrudedAreaSolid.h>
 #include <ifcpp/IFC4X3/include/IfcSolidModel.h>
 
+// OCAF 核心头文件
+#include <TDocStd_Application.hxx>
+#include <TDocStd_Document.hxx>
+#include <TDF_Label.hxx>
+#include <TDF_Tool.hxx>
+#include <TDF_AttributeIterator.hxx>
 
+// 属性头文件 (用于存数据)
+#include <TDataStd_Integer.hxx>
+#include <TDataStd_Real.hxx>
+#include <TDataStd_Name.hxx>
+#include <TNaming_NamedShape.hxx>
+#include <TNaming_Builder.hxx>
+#include <BRepPrimAPI_MakeBox.hxx>
+#include <TopoDS_Shape.hxx>
+
+#include <BinDrivers.hxx>
 #include <QString>
 #include <QDebug>
 #include "IfcImportUtils.h"
@@ -493,52 +509,88 @@ void HomePageActionFun::HelloOCAF()
 {
     try 
     {
-        // 1. 创建应用程序实例 - 正确方式
-        Handle(TDocStd_Application) app = new TDocStd_Application();
+        /*
+            OCAF 类比就是一个只有数据结构的"Excel 表格" 或”文件系统"
+              TDF_Label （标签）： 好比文件夹 或 Excel单元格位置（如：A1 B2）它只有地址，没有数据。
+              TDF_Attribute （属性）：好比文件夹里面的文件 或 单元格里面的内容（数字、文字、形状） 数据必须挂载在Label上
+              TDocStd_Document（文档）：好比整个Excel文件，管理所有的Label和Attribute
+        */
 
-        // 2. 创建新文档
+        // 创建3个变"量 长 宽  高. 读取这些变量，构建一个3D立方体。 将构建好的立方体形状存回OCAF，保存为.cbf文件
+        std::cout << " 初始化 Application 和 Document...." << std::endl;
+        //创建应用容器
+        Handle(TDocStd_Application) app = new TDocStd_Application;
+        //加载二进制文件驱动（否则无法保存文件）
+        BinDrivers::DefineFormat(app);
+
+        //新建一个文档，格式为BinOcaf (二进制OCAF)
         Handle(TDocStd_Document) doc;
-        TCollection_ExtendedString format("BinOcaf");
-        app->NewDocument(format, doc);
+        app->NewDocument("BinOcaf", doc);
 
-        if (doc.IsNull()) {
-            std::cerr << "Failed to create document" << std::endl;
-            return ;
+        //检验文档是否创建成功
+        if (doc.IsNull())
+        {
+            std::cerr << "Error: 无法创建文档" << std::endl;
+            return;
         }
+        //开启一个事务 Transaction   OCAF的修改再Command中进行，方便Undo/Redo
+        doc->NewCommand();
 
-        // 3. 获取根标签
+        //建立数据结构
+        std::cout << "设置参数（长=100，宽=50，高=30） ..." << std::endl;
+
+        //获取根标签(Root Label ，也就是0）
         TDF_Label rootLabel = doc->Main();
+        //创建子标签用于存放数据
+        // 0:1 用于存放长
+        // 0:2 用于存放宽
+        // 0:3 用于存放高
+        // 0:4 用于存放结果形状
+        TDF_Label labelLength = rootLabel.FindChild(1);
+        TDF_Label labelWidth = rootLabel.FindChild(2);
+        TDF_Label labelHeight = rootLabel.FindChild(3);
+        TDF_Label labelShape = rootLabel.FindChild(4);
 
-        // 4. 创建参数标签
-        TDF_Label paramLabel = rootLabel.FindChild(1, Standard_True);
-        Handle(TDataStd_Real) lengthAttr = TDataStd_Real::Set(paramLabel, 50.0);
-        Handle(TDataStd_Name) paramName = TDataStd_Name::Set(paramLabel, "BoxLength");
+        //设定具体数值 （使用TDataStd_Real 属性） ，这里Set方法会自动检查，如果该Label已经有这个属性就修改值，没有就创建
+        TDataStd_Real::Set(labelLength, 100);
+        TDataStd_Real::Set(labelWidth, 50);
+        TDataStd_Real::Set(labelHeight, 30);
 
-        // 5. 创建形状标签
-        TDF_Label shapeLabel = rootLabel.FindChild(2, Standard_True);
-        TNaming_Builder shapeBuilder(shapeLabel);
+        //给标签取名字(使用TDataStd_Name属性），方便在查看器查看
+        TDataStd_Name::Set(labelHeight, "Length");
+        TDataStd_Name::Set(labelWidth, "Width");
+        TDataStd_Name::Set(labelHeight, "Height");
+        TDataStd_Name::Set(labelShape, "MyShape");
 
-        // 创建几何形状
-        BRepPrimAPI_MakeBox boxMaker(50.0, 30.0, 20.0);
-        boxMaker.Build();
+        //从OCAF读取数据，使用Find获取属性指针，然后Get 获取值
+        Handle(TDataStd_Real) attrL, attrW, attrH;
 
-        if (boxMaker.IsDone()) {
-            shapeBuilder.Generated(boxMaker.Shape());
-            Handle(TDataStd_Name) shapeName = TDataStd_Name::Set(shapeLabel, "MyBox");
-            std::cout << "Box shape created successfully" << std::endl;
-        }
+        labelLength.FindAttribute(TDataStd_Real::GetID(), attrL);
+        labelWidth.FindAttribute(TDataStd_Real::GetID(), attrW);
+        labelHeight.FindAttribute(TDataStd_Real::GetID(), attrH);
 
-        // 6. 保存文档
-        TCollection_ExtendedString filename("C:/temp/my_document.cbf");
-        PCDM_StoreStatus status = app->SaveAs(doc, filename);
+        double length = attrL->Get();
+        double width = attrW->Get();
+        double height = attrH->Get();
 
-        if (status == PCDM_SS_OK) {
-            std::cout << "Document saved successfully" << std::endl;
-        }
-        else {
-            std::cerr << "Failed to save document. Status: " << status << std::endl;
-        }
+        std::cout << "当前参数:" << length << " " << width << " " << height << std::endl;
+        //建模
+        TopoDS_Shape boxShape = BRepPrimAPI_MakeBox(length, width, height).Shape();
 
+        //将Shape数据存回OCAF
+        //TNaming_Builder 将TopoDS_Shape转换为TNaming_NamedShape属性的工具
+        TNaming_Builder builder(labelShape);
+        builder.Generated(boxShape);   //将形状挂载到labelShape(0:4)上
+
+        std::cout << " box 已经构建并存储到Label 0:4上" << std::endl;
+
+        //提交事务
+        doc->CommitCommand();
+
+        //保存到磁盘
+        PCDM_StoreStatus status = app->SaveAs(doc, "TestBox.cbf");
+
+        app->Close(doc);
         return ;
     }
     catch (Standard_Failure& e)
@@ -556,4 +608,161 @@ void HomePageActionFun::TestMatrixTranslate()
     Matrix44OperationDialog* dlg = new Matrix44OperationDialog(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->show();
+}
+
+
+// -----Test BRepBuilderAPI_Sewing----//
+void HomePageActionFun::TestSimpleSewing()
+{
+    m_outputFunc(QString::fromLocal8Bit("=== 开始缝合对比实验 (左侧失败 vs 右侧成功) ==="));
+
+    // 1. 准备参数
+    double size = 50.0;     // 立方体半长
+    double gapSize = 5.0;   // 【故意设置大一点】5.0mm 间隙，让视觉效果更明显！
+
+    // 2. 创建几何体 (顶面悬空)
+    std::vector<TopoDS_Face> faces;
+    // 底面和四周 (正常)
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, 0, -size), gp_Dir(0, 0, 1)), -size, size, -size, size)); // Bottom
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, size, 0), gp_Dir(0, 1, 0)), -size, size, -size, size));  // Front
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, -size, 0), gp_Dir(0, 1, 0)), -size, size, -size, size)); // Back
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(size, 0, 0), gp_Dir(1, 0, 0)), -size, size, -size, size));   // Right
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(-size, 0, 0), gp_Dir(1, 0, 0)), -size, size, -size, size));   // Left
+
+    // 顶面 (悬空 gapSize = 5.0mm)
+    faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, 0, size + gapSize), gp_Dir(0, 0, 1)), -size, size, -size, size));
+
+    // 构建原始 Compound
+    TopoDS_Compound rawShape;
+    BRep_Builder builder;
+    builder.MakeCompound(rawShape);
+    for (const auto& f : faces) builder.Add(rawShape, f);
+
+    m_outputFunc(QString::fromLocal8Bit("原始模型：顶面间隙 %1 mm").arg(gapSize));
+
+    // 场景 A：缝合失败 (容差太小) -> 放在原点
+    double smallTol = 0.1;
+    m_outputFunc(QString::fromLocal8Bit("--- 生成左侧模型 (失败)... 容差 %1 (小于间隙)").arg(smallTol));
+    TopoDS_Shape shapeFail = SewMeshFaces(rawShape, smallTol);
+
+    // 分析结果 A
+    InspectModel("左侧-失败模型", shapeFail);
+
+    // 场景 B：缝合成功 (容差够大) -> 向右平移 200mm
+    double bigTol = gapSize + 1.0; // 容差设为 6.0mm，大于 5.0mm
+    m_outputFunc(QString::fromLocal8Bit("--- 生成右侧模型 (成功)... 容差 %1 (大于间隙)").arg(bigTol));
+    TopoDS_Shape shapeSuccess = SewMeshFaces(rawShape, bigTol);
+
+    // 【关键步骤】将成功模型向右平移 200mm，防止重叠
+    gp_Trsf trsf;
+    trsf.SetTranslation(gp_Vec(200, 0, 0)); // 向 X 轴正方向移动 200
+    TopoDS_Shape shapeSuccessMoved = BRepBuilderAPI_Transform(shapeSuccess, trsf).Shape();
+
+    // 分析结果 B (注意：平移不改变拓扑闭合性，分析 shapeSuccess 即可)
+    InspectModel("右侧-成功模型", shapeSuccess);
+
+    // 三维显示 (Visualize)
+    m_context->RemoveAll(Standard_True); // 清空屏幕
+
+    // --- 显示 A (失败，红色) ---
+    if (!shapeFail.IsNull()) {
+        Handle(AIS_Shape) aisFail = new AIS_Shape(shapeFail);
+        aisFail->SetColor(Quantity_NOC_RED);      // 红色代表警告/失败
+        aisFail->SetTransparency(0.4);            // 透明一点，方便看里面的缝隙
+        m_context->Display(aisFail, Standard_False); // False表示先不刷新
+
+        // 高亮显示漏洞边界 (用黄色粗线)
+        ShapeAnalysis_FreeBounds safb(shapeFail, 1.0e-6);
+        const TopoDS_Compound& openWires = safb.GetOpenWires();
+        if (!openWires.IsNull()) {
+            Handle(AIS_Shape) aisOpenEdges = new AIS_Shape(openWires);
+            aisOpenEdges->SetColor(Quantity_NOC_YELLOW); // 黄色高亮漏洞
+            aisOpenEdges->SetWidth(3.0);                 // 线宽加粗
+            m_context->Display(aisOpenEdges, Standard_False);
+        }
+    }
+
+    // --- 显示 B (成功，金色) ---
+    if (!shapeSuccessMoved.IsNull()) {
+        Handle(AIS_Shape) aisSuccess = new AIS_Shape(shapeSuccessMoved);
+        aisSuccess->SetColor(Quantity_NOC_GOLD);  // 金色代表完美修复
+        aisSuccess->SetDisplayMode(AIS_Shaded);   // 实体显示 (只有闭合模型才能完美Shaded)
+        m_context->Display(aisSuccess, Standard_True); // True表示立即刷新
+    }
+
+    m_v3dView->FitAll();
+
+    m_outputFunc(QString::fromLocal8Bit("\n对比完成：\n  <左边(红色)>：缝合失败，依然有漏洞。\n  <右边(金色)>：缝合成功，顶面被拉伸闭合。"));
+}
+
+// 缝合 Sewing
+TopoDS_Shape HomePageActionFun::SewMeshFaces(const TopoDS_Shape& rawFaces, double tolerance)
+{
+    if (rawFaces.IsNull()) return TopoDS_Shape();
+
+    try
+    {
+        BRepBuilderAPI_Sewing sewingTool;
+        sewingTool.Init(tolerance);
+        sewingTool.SetNonManifoldMode(Standard_False);  // 禁用非流形
+        sewingTool.Add(rawFaces);
+        sewingTool.Perform();
+
+        TopoDS_Shape ans = sewingTool.SewedShape();
+        if (ans.IsNull())
+            return rawFaces;
+
+        return ans;
+    }
+    catch (...)
+    {
+        m_outputFunc(QString::fromLocal8Bit("[Error] SPDGeometryBuilder::SewMeshFaces crashed."));
+        return rawFaces;
+    }
+}
+
+
+void HomePageActionFun::InspectModel(const std::string& name, const TopoDS_Shape& shape)
+{
+    m_outputFunc("========================================");
+
+    // 使用 QString::arg 组合字符串
+    m_outputFunc(QString::fromLocal8Bit("检查模型状态: [%1]"));
+
+    // 统计物理边的数量
+    TopTools_IndexedMapOfShape edgeMap;
+    TopExp_Explorer exp(shape, TopAbs_EDGE);
+    while (exp.More()) {
+        edgeMap.Add(exp.Current());
+        exp.Next();
+    }
+    int totalEdges = edgeMap.Extent();
+
+    // 输出总边数
+    m_outputFunc(QString::fromLocal8Bit("  -> 总边数 (Total Edges): %1").arg(totalEdges));
+
+    // 使用 ShapeAnalysis_FreeBounds 类直接分析 Shape
+    ShapeAnalysis_FreeBounds safb(shape, 1.0e-6);
+    const TopoDS_Compound& openWires = safb.GetOpenWires();
+
+    // 统计漏洞边的数量
+    int freeEdgeCount = 0;
+    TopExp_Explorer expFree(openWires, TopAbs_EDGE);
+    while (expFree.More())
+    {
+        freeEdgeCount++;
+        expFree.Next();
+    }
+
+    if (freeEdgeCount > 0)
+    {
+        m_outputFunc(QString::fromLocal8Bit("  -> 状态: [开放/有漏洞] (OPEN SHELL)"));
+        m_outputFunc(QString::fromLocal8Bit("  -> 发现漏洞边界边数: %1").arg(freeEdgeCount));
+    }
+    else
+    {
+        m_outputFunc(QString::fromLocal8Bit("  -> 状态: [封闭/水密] (WATERTIGHT)"));
+        m_outputFunc(QString::fromLocal8Bit("  -> 这是一个完美的实体外壳，可以进行布尔运算。"));
+    }
+    m_outputFunc("========================================");
 }
