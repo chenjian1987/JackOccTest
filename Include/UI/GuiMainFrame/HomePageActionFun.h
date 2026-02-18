@@ -28,6 +28,7 @@ public:
     void TestEditShape(); 
     void TestBuildBaseMode();
     void TestSimpleSewing();   //≤‚ ‘ºÚµ•∑Ï∫œ
+    void TestSimpleShapeUpgrade();  //≤‚ ‘ºÚªØ
     
     void TestLeftCoreView(); 
     void TestRightCoreView(); 

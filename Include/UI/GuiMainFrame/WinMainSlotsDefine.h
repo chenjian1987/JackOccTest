@@ -50,6 +50,14 @@
     { \
         HOMEPAGE->OP->TestSimpleSewing(); \
     } \
+    void WIN::onActionTestSimpleShapeUpgrade() \
+    { \
+        HOMEPAGE->OP->TestSimpleShapeUpgrade(); \
+    } \
+    \
+    \
+    \
+    \
     \
     \
     \

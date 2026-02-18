@@ -200,6 +200,11 @@ void MainWindow::createActions()
     connect(m_actionSewingSimpleTest, &QAction::triggered, this, &MainWindow::onActionTestSimpleSewing);
     m_panelSolid->addSmallAction(m_actionSewingSimpleTest);
 
+    //²âÊÔ ¼ò»¯ ShapeUpgrade_UnifySameDomain
+    m_actionShapeUpgradeSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Test¼ò»¯"), m_panelSolid);
+    connect(m_actionShapeUpgradeSimpleTest, &QAction::triggered, this, &MainWindow::onActionTestSimpleShapeUpgrade);
+    m_panelSolid->addSmallAction(m_actionShapeUpgradeSimpleTest);
+
     //edit 
     QString rotationSolidPath = exePath + QString("/Resource/ExternalCommands.png");
     m_actionEditShape = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("»¥²Ù×÷"), m_panelEdit);

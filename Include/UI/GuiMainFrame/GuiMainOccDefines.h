@@ -157,4 +157,4 @@
 #include <TopTools_HSequenceOfShape.hxx>
 #include <ShapeAnalysis_FreeBounds.hxx> 
 #include <TopoDS.hxx>
-#include <BRepBuilderAPI_Transform.hxx>
+#include <ShapeUpgrade_UnifySameDomain.hxx>

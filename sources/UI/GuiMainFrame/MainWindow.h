@@ -43,6 +43,7 @@ namespace JackC
         void onActionCreateSimpleBSplineCurve(); 
         void onActionCreateRectangle(); 
         void onActionTestSimpleSewing();   //²âÊÔ¼òµ¥·ìºÏ
+        void onActionTestSimpleShapeUpgrade();   //²âÊÔ¼òµ¥¼ò»¯
 
         void onActionLeftCoreView(); 
         void onActionRightCoreView(); 
@@ -98,6 +99,7 @@ namespace JackC
         QAction* m_actionTopExp;
         QAction* m_actionInclineRectangle;
         QAction* m_actionSewingSimpleTest;  //²âÊÔ¼òµ¥µÄ·ìºÏ
+        QAction* m_actionShapeUpgradeSimpleTest;  //²âÊÔ¼òµ¥µÄ·ìºÏ
 
         QAction* m_actionEditShape;
         QAction* m_actionBuildBaseMode;

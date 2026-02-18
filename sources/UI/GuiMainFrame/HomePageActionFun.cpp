@@ -695,7 +695,7 @@ void HomePageActionFun::TestSimpleSewing()
     m_outputFunc(QString::fromLocal8Bit("\n对比完成：\n  <左边(红色)>：缝合失败，依然有漏洞。\n  <右边(金色)>：缝合成功，顶面被拉伸闭合。"));
 }
 
-// 缝合 Sewing
+// ---------缝合 Sewing-----------------//
 TopoDS_Shape HomePageActionFun::SewMeshFaces(const TopoDS_Shape& rawFaces, double tolerance)
 {
     if (rawFaces.IsNull()) return TopoDS_Shape();
@@ -765,4 +765,83 @@ void HomePageActionFun::InspectModel(const std::string& name, const TopoDS_Shape
         m_outputFunc(QString::fromLocal8Bit("  -> 这是一个完美的实体外壳，可以进行布尔运算。"));
     }
     m_outputFunc("========================================");
+}
+
+
+// ---------简化 ShapeUpgrade_UnifySameDomain-----------------//
+void HomePageActionFun::TestSimpleShapeUpgrade()
+{
+    m_outputFunc(QString::fromLocal8Bit("=== 开始 UnifySameDomain 对比实验 (左侧缝合 vs 右侧缝合+简化) ==="));
+
+    // 1. 创建两个相邻且完全共面的正方形面片
+    // 面 1：X 从 0 到 50，Y 从 0 到 50
+    TopoDS_Face face1 = BRepBuilderAPI_MakeFace(gp_Pln(gp::XOY()), 0, 50, 0, 50);
+    // 面 2：X 从 50 到 100，Y 从 0 到 50 (与面1在 X=50 处相邻)
+    TopoDS_Face face2 = BRepBuilderAPI_MakeFace(gp_Pln(gp::XOY()), 50, 100, 0, 50);
+
+    // 将它们放入一个 Compound 中
+    TopoDS_Compound rawCompound;
+    BRep_Builder builder;
+    builder.MakeCompound(rawCompound);
+    builder.Add(rawCompound, face1);
+    builder.Add(rawCompound, face2);
+
+    // 2. 第一步：必须先缝合 (Sewing)
+    // 因为独立的两个面，哪怕紧挨着，在拓扑上也是断开的。Unify 需要处理的是连通的拓扑。
+    BRepBuilderAPI_Sewing sewer(1e-3);
+    sewer.Add(rawCompound);
+    sewer.Perform();
+    TopoDS_Shape sewedShape = sewer.SewedShape();
+
+    // 统计左侧缝合后模型的面数和边数
+    TopTools_IndexedMapOfShape sewedFaces, sewedEdges;
+    TopExp::MapShapes(sewedShape, TopAbs_FACE, sewedFaces);
+    TopExp::MapShapes(sewedShape, TopAbs_EDGE, sewedEdges);
+
+    m_outputFunc(QString::fromLocal8Bit("--- 左侧模型 (仅Sewing缝合) ---"));
+    m_outputFunc(QString::fromLocal8Bit("  -> 面数 (Faces): %1").arg(sewedFaces.Extent())); // 预期：2 个面
+    m_outputFunc(QString::fromLocal8Bit("  -> 边数 (Edges): %1").arg(sewedEdges.Extent())); // 预期：7 条边 (外围6条 + 中间1条共享边)
+
+    // 3. 第二步：使用 ShapeUpgrade_UnifySameDomain 进行简化
+    // 开启合并边(true)、合并面(true)、合并B样条(true)
+    ShapeUpgrade_UnifySameDomain unifier(sewedShape, true, true, true);
+    unifier.Build();
+    TopoDS_Shape unifiedShape = unifier.Shape();
+
+    // 统计右侧简化后模型的面数和边数
+    TopTools_IndexedMapOfShape unifiedFaces, unifiedEdges;
+    TopExp::MapShapes(unifiedShape, TopAbs_FACE, unifiedFaces);
+    TopExp::MapShapes(unifiedShape, TopAbs_EDGE, unifiedEdges);
+
+    m_outputFunc(QString::fromLocal8Bit("--- 右侧模型 (Sewing + Unify简化) ---"));
+    m_outputFunc(QString::fromLocal8Bit("  -> 面数 (Faces): %1").arg(unifiedFaces.Extent())); // 预期：1 个面
+    m_outputFunc(QString::fromLocal8Bit("  -> 边数 (Edges): %1").arg(unifiedEdges.Extent())); // 预期：4 条边 (只有外围4条边，中间线被抹除了)
+
+    // 4. 将简化后的模型向右平移 120mm，方便对比
+    gp_Trsf trsf;
+    trsf.SetTranslation(gp_Vec(120, 0, 0));
+    TopoDS_Shape unifiedShapeMoved = BRepBuilderAPI_Transform(unifiedShape, trsf).Shape();
+
+    // 5. 三维显示 (Visualize)
+    m_context->RemoveAll(Standard_True); // 清空屏幕
+
+    // --- 显示左侧 (仅缝合，蓝色) ---
+    Handle(AIS_Shape) aisSewed = new AIS_Shape(sewedShape);
+    aisSewed->SetColor(Quantity_NOC_BLUE4);
+    // 开启线框显示模式，为了清晰地看到中间那条缝合线
+    aisSewed->SetDisplayMode(AIS_WireFrame);
+    aisSewed->SetWidth(2.0);
+    m_context->Display(aisSewed, Standard_False);
+
+    // --- 显示右侧 (简化后，绿色) ---
+    Handle(AIS_Shape) aisUnified = new AIS_Shape(unifiedShapeMoved);
+    aisUnified->SetColor(Quantity_NOC_GREEN);
+    // 同样开启线框显示模式，验证中间的线是否消失了
+    aisUnified->SetDisplayMode(AIS_WireFrame);
+    aisUnified->SetWidth(2.0);
+    m_context->Display(aisUnified, Standard_True);
+
+    m_v3dView->FitAll();
+    m_outputFunc(QString::fromLocal8Bit("对比完成：观察屏幕，左侧中间有线，右侧变成了干净的一个大面！"));
+    m_outputFunc("==================================================================");
 }
