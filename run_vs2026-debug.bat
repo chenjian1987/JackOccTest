@@ -1,6 +1,6 @@
 set Configuration=Debug
 
-call "%~dp0env.bat" vc142 %Configuration%
+call "%~dp0env.bat" vc144 %Configuration%
 
 echo %DevEnvDir%
 

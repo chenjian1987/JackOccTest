@@ -1,4 +1,4 @@
-#include "UiManager.h"
+#include "../../../Include/UI/UiView/UiManager.h"
 
 
 using namespace JackC;
