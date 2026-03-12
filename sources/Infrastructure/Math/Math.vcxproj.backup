@@ -10,19 +10,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\MathDefine.h" />
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\Matrix44.h" />
+    <ClInclude Include="..\..\..\Include\Infrastructure\Math\Vector3d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Include\Infrastructure\Math\Matrix44.cpp" />
+    <ClCompile Include="Vector3d.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{840B3746-0B35-412B-BC7B-D27889C2ACA6}</ProjectGuid>
-    <RootNamespace>Builder</RootNamespace>
+    <ProjectGuid>{509971C1-B4CE-40A1-8A53-35D94B0F2570}</ProjectGuid>
+    <RootNamespace>Math</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -31,28 +39,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(JACKC_SOLUTION_BIN_DIR)\</OutDir>
     <IntDir>$(JACKC_BUILD_OUTPUT_DIR)\$(TargetName).dir\$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>JACKCC$(ProjectName)</TargetName>
+    <TargetName>JackC$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <OutputFile>$(JACKC_SOLUTION_BIN_DIR)\$(TargetName)$(TargetExt)</OutputFile>
+      <ProgramDatabaseFile>$(JACKC_SOLUTION_PDB_DIR)\$(TargetName).pdb</ProgramDatabaseFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(JACKC_SOLUTION_LIB_DIR)/$(TargetName).lib</ImportLibrary>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>JackCCommon.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+    </Link>
     <ClCompile>
-      <AdditionalUsingDirectories>$(ArxSdkDir)\inc-$(Platform)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Common;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Math;$(JACKC_SOLUTION_INC_DIR)\Business</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>JACKC_BUILDER_DEFINE_HOME;_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Math;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>JACKC_MATH_INTERFACE_HOME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
-    <Link>
-      <OutputFile>$(JACKC_SOLUTION_BIN_DIR)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>Common.lib;Math.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
-      <ProgramDatabaseFile>$(JACKC_SOLUTION_PDB_DIR)\$(TargetName).pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>$(JACKC_SOLUTION_LIB_DIR)/$(TargetName).lib</ImportLibrary>
-    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

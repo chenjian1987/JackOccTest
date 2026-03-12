@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -18,44 +18,37 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\Include\UI\UiView\UiManager.h" />
-    <ClInclude Include="..\..\..\Include\UI\UiView\UiViewDefine.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="UiManager.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f7f50e5f-f343-421d-915a-3797b7d04b5b}</ProjectGuid>
-    <RootNamespace>UiView</RootNamespace>
+    <ProjectGuid>{9d2d3ec6-36f4-4b9d-8149-68a339db2a2a}</ProjectGuid>
+    <RootNamespace>Element</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -86,8 +79,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(JACKC_SOLUTION_BIN_DIR)\</OutDir>
-    <IntDir>$(JACKC_BUILD_OUTPUT_DIR)\$(TargetName).dir\$(Configuration)\</IntDir>
     <TargetName>JackC$(ProjectName)</TargetName>
+    <IntDir>$(JACKC_BUILD_OUTPUT_DIR)\$(TargetName).dir\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -122,25 +115,23 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>JACKC_UIVIEW_HOME;WIN64;_WINDOWS;_USRDLL;UNICODE;_UNICODE;_CRT_SECURE_NO_WARNINGS;_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JACKC_ELEMENT_HOME;_WIN64;ANAV_PORT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(JACKC_SOLUTION_INC_DIR)\Model\Element;$(JACKC_SOLUTION_INC_DIR)\Model\Database;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Common;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Math;$(JACKC_PUGXML_INC_DIR);$(JACKC_JSONCPP_INC_DIR);$(JACKC_OCC_INC_DIR)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(JACKC_SOLUTION_INC_DIR)\UI\UiView;$(JACKC_SOLUTION_INC_DIR)\UI\GuiMainFrame;$(JACKC_SOLUTION_INC_DIR)\App;$(JACKC_SOLUTION_INC_DIR)\Model\Database;$(JACKC_SOLUTION_INC_DIR)\Model\Element;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Common;$(JACKC_SOLUTION_INC_DIR)\Infrastructure\Math;$(JACKC_OCC_INC_DIR);$(JACKC_QT_INC_DIR);$(JACKC_QT_INC_DIR)\QtWidgets;$(JACKC_QT_INC_DIR)\QtCore;$(JACKC_QT_INC_DIR)\QtGui;$(JACKC_QT_INC_DIR)\QtNetwork;$(JACKC_QT_INC_DIR)\QtCore5Compat</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4250;4251</DisableSpecificWarnings>
-      <AdditionalOptions>/Zc:__cplusplus  /permissive- %(AdditionalOptions)</AdditionalOptions>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(JACKC_SOLUTION_BIN_DIR)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR);$(JACKC_PUGXML_LIB_DIR);$(JACKC_QT_LIB_DIR);$(JACKC_JSONCPP_LIB_DIR);$(JACKC_OCC_LIB_DIR);$(JACKC_SARIBBON_LIB_DIR)\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>JackCCommon.lib;TKBRep.lib;TKBool.lib;TKBO.lib;TKGeomAlgo.lib;TKG3d.lib;TKernel.lib;TKGeomBase.lib;TKOpenGl.lib;TKPrim.lib;TKMath.lib;TKTopAlgo.lib;TKService.lib;TKV3d.lib;Qt6Widgetsd.lib;Qt6Guid.lib;Qt6Cored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(JACKC_SOLUTION_LIB_DIR);$(JACKC_PUGXML_LIB_DIR);$(JACKC_JSONCPP_LIB_DIR);$(JACKC_OCC_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>JackCMath.lib;JackCCommon.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;pugixml.lib;jsoncpp.lib;TKV3d.lib;TKG3d.lib;TKG2d.lib;TKMath.lib;TKernel.lib;TKTopAlgo.lib;TKBool.lib;TKService.lib;TKBRep.lib;TKOpenGl.lib;TKGeomBase.lib;TKPrim.lib</AdditionalDependencies>
+      <ProgramDatabaseFile>$(JACKC_SOLUTION_PDB_DIR)\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(JACKC_SOLUTION_LIB_DIR)/$(TargetName).lib</ImportLibrary>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

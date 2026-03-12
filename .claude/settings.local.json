@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(build.bat)"
+      "Bash(build.bat)",
+      "Bash(dir Include:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)",
+      "Bash(sed:*)",
+      "Bash(do echo:*)"
     ]
   }
 }
