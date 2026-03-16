@@ -132,4 +132,10 @@
     void WIN::onActionHelloOCAF() \
     { \
          HOMEPAGE->OP->HelloOCAF(); \
+    } \
+    \
+    \
+    void WIN::onActionBsplineCurveTest1() \
+    { \
+        HOMEPAGE->OP->BsplineCurveTest1(); \
     }

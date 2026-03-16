@@ -69,6 +69,8 @@ namespace JackC
 
         void onActionHelloOCAF();
 
+        void onActionBsplineCurveTest1();
+
     private:
         void createActions();
         void createMenus();
@@ -127,5 +129,9 @@ namespace JackC
 
         SARibbonPannel* m_ocafManager;
         QAction* m_actionHelloOCAF;
+
+        //bÑùÌõÇúÏß
+        SARibbonPannel* m_bsplineCurveManager;
+        QAction* m_actionBsplineCurveTest1;
     };
 }

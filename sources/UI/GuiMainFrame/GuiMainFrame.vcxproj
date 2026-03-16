@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\AppWindowFactory.h" />
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\BSplineValidationUtils.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\CoordinateSystemDrawer.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainFrameDefine.h" />
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\GuiMainOccDefines.h" />
@@ -97,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppWindowFactory.cpp" />
+    <ClCompile Include="BSplineValidationUtils.cpp" />
     <ClCompile Include="CoordinateSystemDrawer.cpp" />
     <ClCompile Include="HomePage.cpp" />
     <ClCompile Include="HomePageActionFun.cpp" />
@@ -140,7 +142,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v144</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">

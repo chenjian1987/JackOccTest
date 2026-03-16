@@ -84,6 +84,7 @@
 #include "WinArcBSurfIntersect.h"
 #include "WinArcFaceIntersectBSplineFace.h"
 #include "Matrix44OperationDialog.h"
+#include "BSplineValidationUtils.h"
 
 
 HomePageActionFun::HomePageActionFun(Handle(AIS_InteractiveContext) context, Handle(V3d_Viewer) v3dViewer, Handle(V3d_View) v3dView, QWidget* parent, std::function<void(const QString&)> func)
@@ -275,7 +276,6 @@ void  HomePageActionFun::TestCreateSimpleBSplineCurve()
     Handle(AIS_Shape) aisCurve = new AIS_Shape(edge);
     m_context->Display(aisCurve, Standard_True);
 }
-
 
 //------------------------View-----------------------
 void HomePageActionFun::TestFrontCoreView()
@@ -844,4 +844,40 @@ void HomePageActionFun::TestSimpleShapeUpgrade()
     m_v3dView->FitAll();
     m_outputFunc(QString::fromLocal8Bit("对比完成：观察屏幕，左侧中间有线，右侧变成了干净的一个大面！"));
     m_outputFunc("==================================================================");
+}
+
+
+
+// ---------BSpline----------------//
+void HomePageActionFun::BsplineCurveTest1()
+{
+    m_context->RemoveAll(Standard_False);
+    m_outputFunc(QStringLiteral("================================================"));
+    m_outputFunc(QStringLiteral("图形规则：曲线--彩色线；控制多边形---灰色折线；控制点---红色"));
+    m_outputFunc(QStringLiteral("单段三次案例"));
+
+    //控制点
+    std::vector<gp_Pnt> poles =
+    {
+        gp_Pnt(0,   0, 0),
+        gp_Pnt(35,  90, 0),
+        gp_Pnt(105, -90, 0),
+        gp_Pnt(140,  0, 0)
+    };
+    //节点
+    std::vector<double> knots = { 0,1 };
+    //非周期三次B样条，每个节点的重数为4（degree + 1），表示曲线在起点和终点处都经过控制点
+    std::vector<int> mults = { 4,4 };
+    Handle(Geom_BSplineCurve) bspline = BSplineValidationUtils::CreateBSpline3d(poles, knots, mults, 3, Standard_False);
+
+    BSplineDisplayStyle style;
+    style.curveColor = BSplineValidationUtils::MakeColor(0.95, 0.55, 0.05);     //曲线颜色（橙色）
+    style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //控制多边形颜色（灰色）
+    style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //控制点颜色（红色）
+
+    BSplineValidationUtils::DisplayCurveCase(m_context, bspline, style);
+
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case1-多段三次B样条"), bspline));
+    m_outputFunc(QStringLiteral("说明：这是文档主案例。它有多个 interior knots，更容易看出局部控制和连续性。"));
+    BSplineValidationUtils::LogPoleDistance(m_outputFunc, QStringLiteral("Case1-多段三次B样条"), bspline);
 }

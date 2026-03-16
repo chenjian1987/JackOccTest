@@ -169,6 +169,16 @@ void MainWindow::createToolBars()
 
     m_ifcDataManager = dataCenterView->addPannel(QString::fromLocal8Bit("IFC"));
     m_ocafManager = dataCenterView->addPannel(QString::fromLocal8Bit("OCAF"));
+
+    //B样条曲线
+    SARibbonBar* barViewBSplineCurve = ribbonBar();
+    SARibbonCategory* viewBSplineCurve = new SARibbonCategory();
+    viewBSplineCurve->setCategoryName(QString::fromLocal8Bit("B样条曲线"));
+    viewBSplineCurve->setObjectName("B样条曲线");
+    viewBSplineCurve->setFont(QFont(QString::fromLocal8Bit("微软雅黑"), 10));
+    barViewBSplineCurve->addCategoryPage(viewBSplineCurve);
+
+    m_bsplineCurveManager = viewBSplineCurve->addPannel(QString::fromLocal8Bit("初步学习"));
 }
 
 void MainWindow::createActions() 
@@ -287,6 +297,12 @@ void MainWindow::createActions()
     m_actionHelloOCAF = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("Hello OCAF-创建TDocStd_Document"), m_panelSolid);
     connect(m_actionHelloOCAF, &QAction::triggered, this, &MainWindow::onActionHelloOCAF);
     m_ocafManager->addSmallAction(m_actionHelloOCAF);
+
+
+	//bspline curve
+    m_actionBsplineCurveTest1 = new QAction(QIcon(QString(exePath + "/Resource/Arc3Points.png")), QString::fromLocal8Bit("B样条曲线 控制点/节点/次数对比"), m_panelCurve);
+    connect(m_actionBsplineCurveTest1, &QAction::triggered, this, &MainWindow::onActionBsplineCurveTest1);
+	m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveTest1);
 }
 
 void MainWindow::AppendOutput(const QString& text)

@@ -39,6 +39,12 @@
     <Filter Include="Include\MatrixOperator">
       <UniqueIdentifier>{2344fa49-3ff6-4105-bd4b-afe619c62a54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\BSplineLine">
+      <UniqueIdentifier>{ed87737c-e271-460b-b0e0-e11803a4153e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\BSplineLine">
+      <UniqueIdentifier>{bb6b71f2-792f-4c65-8f91-c7dc7b3576ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\IMainWindow.h">
@@ -70,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\CoordinateSystemDrawer.h">
       <Filter>Include\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\UI\GuiMainFrame\BSplineValidationUtils.h">
+      <Filter>Include\BSplineLine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +138,9 @@
     </ClCompile>
     <ClCompile Include="Matrix44OperationDialog.cpp">
       <Filter>Source\MatrixOperator</Filter>
+    </ClCompile>
+    <ClCompile Include="BSplineValidationUtils.cpp">
+      <Filter>Source\BSplineLine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

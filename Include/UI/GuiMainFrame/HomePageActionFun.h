@@ -58,6 +58,8 @@ public:
 
     void HelloOCAF();
 
+    void BsplineCurveTest1();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 

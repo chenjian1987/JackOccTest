@@ -156,5 +156,32 @@
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <TopTools_HSequenceOfShape.hxx>
 #include <ShapeAnalysis_FreeBounds.hxx> 
-#include <TopoDS.hxx>
+#include <Geom_CartesianPoint.hxx>
 #include <ShapeUpgrade_UnifySameDomain.hxx>
+#include <Geom_Point.hxx>
+
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+
+#include <Geom_Point.hxx>
+#include <Geom_CartesianPoint.hxx>
+#include <Geom_BSplineCurve.hxx>
+
+#include <AIS_Shape.hxx>
+#include <AIS_Point.hxx>
+#include <AIS_InteractiveContext.hxx>
+
+#include <Prs3d_Drawer.hxx>
+#include <Prs3d_PointAspect.hxx>
+
+#include <BRep_Builder.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
+
+#include <TopoDS_Compound.hxx>
+#include <TopoDS_Edge.hxx>
+#include <TopoDS_Shape.hxx>
+
+#include <gp_Trsf.hxx>
+#include <gp_Vec.hxx>
