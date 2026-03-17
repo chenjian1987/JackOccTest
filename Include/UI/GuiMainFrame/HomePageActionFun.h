@@ -60,6 +60,11 @@ public:
 
     void BsplineCurveTest1();
 
+    /// <summary>
+    /// 节点重数与连续性对比验证
+    /// </summary>
+    void BsplineCurveKnotMultCompareTest();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 
@@ -73,6 +78,12 @@ private:
     //分析模型
     void InspectModel(const std::string& name, const TopoDS_Shape& shape);
 
+private:
+    void BSplineContinuityCompareTest();
+
+    //void BsplineLocalControlCompareTest();
+
+    //void BsplineDataValidityCompareTest();
 
 private:
     Handle(AIS_InteractiveContext) m_context;

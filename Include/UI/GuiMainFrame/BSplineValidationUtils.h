@@ -29,6 +29,7 @@ namespace JackC
 		double polygonWidth = 1.0;			// 控制多边形线宽
 	};
 
+
 	class BSplineValidationUtils
 	{
 	public:
@@ -127,5 +128,40 @@ namespace JackC
 		/// 分析某个knot左右两侧的连续性特性，通过对比点位置跳变、一阶跳变、二阶跳变
 		/// </summary>
 		static void LogContinuityAtKnot(const OutputFunc& outputFunc, const QString& caseName, const Handle(Geom_BSplineCurve)& curve, int knotIndex);
+
+	public :
+		static Handle(Geom_BSplineCurve) CopyCurve(const Handle(Geom_BSplineCurve)& curve);
+
+		/// <summary>
+		/// 复制并移动某个控制点，观察曲线的局部变化情况，验证B样条的局部控制特性
+		/// </summary>
+		/// <param name="curve"></param>
+		/// <param name="poleIndex"></param>
+		/// <param name="delta"></param>
+		/// <returns></returns>
+		static Handle(Geom_BSplineCurve) CopyCurveWithMovedPole(const Handle(Geom_BSplineCurve)& curve, int poleIndex, const gp_Vec& delta);
+
+		/// <summary>
+		/// 校验非周期B样条输入是否合法，
+		/// 主要检查knotsVec是否严格递增，knotsVec.size()是否等于multsVec.size()，以及非周期曲线通常满足NbPoles = Sum(Mults) - Degree - 1等条件，
+		/// 返回错误信息字符串，如果合法则返回空字符串
+		/// </summary>
+		/// <param name="polesVec"></param>
+		/// <param name="knotsVec"></param>
+		/// <param name="multsVec"></param>
+		/// <param name="degree"></param>
+		/// <returns></returns>
+		static QString ValidateOpenBSplineInput(const std::vector<gp_Pnt>& polesVec, const std::vector<double>& knotsVec, const std::vector<int>& multsVec, int degree);
+
+		/// <summary>
+		/// 带检验的B样条构造函数，如果输入不合法则抛出异常，合法则返回构造好的曲线对象
+		/// </summary>
+		/// <param name="polesVec"></param>
+		/// <param name="knotsVec"></param>
+		/// <param name="multsVec"></param>
+		/// <param name="degree"></param>
+		/// <returns></returns>
+		static Handle(Geom_BSplineCurve) CreateOpenBSpline3dChecked(const std::vector<gp_Pnt>& polesVec, const std::vector<double>& knotsVec, const std::vector<int>& multsVec, int degree, QString& outMsg);
+
 	};
 }

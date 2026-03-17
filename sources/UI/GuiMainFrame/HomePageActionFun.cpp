@@ -881,3 +881,117 @@ void HomePageActionFun::BsplineCurveTest1()
     m_outputFunc(QStringLiteral("说明：这是文档主案例。它有多个 interior knots，更容易看出局部控制和连续性。"));
     BSplineValidationUtils::LogPoleDistance(m_outputFunc, QStringLiteral("Case1-多段三次B样条"), bspline);
 }
+
+/// 节点重数与连续性对比验证
+void HomePageActionFun::BsplineCurveKnotMultCompareTest()
+{
+    BSplineContinuityCompareTest();
+}
+
+void HomePageActionFun::BSplineContinuityCompareTest()
+{
+	m_context->RemoveAll(Standard_False);
+    // 三组案例统一使用三个唯一节点值，只修改中间节点重数
+    std::vector<double> knots = { 0, 1, 2 };
+
+    // -------------------- Case1：内部重数 = 1，对应 C2 --------------------
+    {
+        std::vector<gp_Pnt> poles =
+        {
+            gp_Pnt(0,   0,   0),
+            gp_Pnt(40, 110,  0),
+            gp_Pnt(90, 110,  0),
+            gp_Pnt(140,-70,  0),
+            gp_Pnt(190,-70,  0)
+        };
+        std::vector<int> mults = { 4, 1, 4 };
+
+        QString msg;
+        Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
+        m_outputFunc(QStringLiteral("[Case1-C2] 构造结果：%1").arg(msg));
+
+        if (!curve.IsNull())
+        {
+            BSplineDisplayStyle style;
+            style.translation = gp_Vec(0, 0, 0);
+            style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);
+            style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);
+            style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);
+
+            BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
+            m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case1-C2"), curve));
+
+            // 这里knotIndex = 2，表示检查中间节点 u = 1 的连续性
+            BSplineValidationUtils::LogContinuityAtKnot(m_outputFunc, QStringLiteral("Case1-C2"), curve, 2);
+        }
+    }
+
+    // -------------------- Case2：内部重数 = 2，对应 C1 --------------------
+    {
+        std::vector<gp_Pnt> poles =
+        {
+            gp_Pnt(0,   0,   0),
+            gp_Pnt(30, 110,  0),
+            gp_Pnt(65, 110,  0),
+            gp_Pnt(100,  20, 0),
+            gp_Pnt(145,-110, 0),
+            gp_Pnt(190,-110, 0)
+        };
+        std::vector<int> mults = { 4, 2, 4 };
+
+        QString msg;
+        Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
+        m_outputFunc(QStringLiteral("[Case2-C1] 构造结果：%1").arg(msg));
+
+        if (!curve.IsNull())
+        {
+            BSplineDisplayStyle style;
+            style.translation = gp_Vec(220, 0, 0);
+            style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.70, 0.20);
+            style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);
+            style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);
+
+            BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
+            m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case2-C1"), curve));
+            BSplineValidationUtils::LogContinuityAtKnot(m_outputFunc, QStringLiteral("Case2-C1"), curve, 2);
+        }
+    }
+
+    // -------------------- Case3：内部重数 = 3，对应 C0 --------------------
+    {
+        std::vector<gp_Pnt> poles =
+        {
+            gp_Pnt(0,   0,   0),
+            gp_Pnt(30, 110,  0),
+            gp_Pnt(65, 110,  0),
+            gp_Pnt(100,  20, 0),
+            gp_Pnt(140, 130, 0),
+            gp_Pnt(175,-100, 0),
+            gp_Pnt(205, -20, 0)
+        };
+        std::vector<int> mults = { 4, 3, 4 };
+
+        QString msg;
+        Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
+        m_outputFunc(QStringLiteral("[Case3-C0] 构造结果：%1").arg(msg));
+
+        if (!curve.IsNull())
+        {
+            BSplineDisplayStyle style;
+            style.translation = gp_Vec(460, 0, 0);
+            style.curveColor = BSplineValidationUtils::MakeColor(0.88, 0.25, 0.15);
+            style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);
+            style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);
+
+            BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
+            m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case3-C0"), curve));
+            BSplineValidationUtils::LogContinuityAtKnot(m_outputFunc, QStringLiteral("Case3-C0"), curve, 2);
+        }
+    }
+
+    m_context->UpdateCurrentViewer();
+    m_v3dView->FitAll();
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("结论：对于三次B样条，内部节点重数从1增加到3时，连续性从C2降低到C0。"));
+    m_outputFunc(QStringLiteral("============================================================"));
+}

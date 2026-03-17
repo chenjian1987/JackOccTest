@@ -138,4 +138,10 @@
     void WIN::onActionBsplineCurveTest1() \
     { \
         HOMEPAGE->OP->BsplineCurveTest1(); \
+    } \
+    \
+    \
+    void WIN::onActionBsplineCurveKnotMultCompareTest() \
+    { \
+        HOMEPAGE->OP->BsplineCurveKnotMultCompareTest(); \
     }

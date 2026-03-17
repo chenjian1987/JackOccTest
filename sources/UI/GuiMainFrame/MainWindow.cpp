@@ -303,6 +303,10 @@ void MainWindow::createActions()
     m_actionBsplineCurveTest1 = new QAction(QIcon(QString(exePath + "/Resource/Arc3Points.png")), QString::fromLocal8Bit("B样条曲线 控制点/节点/次数对比"), m_panelCurve);
     connect(m_actionBsplineCurveTest1, &QAction::triggered, this, &MainWindow::onActionBsplineCurveTest1);
 	m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveTest1);
+
+    m_actionBsplineCurveKnotMultCompareTest = new QAction(QIcon(QString(exePath + "/Resource/Arc3Points.png")), QString::fromLocal8Bit("节点重数与连续性对比测试"), m_panelCurve);
+    connect(m_actionBsplineCurveKnotMultCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveKnotMultCompareTest);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveKnotMultCompareTest);
 }
 
 void MainWindow::AppendOutput(const QString& text)

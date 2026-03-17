@@ -32,6 +32,8 @@
 
 using namespace JackC;
 
+
+
 // 将occ的连续性枚举转换为字符串，方便显示在UI上
 QString BSplineValidationUtils::ContinuityToString(GeomAbs_Shape shape)
 {
@@ -61,6 +63,9 @@ QString BSplineValidationUtils::RealToString(double value, int pre)
 	return QString::fromStdString(oss.str());
 }
 
+
+
+
 // 创建3d B样条曲线    poles控制点  knots节点
 Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateBSpline3d(const std::vector<gp_Pnt>& polesVec, const std::vector<double>& knotsVec, const std::vector<int>& multsVec, int degree, bool periodic)
 {
@@ -84,6 +89,105 @@ Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateBSpline3d(const std::vec
 
 	return new Geom_BSplineCurve(poles, knots, mults, degree, periodic);
 }
+
+Handle(Geom_BSplineCurve) BSplineValidationUtils::CopyCurve(const Handle(Geom_BSplineCurve)& curve)
+{
+	if (curve.IsNull()) return Handle(Geom_BSplineCurve)();
+	return Handle(Geom_BSplineCurve)::DownCast(curve->Copy());
+}
+
+//复制并移动某个控制点，观察曲线的变化
+Handle(Geom_BSplineCurve)  BSplineValidationUtils::CopyCurveWithMovedPole(const Handle(Geom_BSplineCurve)& curve, int poleIndex, const gp_Vec& delta)
+{
+	Handle(Geom_BSplineCurve) newCurve = CopyCurve(curve);
+
+	if (newCurve.IsNull()) return Handle(Geom_BSplineCurve)();
+	if (poleIndex<1 || poleIndex>newCurve->NbPoles()) return newCurve;
+
+	gp_Pnt pt = newCurve->Pole(poleIndex);
+	pt.Translated(delta);
+	newCurve->SetPole(poleIndex, pt);
+
+	return newCurve;
+}
+
+// 验证输入的poles / knots / mults / degree是否满足构造B样条曲线所需的条件，返回错误信息字符串
+QString BSplineValidationUtils::ValidateOpenBSplineInput(const std::vector<gp_Pnt>& polesVec, const std::vector<double>& knotsVec, const std::vector<int>& multsVec, int degree)
+{
+	if (degree < 1)
+		return QStringLiteral("非法：Degree 次数 必须 >= 1");
+
+	if (polesVec.empty())
+		return QStringLiteral("非法：控制点数组不能为空");
+
+	if (knotsVec.empty())
+		return QStringLiteral("非法：节点数组不能为空");
+
+	if (multsVec.empty())
+		return QStringLiteral("非法：重数数组不能为空");
+
+	if (knotsVec.size() != multsVec.size())
+		return QStringLiteral("非法：节点knots 与 mults 重数数量不一致");
+
+	// 非周期B样条至少要有首尾两个唯一节点
+	if (knotsVec.size() < 2)
+		return QStringLiteral("非法：唯一节点数至少为2");
+	for (size_t i = 0; i + 1 < knotsVec.size(); ++i)
+	{
+		if (knotsVec[i] >= knotsVec[i + 1])
+			return QStringLiteral("非法：节点必须严格递增");
+	}
+
+	//首尾节点的重数不能大于次数+1. 非首尾的节点的重数不能大于次数
+	int sumMults = 0;
+	for (size_t i = 0; i < multsVec.size(); ++i)
+	{
+		if (multsVec[i] < 0)
+			return QStringLiteral("非法：重数必须 大于0");
+		if (i == 0 || i == multsVec.size() - 1)
+		{
+			if(multsVec[i] > degree +1) return QStringLiteral("非法：首尾节点的重数不能大于次数+1");
+		}
+		else
+		{
+			if (multsVec[i] > degree) return QStringLiteral("非法：非首尾节点的重数不能大于次数");
+		}
+		sumMults += multsVec[i];
+	}
+	//非周期B样条满足 NbPoles=Sum(Mults)-Degree-1
+	const int extPoles = sumMults - degree - 1;
+	if(extPoles!=static_cast<int>(polesVec.size()))
+		return QStringLiteral("非法：非周期B样条满足 NbPoles=Sum(Mults)-Degree-1");
+
+	return QStringLiteral("合法");
+}
+
+Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateOpenBSpline3dChecked(const std::vector<gp_Pnt>& polesVec,const std::vector<double>& knotsVec,
+	const std::vector<int>& multsVec, int degree, QString& outMsg)
+{
+	outMsg = ValidateOpenBSplineInput(polesVec, knotsVec, multsVec, degree);
+	if (outMsg != QStringLiteral("合法"))  return Handle(Geom_BSplineCurve)();
+
+	try
+	{
+		Handle(Geom_BSplineCurve) curve = CreateBSpline3d(polesVec, knotsVec, multsVec, degree, Standard_False);
+		outMsg = QStringLiteral("OK");
+		return curve;
+	}
+	catch (const Standard_Failure& e)
+	{
+		outMsg = QStringLiteral("OCC 构造失败：%1").arg(e.GetMessageString());
+		return Handle(Geom_BSplineCurve)();
+	}
+	catch (...)
+	{
+		outMsg = QStringLiteral("OCC 构造失败：未知异常");
+		return Handle(Geom_BSplineCurve)();
+	}
+}
+
+
+
 
 // 获取B样条曲线的所有控制点
 std::vector<gp_Pnt> BSplineValidationUtils::GetPoles(const Handle(Geom_BSplineCurve)& curve)
@@ -263,6 +367,9 @@ void BSplineValidationUtils::DisplayCurveCase(const Handle(AIS_InteractiveContex
 	if (updateViewer)
 		context->UpdateCurrentViewer();
 }
+
+
+
 
 // 通过密集采样计算控制点到曲线的最小距离
 double BSplineValidationUtils::MinDistancePoleToCurveBySampling(const Handle(Geom_BSplineCurve)& curve, const gp_Pnt& pole, int sampleCount)
