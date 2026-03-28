@@ -300,13 +300,27 @@ void MainWindow::createActions()
 
 
 	//bspline curve
-    m_actionBsplineCurveTest1 = new QAction(QIcon(QString(exePath + "/Resource/Arc3Points.png")), QString::fromLocal8Bit("B样条曲线 控制点/节点/次数对比"), m_panelCurve);
+    // bspline curve
+    m_actionBsplineCurveTest1 = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("B样条曲线 控制点/节点/次数对比"),
+        m_bsplineCurveManager);
     connect(m_actionBsplineCurveTest1, &QAction::triggered, this, &MainWindow::onActionBsplineCurveTest1);
-	m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveTest1);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveTest1);
 
-    m_actionBsplineCurveKnotMultCompareTest = new QAction(QIcon(QString(exePath + "/Resource/Arc3Points.png")), QString::fromLocal8Bit("节点重数与连续性对比测试"), m_panelCurve);
+    m_actionBsplineCurveKnotMultCompareTest = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("节点重数与连续性对比测试"),
+        m_bsplineCurveManager);
     connect(m_actionBsplineCurveKnotMultCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveKnotMultCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveKnotMultCompareTest);
+
+    m_actionBsplineCurveLocalControlCompareTest = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("局部控制对比测试"),
+        m_bsplineCurveManager);
+    connect(m_actionBsplineCurveLocalControlCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveLocalControlCompareTest);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveLocalControlCompareTest);
 }
 
 void MainWindow::AppendOutput(const QString& text)

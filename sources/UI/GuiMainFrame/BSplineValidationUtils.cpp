@@ -33,7 +33,6 @@
 using namespace JackC;
 
 
-
 // 将occ的连续性枚举转换为字符串，方便显示在UI上
 QString BSplineValidationUtils::ContinuityToString(GeomAbs_Shape shape)
 {
@@ -56,6 +55,8 @@ Quantity_Color BSplineValidationUtils::MakeColor(double r, double g, double b)
 	return Quantity_Color(r, g, b, Quantity_TOC_RGB);
 }
 
+
+// 实数转字符串
 QString BSplineValidationUtils::RealToString(double value, int pre)
 {
 	std::ostringstream oss;
@@ -67,7 +68,7 @@ QString BSplineValidationUtils::RealToString(double value, int pre)
 
 
 // 创建3d B样条曲线    poles控制点  knots节点
-Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateBSpline3d(const std::vector<gp_Pnt>& polesVec, const std::vector<double>& knotsVec, const std::vector<int>& multsVec, int degree, bool periodic)
+Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateBSpline3d(const std::vector<gp_Pnt>& polesVec,const std::vector<double>& knotsVec,const std::vector<int>& multsVec,int degree,	bool periodic)
 {
 	TColgp_Array1OfPnt poles(1, static_cast<Standard_Integer>(polesVec.size()));
 	for (Standard_Integer i = 1; i <= static_cast<Standard_Integer>(polesVec.size()); ++i)
@@ -90,9 +91,12 @@ Handle(Geom_BSplineCurve) BSplineValidationUtils::CreateBSpline3d(const std::vec
 	return new Geom_BSplineCurve(poles, knots, mults, degree, periodic);
 }
 
+// 复制一条B样条曲线
 Handle(Geom_BSplineCurve) BSplineValidationUtils::CopyCurve(const Handle(Geom_BSplineCurve)& curve)
 {
-	if (curve.IsNull()) return Handle(Geom_BSplineCurve)();
+	if (curve.IsNull())
+		return Handle(Geom_BSplineCurve)();
+
 	return Handle(Geom_BSplineCurve)::DownCast(curve->Copy());
 }
 
@@ -105,7 +109,7 @@ Handle(Geom_BSplineCurve)  BSplineValidationUtils::CopyCurveWithMovedPole(const 
 	if (poleIndex<1 || poleIndex>newCurve->NbPoles()) return newCurve;
 
 	gp_Pnt pt = newCurve->Pole(poleIndex);
-	pt.Translated(delta);
+	pt.Translate(delta);
 	newCurve->SetPole(poleIndex, pt);
 
 	return newCurve;
@@ -502,3 +506,6 @@ void BSplineValidationUtils::LogContinuityAtKnot(const OutputFunc& out, const QS
 	out(QStringLiteral("D1 jump     = %1").arg(RealToString(dv1.Magnitude(), 8)));
 	out(QStringLiteral("D2 jump     = %1").arg(RealToString(dv2.Magnitude(), 8)));
 }
+
+
+

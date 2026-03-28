@@ -71,6 +71,7 @@ namespace JackC
 
         void onActionBsplineCurveTest1();
         void onActionBsplineCurveKnotMultCompareTest();
+        void onActionBsplineCurveLocalControlCompareTest();    //局部控制对比测试
 
     private:
         void createActions();
@@ -134,6 +135,7 @@ namespace JackC
         //b样条曲线
         SARibbonPannel* m_bsplineCurveManager;
         QAction* m_actionBsplineCurveTest1;
-        QAction* m_actionBsplineCurveKnotMultCompareTest;  //节点重数与连续性对比测试
+        QAction* m_actionBsplineCurveKnotMultCompareTest;      //节点重数与连续性对比测试
+        QAction* m_actionBsplineCurveLocalControlCompareTest;  //局部控制对比测试
     };
 }

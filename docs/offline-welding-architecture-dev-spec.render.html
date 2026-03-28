@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>三维免示教离线焊接软件研发设计文档</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #222;
+      margin: 24px 32px;
+    }
+    h1, h2, h3, h4 {
+      color: #133a63;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 20pt;
+      text-align: center;
+      margin-top: 8px;
+    }
+    h2 {
+      font-size: 15pt;
+      border-bottom: 1px solid #d8e1ea;
+      padding-bottom: 4px;
+    }
+    h3 {
+      font-size: 12.5pt;
+    }
+    p, li {
+      margin: 6px 0;
+    }
+    .meta {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    .note {
+      background: #f5f8fb;
+      border-left: 4px solid #5b8db8;
+      padding: 10px 12px;
+      margin: 12px 0;
+    }
+    .figure-title {
+      text-align: center;
+      color: #444;
+      font-size: 9.5pt;
+      margin-top: 4px;
+      margin-bottom: 14px;
+    }
+    .diagram {
+      display: block;
+      width: 100%;
+      max-width: 980px;
+      margin: 10px auto 0 auto;
+      border: 1px solid #dcdcdc;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 18px 0;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #9baec2;
+      padding: 6px 8px;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    th {
+      background: #eaf1f7;
+      text-align: left;
+    }
+    .small {
+      font-size: 9pt;
+      color: #555;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9pt;
+    }
+  </style>
+</head>
+<body>
+  <h1>三维免示教离线焊接软件研发设计文档</h1>
+  <div class="meta">版本：V1.0　　用途：研发设计 / 汇报附件 / 开发拆任务基线</div>
+
+  <div class="note">
+    <p><strong>说明：</strong>本文档面向研发落地，重点补齐核心框架 UML 类图、模块依赖图、运动控制系统 UML 细化类图、项目生命周期时序图和接口拆任务表。</p>
+    <p><strong>命名约束：</strong>当前仓库实际源码目录为 <code>/sources</code>，文档中接口头文件仍以 <code>/Include</code> 为公开边界，私有实现以 <code>/sources</code> 为准；如后续重构，可再统一为 <code>/Source</code> 命名。</p>
+  </div>
+
+  <h2>1. 文档目标与适用范围</h2>
+  <p>本文档用于指导三维免示教离线焊接软件的下一阶段研发实施，解决当前方案中“模块边界不清、类职责不稳、生命周期流程分散、开发拆分颗粒度不足”的问题。文档将系统拆分为核心框架、业务子系统、项目生命周期和接口任务四个维度，确保架构讨论能够直接转化为研发任务。</p>
+  <p>本文重点覆盖以下内容：</p>
+  <ul>
+    <li>核心框架对象之间的关系、持有关系和编排关系。</li>
+    <li>UI、交互层、应用层、业务层、领域层和基础设施层的依赖边界。</li>
+    <li>运动控制系统内部对象的聚合关系、算法入口和运行时组件。</li>
+    <li>项目 <code>Create / Open / Save / Export</code> 四类关键流程的时序。</li>
+    <li>可直接下发给开发人员的接口任务拆分清单。</li>
+  </ul>
+
+  <h2 class="page-break">2. 核心框架 UML 类图</h2>
+  <p>核心框架负责完成应用生命周期管理、项目装配、命令调度和业务编排。该图的重点不是业务算法，而是回答“谁持有谁、谁编排谁、谁是跨层协调入口”的问题。</p>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/core-framework-class.png" alt="核心框架 UML 类图" />
+  <div class="figure-title">图 2-1 核心框架 UML 类图</div>
+  <p>设计要点如下：</p>
+  <ul>
+    <li><code>IApplication</code> 是应用统一入口，向 UI 和外部模块暴露项目、命令和业务访问能力。</li>
+    <li><code>ApplicationImpl</code> 负责装配 <code>MainWindow</code>、<code>DocumentView</code>、<code>Project</code>、<code>BusinessManager</code> 和 <code>CommandActionManager</code>。</li>
+    <li><code>Project</code> 是项目聚合根，统一负责项目目录、项目文件、配置和业务模块生命周期。</li>
+    <li><code>BusinessManager</code> 用于屏蔽多个业务模块的创建、初始化、加载和保存细节。</li>
+    <li><code>BusinessInteract</code> 不承担业务计算，专门负责跨业务模块和 UI 的事件连接。</li>
+  </ul>
+
+  <h2>3. 模块依赖图</h2>
+  <p>模块依赖图定义了编译期和设计期边界，目的是防止 UI 直接下沉到底层业务或底层库，避免后续形成难以维护的网状依赖。</p>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/module-dependency.png" alt="模块依赖图" />
+  <div class="figure-title">图 3-1 模块依赖图</div>
+  <p>依赖约束要求如下：</p>
+  <ul>
+    <li>UI 层只能依赖 <code>Interaction</code> 和 <code>AppInterface</code>，不得直接引用具体业务实现。</li>
+    <li><code>Interaction</code> 承接用户意图和场景输入，只访问应用接口、领域对象和基础设施。</li>
+    <li><code>Application</code> 作为编排层，可依赖 UI、交互、业务、领域和基础设施，但不承载底层算法实现。</li>
+    <li>业务子系统之间的协作尽量通过 <code>BusinessInteract</code> 或事件总线完成，减少直接双向耦合。</li>
+    <li>基础设施层只向上提供通用能力，不反向依赖任何上层业务模块。</li>
+  </ul>
+
+  <h2 class="page-break">4. 运动控制系统 UML 细化类图</h2>
+  <p>运动控制系统是离线焊接软件的核心能力之一，需要同时承载工作站管理、设备管理、运动学求解、仿真控制和碰撞检测。该类图用于确定运动控制模块内部的主要对象、聚合关系和算法入口。</p>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/motion-control-class.png" alt="运动控制系统 UML 细化类图" />
+  <div class="figure-title">图 4-1 运动控制系统 UML 细化类图</div>
+  <p>设计要点如下：</p>
+  <ul>
+    <li><code>MotionControlBusiness</code> 是运动控制总入口，对外提供工作站切换、设备激活、移动控制、轨迹仿真和保存加载能力。</li>
+    <li><code>WorkStationManager</code> 管理多个工作站对象，并维护当前激活工作站。</li>
+    <li><code>WorkStation</code> 聚合多个 <code>DeviceGroup</code>，<code>DeviceGroup</code> 再聚合多个 <code>Device</code>。</li>
+    <li><code>Device</code> 采用抽象基类设计，面向机器人、外部轴、变位机、工作台和工装等具体设备派生扩展。</li>
+    <li><code>SimulationController</code> 和 <code>CollideChecker</code> 是运动控制运行时的重要执行组件，应避免分散在 UI 或其他模块中。</li>
+    <li><code>RobotBaseAdapter</code> 用于隔离第三方运动学 DLL 调用，避免业务层直接依赖算法库细节。</li>
+  </ul>
+
+  <h2 class="page-break">5. 项目生命周期时序图</h2>
+  <p>项目生命周期是系统的主业务骨架，决定了项目数据如何创建、如何恢复、如何持久化以及如何导出交付。以下四张时序图分别对应项目的 <code>Create</code>、<code>Open</code>、<code>Save</code>、<code>Export</code> 四个关键操作。</p>
+
+  <h3>5.1 Project.Create</h3>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/project-create-sequence.png" alt="Project Create 时序图" />
+  <div class="figure-title">图 5-1 Project.Create 时序图</div>
+  <p>核心步骤：创建目录骨架，生成默认项目配置，依次创建各业务模块，再执行统一初始化和界面绑定。</p>
+
+  <h3>5.2 Project.Open</h3>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/project-open-sequence.png" alt="Project Open 时序图" />
+  <div class="figure-title">图 5-2 Project.Open 时序图</div>
+  <p>核心步骤：读取项目文件，加载配置与业务数据，统一初始化各业务模块，恢复联动关系和视图状态。</p>
+
+  <h3>5.3 Project.Save</h3>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/project-save-sequence.png" alt="Project Save 时序图" />
+  <div class="figure-title">图 5-3 Project.Save 时序图</div>
+  <p>核心步骤：先保存项目级配置，再保存各业务模块数据，最后落盘项目文件并刷新界面状态。</p>
+
+  <h3>5.4 Project.Export</h3>
+  <img class="diagram" src="file:///F:/OwnerCode/JackOccTest/docs/diagrams/project-export-sequence.png" alt="Project Export 时序图" />
+  <div class="figure-title">图 5-4 Project.Export 时序图</div>
+  <p>核心步骤：导出前先执行一次保存，随后由归档服务将项目目录打包成 <code>.myrsp</code>，默认排除临时缓存和过程生成目录。</p>
+
+  <h2 class="page-break">6. 可直接给开发拆任务的接口表</h2>
+  <p>说明：下表按优先级和模块分组，用于直接拆分研发任务。标记为“建议新增”的头文件表示当前仓库中尚未看到对应公开接口，建议在本轮架构收敛中新增。</p>
+
+  <h3>6.1 核心框架与项目层接口任务表</h3>
+  <table>
+    <tr>
+      <th style="width:7%;">优先级</th>
+      <th style="width:16%;">类名/接口名</th>
+      <th style="width:27%;">建议头文件名</th>
+      <th style="width:35%;">责任说明</th>
+      <th style="width:15%;">备注</th>
+    </tr>
+    <tr><td>P0</td><td>IApplication</td><td><code>Include/App/IApplication.h</code></td><td>定义应用启动、关闭、当前项目访问、业务管理器访问、命令管理器访问等统一能力。</td><td>现有接口，建议扩充项目相关接口。</td></tr>
+    <tr><td>P0</td><td>IAppFactory</td><td><code>Include/App/IAppFactory.h</code></td><td>定义应用工厂，负责创建应用实例和屏蔽具体实现。</td><td>现有接口，可直接沿用。</td></tr>
+    <tr><td>P0</td><td>ApplicationImpl</td><td><code>sources/App/AppImpl/Application.h</code></td><td>完成主窗口、文档视图、项目对象、命令管理器和业务编排器的装配，是运行时主入口。</td><td>现有私有实现，建议继续扩充。</td></tr>
+    <tr><td>P1</td><td>AppManager</td><td><code>sources/App/AppImpl/AppManager.h</code></td><td>管理应用单例、全局上下文、启动顺序和退出资源释放。</td><td>现有私有实现。</td></tr>
+    <tr><td>P0</td><td>ProjectContext</td><td><code>Include/App/ProjectContext.h</code></td><td>封装项目根目录、项目文件路径、运行模式、输出目录、用户配置等上下文信息。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>Project</td><td><code>Include/Model/Element/Project.h</code></td><td>项目聚合根，统一实现 <code>Create / Initialize / Open / Save / Export / Import / Close</code>。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>ProjectStorage</td><td><code>Include/Infrastructure/Common/ProjectStorage.h</code></td><td>负责项目目录骨架创建、项目文件读写、临时文件刷盘和项目路径规范化。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>ProjectArchiveService</td><td><code>Include/Infrastructure/Common/ProjectArchiveService.h</code></td><td>负责项目导出打包和导入解包，统一管理 <code>.myrsp</code> 格式。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>ISerializable</td><td><code>Include/Infrastructure/Common/ISerializable.h</code></td><td>统一定义对象的序列化、反序列化、文件持久化契约。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>IPreference</td><td><code>Include/Infrastructure/Common/IPreference.h</code></td><td>统一定义配置对象的加载、保存、校验、重置和单项配置读写接口。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>PreferenceFactory</td><td><code>Include/Infrastructure/Common/PreferenceFactory.h</code></td><td>负责配置类型注册、实例创建和默认配置对象生成。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>PreferenceManager</td><td><code>Include/Infrastructure/Common/PreferenceManager.h</code></td><td>管理项目级和业务级配置对象，统一执行 <code>Create / Load / Save / Validate / Watch</code>。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>IBusiness</td><td><code>Include/Business/IBusiness.h</code></td><td>定义各业务模块公共生命周期和异常处理接口。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>BusinessFactory</td><td><code>Include/Business/BusinessFactory.h</code></td><td>负责业务模块注册、实例创建和业务类型映射。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>BusinessManager</td><td><code>Include/Business/BusinessManager.h</code></td><td>统一创建、初始化、加载和保存所有业务模块，并提供统一查询入口。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>EventBus</td><td><code>Include/Infrastructure/Common/EventBus.h</code></td><td>提供发布订阅模型，用于模块解耦和跨模块状态广播。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>AppEvent</td><td><code>Include/Infrastructure/Common/AppEvent.h</code></td><td>定义统一事件对象、事件参数和事件命名规范。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>CommandActionManager</td><td><code>Include/Interaction/CommandActionManager.h</code></td><td>负责命令注册、启用状态判断、执行、撤销和重做，是 UI 与应用的命令桥梁。</td><td>建议新增，需与现有 GUI 命令定义对齐。</td></tr>
+    <tr><td>P0</td><td>BusinessInteract</td><td><code>sources/App/AppImpl/BusinessInteract.h</code></td><td>负责工作站列表、属性面板、控制面板、三维系统和设备通信系统之间的事件连接。</td><td>建议新增私有实现类。</td></tr>
+  </table>
+
+  <h3>6.2 运动控制系统接口任务表</h3>
+  <table>
+    <tr>
+      <th style="width:7%;">优先级</th>
+      <th style="width:16%;">类名/接口名</th>
+      <th style="width:27%;">建议头文件名</th>
+      <th style="width:35%;">责任说明</th>
+      <th style="width:15%;">备注</th>
+    </tr>
+    <tr><td>P0</td><td>MotionControlBusiness</td><td><code>Include/Business/MotionControl/MotionControlBusiness.h</code></td><td>运动控制总入口，对外提供工作站切换、设备切换、设备移动、轨迹仿真、碰撞检测和数据持久化能力。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>WorkStationManager</td><td><code>Include/Business/MotionControl/WorkStationManager.h</code></td><td>管理工作站集合、激活工作站切换和工作站查询。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>WorkStation</td><td><code>Include/Model/Element/WorkStation.h</code></td><td>工作站聚合根，包含设备组集合、用途、名称、默认坐标系等。</td><td>建议新增领域对象。</td></tr>
+    <tr><td>P0</td><td>DeviceGroup</td><td><code>Include/Model/Element/DeviceGroup.h</code></td><td>设备组聚合，维护设备集合和当前激活设备。</td><td>建议新增领域对象。</td></tr>
+    <tr><td>P0</td><td>Device</td><td><code>Include/Model/Element/Device.h</code></td><td>统一设备抽象基类，封装标识、属性、状态和移动接口。</td><td>建议新增抽象基类。</td></tr>
+    <tr><td>P0</td><td>RobotDevice</td><td><code>Include/Model/Element/RobotDevice.h</code></td><td>机器人设备对象，扩展轴组、工具坐标、基坐标和机器人专属参数。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>ExternalAxisDevice</td><td><code>Include/Model/Element/ExternalAxisDevice.h</code></td><td>外部轴设备对象，描述外部轴的运动范围、联动方式和状态。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>PositionerDevice</td><td><code>Include/Model/Element/PositionerDevice.h</code></td><td>变位机设备对象，封装工件姿态变化和联动约束。</td><td>建议新增。</td></tr>
+    <tr><td>P2</td><td>WorkbenchDevice</td><td><code>Include/Model/Element/WorkbenchDevice.h</code></td><td>工作台设备对象，用于表达台面、工位和固定装置的空间关系。</td><td>建议新增。</td></tr>
+    <tr><td>P2</td><td>FixtureDevice</td><td><code>Include/Model/Element/FixtureDevice.h</code></td><td>工装设备对象，描述夹具、定位块等静态设备。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>Trajectory</td><td><code>Include/Model/Element/Trajectory.h</code></td><td>统一描述轨迹点、姿态、速度、工艺参数绑定和轨迹分段。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>MotionCommand</td><td><code>Include/Model/Element/MotionCommand.h</code></td><td>统一描述单次移动指令，包含目标设备、目标位姿、速度和加速度信息。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>SimulationController</td><td><code>Include/Business/MotionControl/SimulationController.h</code></td><td>负责轨迹仿真执行状态机，包括播放、暂停、停止、进度和回放控制。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>CollideChecker</td><td><code>Include/Business/MotionControl/CollideChecker.h</code></td><td>负责设备姿态碰撞检测、轨迹碰撞检测和干涉分析。</td><td>建议新增。</td></tr>
+    <tr><td>P0</td><td>RobotBaseAdapter</td><td><code>Include/Business/MotionControl/RobotBaseAdapter.h</code></td><td>封装外部机器人算法 DLL 的访问接口，隔离正逆解和运动学验证细节。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>KinematicsService</td><td><code>Include/Business/MotionControl/KinematicsService.h</code></td><td>基于设备对象和算法适配器统一提供 FK、IK、可达性验证和姿态校验。</td><td>建议新增。</td></tr>
+    <tr><td>P2</td><td>MotionAuditService</td><td><code>Include/Business/MotionControl/MotionAuditService.h</code></td><td>记录设备切换、设备移动、碰撞结果和仿真结果等关键操作，服务于可追溯性。</td><td>建议新增。</td></tr>
+  </table>
+
+  <h3>6.3 三维、工艺、焊接应用、后处理与设备通信接口任务表</h3>
+  <table>
+    <tr>
+      <th style="width:7%;">优先级</th>
+      <th style="width:16%;">类名/接口名</th>
+      <th style="width:27%;">建议头文件名</th>
+      <th style="width:35%;">责任说明</th>
+      <th style="width:15%;">备注</th>
+    </tr>
+    <tr><td>P1</td><td>ThreeDBusiness</td><td><code>Include/Business/ThreeD/ThreeDBusiness.h</code></td><td>三维系统总入口，负责模型导入、场景刷新、显示状态和选择状态对外服务。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>SceneManager</td><td><code>Include/Business/ThreeD/SceneManager.h</code></td><td>管理场景树、节点可见性、选中集和视图刷新。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>ModelRepository</td><td><code>Include/Business/ThreeD/ModelRepository.h</code></td><td>负责工件模型、设备模型加载、缓存和索引。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>DeviceCommBusiness</td><td><code>Include/Business/DeviceComm/DeviceCommBusiness.h</code></td><td>设备通信总入口，负责连接状态、参数下发、设备反馈和虚实同步。</td><td>建议新增。</td></tr>
+    <tr><td>P2</td><td>ProtocolAdapter</td><td><code>Include/Business/DeviceComm/ProtocolAdapter.h</code></td><td>抽象不同品牌控制器协议，实现协议层适配。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>ProcessBusiness</td><td><code>Include/Business/Process/ProcessBusiness.h</code></td><td>工艺系统总入口，负责工艺配置、规则匹配和工艺求解调用。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>TechParamManager</td><td><code>Include/Business/Process/TechParamManager.h</code></td><td>管理焊接工艺参数、材料参数和工艺模板集合。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>TechSolver</td><td><code>Include/Business/Process/TechSolver.h</code></td><td>根据焊缝类型、板厚、材料等输入求解焊接参数。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>WeldingAppBusiness</td><td><code>Include/Business/Welding/WeldingAppBusiness.h</code></td><td>焊接应用总编排器，组织焊缝提取、工艺匹配、路径生成与结果发布。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>SeamExtractor</td><td><code>Include/Business/Welding/SeamExtractor.h</code></td><td>从三维模型中提取焊缝、坡口和接头语义信息。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>PathPlanner</td><td><code>Include/Business/Welding/PathPlanner.h</code></td><td>根据焊缝对象和工艺参数生成焊接路径、姿态和节拍结果。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>PostProcessBusiness</td><td><code>Include/Business/PostProcess/PostProcessBusiness.h</code></td><td>后处理总入口，负责程序生成、模板套用和结果导出。</td><td>建议新增。</td></tr>
+    <tr><td>P1</td><td>ProgramGenerator</td><td><code>Include/Business/PostProcess/ProgramGenerator.h</code></td><td>将轨迹和设备坐标转换为控制器可执行程序。</td><td>建议新增。</td></tr>
+  </table>
+
+  <h2 class="page-break">7. 附录：图源文件清单</h2>
+  <table>
+    <tr>
+      <th style="width:36%;">图示</th>
+      <th style="width:32%;">Mermaid 源文件</th>
+      <th style="width:32%;">输出图片</th>
+    </tr>
+    <tr><td>核心框架 UML 类图</td><td><code>docs/diagrams/core-framework-class.mmd</code></td><td><code>docs/diagrams/core-framework-class.png</code></td></tr>
+    <tr><td>模块依赖图</td><td><code>docs/diagrams/module-dependency.mmd</code></td><td><code>docs/diagrams/module-dependency.png</code></td></tr>
+    <tr><td>运动控制系统 UML 细化类图</td><td><code>docs/diagrams/motion-control-class.mmd</code></td><td><code>docs/diagrams/motion-control-class.png</code></td></tr>
+    <tr><td>Project.Create 时序图</td><td><code>docs/diagrams/project-create-sequence.mmd</code></td><td><code>docs/diagrams/project-create-sequence.png</code></td></tr>
+    <tr><td>Project.Open 时序图</td><td><code>docs/diagrams/project-open-sequence.mmd</code></td><td><code>docs/diagrams/project-open-sequence.png</code></td></tr>
+    <tr><td>Project.Save 时序图</td><td><code>docs/diagrams/project-save-sequence.mmd</code></td><td><code>docs/diagrams/project-save-sequence.png</code></td></tr>
+    <tr><td>Project.Export 时序图</td><td><code>docs/diagrams/project-export-sequence.mmd</code></td><td><code>docs/diagrams/project-export-sequence.png</code></td></tr>
+  </table>
+
+  <p class="small">文档说明：本文件为 Word 导出源 HTML。若需要继续维护图示，请优先编辑 Mermaid 源文件并重新执行导出脚本。</p>
+</body>
+</html>
+

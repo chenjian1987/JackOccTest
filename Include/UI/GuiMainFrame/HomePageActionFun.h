@@ -65,6 +65,11 @@ public:
     /// </summary>
     void BsplineCurveKnotMultCompareTest();
 
+    /// <summary>
+    /// 局部控制对比验证
+    /// </summary>
+    void BsplineCurveLocalControlCompareTest();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 

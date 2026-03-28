@@ -995,3 +995,102 @@ void HomePageActionFun::BSplineContinuityCompareTest()
     m_outputFunc(QStringLiteral("结论：对于三次B样条，内部节点重数从1增加到3时，连续性从C2降低到C0。"));
     m_outputFunc(QStringLiteral("============================================================"));
 }
+
+
+void HomePageActionFun::BsplineCurveLocalControlCompareTest()
+{
+    m_context->RemoveAll(Standard_False);
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("B样条局部控制对比验证开始"));
+    m_outputFunc(QStringLiteral("目标：保持 knots / mults / degree 不变，只移动一个控制点，观察曲线局部变化"));
+    m_outputFunc(QStringLiteral("============================================================"));
+
+    // 这里使用 10 个控制点、7 个 span，使局部控制现象更明显
+    std::vector<gp_Pnt> poles =
+    {
+        gp_Pnt(0,    0,   0),
+        gp_Pnt(30,   60,  0),
+        gp_Pnt(60,  -40,  0),
+        gp_Pnt(95,   85,  0),
+        gp_Pnt(130,  20,  0),
+        gp_Pnt(165, -70,  0),
+        gp_Pnt(200,  50,  0),
+        gp_Pnt(235, -20,  0),
+        gp_Pnt(270,  60,  0),
+        gp_Pnt(300,   0,  0)
+    };
+
+    // 唯一节点值：0 ~ 7，共 8 个唯一节点
+    std::vector<double> knots = { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+    // 三次 B 样条，两端夹持，中间节点重数均为 1
+    // Sum(Mults) = 4 + 1 + 1 + 1 + 1 + 1 + 1 + 4 = 14
+    // NbPoles = 14 - 3 - 1 = 10，刚好匹配
+    std::vector<int> mults = { 4, 1, 1, 1, 1, 1, 1, 4 };
+
+    QString msg;
+    Handle(Geom_BSplineCurve) baseCurve =
+        BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
+
+    m_outputFunc(QStringLiteral("[BaseCurve] 构造结果：%1").arg(msg));
+    if (baseCurve.IsNull())
+        return;
+
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("BaseCurve-原始曲线"), baseCurve));
+
+    // 这里选择第 6 个控制点，便于观察中部区域的局部变化
+    const int movedPoleIndex = 6;
+    const gp_Vec delta(0, 90, 0);
+
+    Handle(Geom_BSplineCurve) movedCurve =
+        BSplineValidationUtils::CopyCurveWithMovedPole(baseCurve, movedPoleIndex, delta);
+
+    if (movedCurve.IsNull())
+    {
+        m_outputFunc(QStringLiteral("[MovedCurve] 构造失败"));
+        return;
+    }
+
+    m_outputFunc(QStringLiteral("移动控制点编号：Pole[%1]").arg(movedPoleIndex));
+    m_outputFunc(QStringLiteral("位移向量：(%1, %2, %3)")
+        .arg(delta.X())
+        .arg(delta.Y())
+        .arg(delta.Z()));
+
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("MovedCurve-移动控制点后"), movedCurve));
+
+    // 显示原始曲线 
+    {
+        BSplineDisplayStyle style;
+        style.translation = gp_Vec(0, 0, 0);
+        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);   // 蓝色：原始曲线
+        style.polygonColor = BSplineValidationUtils::MakeColor(0.60, 0.60, 0.60); // 灰色：原始控制多边形
+        style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);    // 红色：原始控制点
+        style.curveWidth = 2.0;
+        style.polygonWidth = 1.0;
+
+        BSplineValidationUtils::DisplayCurveCase(m_context, baseCurve, style, false);
+    }
+
+    //  显示修改后的曲线 
+    {
+        BSplineDisplayStyle style;
+        style.translation = gp_Vec(0, 0, 0);
+        style.curveColor = BSplineValidationUtils::MakeColor(0.90, 0.30, 0.15);   // 红橙色：修改后曲线
+        style.polygonColor = BSplineValidationUtils::MakeColor(0.25, 0.25, 0.25); // 深灰：修改后控制多边形
+        style.poleColor = BSplineValidationUtils::MakeColor(0.10, 0.70, 0.20);    // 绿色：修改后控制点
+        style.curveWidth = 2.0;
+        style.polygonWidth = 1.0;
+
+        BSplineValidationUtils::DisplayCurveCase(m_context, movedCurve, style, false);
+    }
+
+    m_context->UpdateCurrentViewer();
+    m_v3dView->FitAll();
+    BSplineValidationUtils::LogLocalControlDeviation(m_outputFunc, baseCurve, movedCurve);
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("观察结论：移动单个控制点后，曲线变化主要集中在其影响区间，而不是整条曲线均匀变化。"));
+    m_outputFunc(QStringLiteral("============================================================"));
+}

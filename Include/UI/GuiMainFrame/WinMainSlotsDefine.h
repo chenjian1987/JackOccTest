@@ -144,4 +144,8 @@
     void WIN::onActionBsplineCurveKnotMultCompareTest() \
     { \
         HOMEPAGE->OP->BsplineCurveKnotMultCompareTest(); \
+    } \
+    void WIN::onActionBsplineCurveLocalControlCompareTest() \
+    { \
+    HOMEPAGE->OP->BsplineCurveLocalControlCompareTest(); \
     }
