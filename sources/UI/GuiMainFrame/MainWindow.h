@@ -72,6 +72,7 @@ namespace JackC
         void onActionBsplineCurveTest1();
         void onActionBsplineCurveKnotMultCompareTest();
         void onActionBsplineCurveLocalControlCompareTest();    //局部控制对比测试
+		void onActionBsplineDataValidityCompareTest();         //数据合法性验证
 
     private:
         void createActions();
@@ -137,5 +138,6 @@ namespace JackC
         QAction* m_actionBsplineCurveTest1;
         QAction* m_actionBsplineCurveKnotMultCompareTest;      //节点重数与连续性对比测试
         QAction* m_actionBsplineCurveLocalControlCompareTest;  //局部控制对比测试
+        QAction* m_actionBsplineDataValidityCompareTest;        //数据合法性验证
     };
 }

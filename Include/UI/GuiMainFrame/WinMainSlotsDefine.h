@@ -148,4 +148,8 @@
     void WIN::onActionBsplineCurveLocalControlCompareTest() \
     { \
     HOMEPAGE->OP->BsplineCurveLocalControlCompareTest(); \
+    }\
+    void WIN::onActionBsplineDataValidityCompareTest() \
+    { \
+    HOMEPAGE->OP->BsplineDataValidityCompareTest(); \
     }

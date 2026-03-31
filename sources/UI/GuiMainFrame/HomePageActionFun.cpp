@@ -996,7 +996,6 @@ void HomePageActionFun::BSplineContinuityCompareTest()
     m_outputFunc(QStringLiteral("============================================================"));
 }
 
-
 void HomePageActionFun::BsplineCurveLocalControlCompareTest()
 {
     m_context->RemoveAll(Standard_False);
@@ -1093,4 +1092,117 @@ void HomePageActionFun::BsplineCurveLocalControlCompareTest()
     m_outputFunc(QStringLiteral("============================================================"));
     m_outputFunc(QStringLiteral("观察结论：移动单个控制点后，曲线变化主要集中在其影响区间，而不是整条曲线均匀变化。"));
     m_outputFunc(QStringLiteral("============================================================"));
+}
+
+
+//  B样条数据合法性验证
+void HomePageActionFun::BsplineDataValidityCompareTest()
+{
+    m_context->RemoveAll(Standard_False);
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("B样条数据合法性验证开始"));
+    m_outputFunc(QStringLiteral("目标：合法输入可以正常构造；非法输入在进入 OCC 前被预校验拦截"));
+    m_outputFunc(QStringLiteral("注意：本实验只针对非周期 B 样条"));
+    m_outputFunc(QStringLiteral("============================================================"));
+
+    //case1 合法输入
+    std::vector<gp_Pnt> poles1 = 
+    {
+        gp_Pnt(0,   0, 0),
+        gp_Pnt(30,  60, 0),
+        gp_Pnt(60, -30, 0),
+        gp_Pnt(90,  80, 0),
+        gp_Pnt(120,  -20, 0),
+        gp_Pnt(150,  50, 0),
+		gp_Pnt(180,  0, 0)
+	};
+    std::vector<double> knots1 = { 0,1,2,3,4 };
+	std::vector<int> mults1 = { 4, 1, 1, 1, 4 };
+
+    RunBsplineValidityTest(QStringLiteral("Case1-合法输入"), poles1, knots1, mults1, 3, true, gp_Vec(0, 0, 0));
+    
+    //case2 非法输入：控制点数量不匹配
+    std::vector<gp_Pnt> poles2=
+    {
+        gp_Pnt(0,   0, 0),
+        gp_Pnt(30,  60, 0),
+        gp_Pnt(60, -30, 0),
+        gp_Pnt(90,  80, 0),
+        gp_Pnt(120,  -20, 0),
+        gp_Pnt(150,  50, 0)
+    };
+    std::vector<double> knots2 = { 0,1,2,3,4 };
+    std::vector<int> mults2 = { 4, 1, 1, 1, 4 };
+    RunBsplineValidityTest(QStringLiteral("Case2-非法输入-控制点数量不匹配"), poles2,knots2, mults2, 3, false, gp_Vec(0, 0, 0));
+
+    //case3 非法输入：节点与重数不匹配
+    std::vector<gp_Pnt> poles3 =
+    {
+        gp_Pnt(0,   0, 0),
+        gp_Pnt(30,  60, 0),
+        gp_Pnt(60, -30, 0),
+        gp_Pnt(90,  80, 0),
+        gp_Pnt(120,  -20, 0),
+        gp_Pnt(150,  50, 0),
+                gp_Pnt(180,  0, 0)
+    };
+    std::vector<double> knots3 = { 0,1,2,3,4 };
+    std::vector<int> mults3 = { 4, 1,  1, 4 };
+    RunBsplineValidityTest(QStringLiteral("Case3-非法输入-节点与重数不匹配"), poles3, knots3, mults3, 3, false, gp_Vec(0, 0, 0));
+
+    //case4 非法输入：节点存在重复
+    std::vector<gp_Pnt> poles4 =
+    {
+        gp_Pnt(0,   0, 0),
+        gp_Pnt(30,  60, 0),
+        gp_Pnt(60, -30, 0),
+        gp_Pnt(90,  80, 0),
+        gp_Pnt(120,  -20, 0),
+        gp_Pnt(150,  50, 0),
+                gp_Pnt(180,  0, 0)
+    };
+    std::vector<double> knots4 = { 0,1,1,3,4 };
+    std::vector<int> mults4 = { 4, 1,  1, 4 };
+    RunBsplineValidityTest(QStringLiteral("Case4-非法输入-节点存在重复"), poles4, knots4, mults4, 3, false, gp_Vec(0, 0, 0));
+
+    //case5 非法输入：内部接重数过大
+    std::vector<gp_Pnt> poles5 =
+    {
+        gp_Pnt(0,   0,  0),
+        gp_Pnt(35, 75,  0),
+        gp_Pnt(70, 15,  0),
+        gp_Pnt(105,-15, 0),
+        gp_Pnt(140,-75, 0)
+    };
+    std::vector<double> knots5 = { 0,1,2 };
+    std::vector<int> mults5 = { 4, 4, 4 };
+    RunBsplineValidityTest(QStringLiteral("Case4-非法输入-内部接重数过大"), poles5, knots5, mults5, 3, false, gp_Vec(0, 0, 0));
+
+}
+
+//  执行单个B样条合法性
+void HomePageActionFun::RunBsplineValidityTest(const QString& caseName, const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, const std::vector<int>& mults, int degree, bool needDisplay, const gp_Vec& displayTranslation)
+{
+    m_outputFunc(QStringLiteral("------------------------------------------------------------"));
+    m_outputFunc(QStringLiteral("[%1]").arg(caseName));
+
+    QString checkMsg = BSplineValidationUtils::ValidateOpenBSplineInput(poles, knots, mults, degree);
+    m_outputFunc(QStringLiteral("校验结果:%1").arg(checkMsg));
+
+    QString buildMsg;
+    Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, degree, buildMsg);
+    m_outputFunc(QStringLiteral("构造结果:%1").arg(buildMsg));
+
+	if (!curve.IsNull() && needDisplay)
+    {
+        BSplineDisplayStyle style;
+        style.translation = displayTranslation;
+        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);     //蓝色：曲线
+		style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //灰色：控制多边形
+		style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //红色：控制点
+        BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
+        m_outputFunc(BSplineValidationUtils::BuildCurveSummary(caseName, curve));
+    }
+    m_outputFunc(QStringLiteral("------------------------------------------------------------"));
 }

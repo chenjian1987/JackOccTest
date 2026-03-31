@@ -70,6 +70,9 @@ public:
     /// </summary>
     void BsplineCurveLocalControlCompareTest();
 
+    //  B样条数据合法性验证
+    void BsplineDataValidityCompareTest();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 
@@ -86,10 +89,10 @@ private:
 private:
     void BSplineContinuityCompareTest();
 
-    //void BsplineLocalControlCompareTest();
+    //  执行单个B样条合法性
+    void RunBsplineValidityTest(const QString& caseName, const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, const std::vector<int>& mults, int degree, bool needDisplay, const gp_Vec& displayTranslation);
 
-    //void BsplineDataValidityCompareTest();
-
+    
 private:
     Handle(AIS_InteractiveContext) m_context;
     Handle(V3d_Viewer) m_v3dViewer;

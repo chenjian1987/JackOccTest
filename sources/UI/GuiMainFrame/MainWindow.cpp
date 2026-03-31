@@ -178,7 +178,7 @@ void MainWindow::createToolBars()
     viewBSplineCurve->setFont(QFont(QString::fromLocal8Bit("微软雅黑"), 10));
     barViewBSplineCurve->addCategoryPage(viewBSplineCurve);
 
-    m_bsplineCurveManager = viewBSplineCurve->addPannel(QString::fromLocal8Bit("初步学习"));
+    m_bsplineCurveManager = viewBSplineCurve->addPannel(QString::fromLocal8Bit("基础"));
 }
 
 void MainWindow::createActions() 
@@ -321,6 +321,13 @@ void MainWindow::createActions()
         m_bsplineCurveManager);
     connect(m_actionBsplineCurveLocalControlCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveLocalControlCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveLocalControlCompareTest);
+
+    m_actionBsplineDataValidityCompareTest = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("数据合法性验证"),
+        m_bsplineCurveManager);
+    connect(m_actionBsplineDataValidityCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineDataValidityCompareTest);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineDataValidityCompareTest);
 }
 
 void MainWindow::AppendOutput(const QString& text)
