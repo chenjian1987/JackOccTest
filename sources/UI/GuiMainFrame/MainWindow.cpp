@@ -1,4 +1,4 @@
-#include <QApplication>
+ï»¿#include <QApplication>
 #include <QMdiArea>
 #include <QPoint>
 #include <QToolBar>
@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget* parent) :SARibbonMainWindow(parent), m_isAppClos
     DBG_WARN_UNLESS(pUiMgr, L"pUiMgr is nullptr", L"jack.chen", L"2025-05-10");
     pUiMgr->SetApplicationWindow(this);
 
-    // ÉèÖÃÄ¬ÈÏ×ÖÌå£¨ÈçDockWidgetµÄTab¿Ø¼þ£©
+    // è®¾ç½®é»˜è®¤å­—ä½“ï¼ˆå¦‚DockWidgetçš„TabæŽ§ä»¶ï¼‰
     QString fontFamily = QString::fromStdWString(L"Microsoft YaHei");
     QFont   font(fontFamily);
     setFont(font);
@@ -70,21 +70,21 @@ MainWindow::~MainWindow()
 
 bool MainWindow::Initialize()
 {
-    // ÉèÖÃ´°¿Úicon
+    // è®¾ç½®çª—å£icon
     FilePathManager* pFilePathManager = FilePathManager::Get();
-    DBG_WARN_AND_RETURN_FALSE_UNLESS(pFilePathManager, L"pFilePathManagerÎª¿Õ", L"jack.chen", L"2025-05-10");
+    DBG_WARN_AND_RETURN_FALSE_UNLESS(pFilePathManager, L"pFilePathManagerä¸ºç©º", L"jack.chen", L"2025-05-10");
     const FilePath& resourcePath = pFilePathManager->GetResourcePath();
     std::wstring    strIconFilePath(resourcePath.GetFullPath() + L"/JackCAD.png");
     setWindowIcon(QIcon(QString::fromStdWString(strIconFilePath)));
 
-    // ÉèÖÃ´°¿Ú±êÌâ
+    // è®¾ç½®çª—å£æ ‡é¢˜
     setWindowTitle(QString::fromLocal8Bit("JackQuickOCCT"));
     setMinimumSize(QSize(1288, 1000));
     showNormal();
 
-    //Ìí¼Ó¹¤¾ßÀ¸
+    //æ·»åŠ å·¥å…·æ 
     QToolBar* toolBar = new QToolBar();
-    toolBar->setMovable(false);         //ÉèÖÃ¹¤¾ßÀ¸²»¿ÉÒÆ¶¯
+    toolBar->setMovable(false);         //è®¾ç½®å·¥å…·æ ä¸å¯ç§»åŠ¨
     addToolBar(toolBar);
 
     createMenus();
@@ -94,16 +94,16 @@ bool MainWindow::Initialize()
     HomePage* pHomePage = NEW_AS_QT(HomePage, this);
     m_pHomePage = pHomePage;
 
-    // ´´½¨ÈÝÆ÷
+    // åˆ›å»ºå®¹å™¨
     QWidget* central = new QWidget(this);
     QVBoxLayout* pVLayout = new QVBoxLayout(central);
     pVLayout->setContentsMargins(0, 0, 0, 0);
     pVLayout->setSpacing(0);
 
-    // Ö÷ÊÓÍ¼
+    // ä¸»è§†å›¾
     pVLayout->addWidget(pHomePage, 1);
 
-    // ÈÕÖ¾
+    // æ—¥å¿—
     m_outputWindow = new QPlainTextEdit(central);
     m_outputWindow->setReadOnly(true);
     m_outputWindow->setFixedHeight(150);
@@ -119,7 +119,7 @@ void MainWindow::createMenus()
 {
     SARibbonBar* menu_TestBrep = ribbonBar();
     menu_TestBrep->setRibbonStyle(SARibbonBar::RibbonStyle::RibbonStyleLooseThreeRow);
-    menu_TestBrep->setFont(QFont("Î¢ÈíÑÅºÚ", 10));
+    menu_TestBrep->setFont(QFont("å¾®è½¯é›…é»‘", 10));
     menu_TestBrep->applicationButton()->setVisible(false);
     menu_TestBrep->setEnableWordWrap(true);
 }
@@ -128,63 +128,63 @@ void MainWindow::createToolBars()
 {
     SARibbonBar* mainPageRibbon = ribbonBar();
     SARibbonCategory* categoryPanelTestBRep = new SARibbonCategory();
-    categoryPanelTestBRep->setCategoryName(QString::fromLocal8Bit("½¨Ä£"));
-    categoryPanelTestBRep->setObjectName("½¨Ä£");
-    categoryPanelTestBRep->setFont(QFont(QString::fromLocal8Bit("Î¢ÈíÑÅºÚ"), 10));
+    categoryPanelTestBRep->setCategoryName(QString::fromLocal8Bit("å»ºæ¨¡"));
+    categoryPanelTestBRep->setObjectName("å»ºæ¨¡");
+    categoryPanelTestBRep->setFont(QFont(QString::fromLocal8Bit("å¾®è½¯é›…é»‘"), 10));
     mainPageRibbon->addCategoryPage(categoryPanelTestBRep);
-    // ²»ÒªÉèÖÃcategoryPanelTestBRepµÄminimumWidth£¬ÒòÎªÕâ»á³Å´óÕû¸öÀà±ð
+    // ä¸è¦è®¾ç½®categoryPanelTestBRepçš„minimumWidthï¼Œå› ä¸ºè¿™ä¼šæ’‘å¤§æ•´ä¸ªç±»åˆ«
 
-    //½¨Ä£ Ä£ÐÍ¹ØÏµ ×ø±êÖá×ª»»
+    //å»ºæ¨¡ æ¨¡åž‹å…³ç³» åæ ‡è½´è½¬æ¢
     // geom curve
-    m_panelCurve = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("²âÊÔGeom Curve"));
+    m_panelCurve = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("æµ‹è¯•Geom Curve"));
     //brep solid
-    m_panelSolid = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("²âÊÔBRep Solid"));
-    // ½«¡°»¥²Ù×÷ & »¥±à¼­¡±¸ÄÎª¡°»¥²Ù×÷¡±
-    m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("»¥²Ù×÷"));
-    m_panelRelationship = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("Ä£ÐÍ¹ØÏµ"));
-    m_panelMatrixTranslate = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("×ø±êÏµ×ª»»"));
+    m_panelSolid = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("æµ‹è¯•BRep Solid"));
+    // å°†â€œäº’æ“ä½œ & äº’ç¼–è¾‘â€æ”¹ä¸ºâ€œäº’æ“ä½œâ€
+    m_panelEdit = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("äº’æ“ä½œ"));
+    m_panelRelationship = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("æ¨¡åž‹å…³ç³»"));
+    m_panelMatrixTranslate = categoryPanelTestBRep->addPannel(QString::fromLocal8Bit("åæ ‡ç³»è½¬æ¢"));
 
-    // ³¢ÊÔÉèÖÃÃæ°åµÄ¹Ì¶¨¿í¶È£¬µ¥Î»ÊÇÏñËØ
+    // å°è¯•è®¾ç½®é¢æ¿çš„å›ºå®šå®½åº¦ï¼Œå•ä½æ˜¯åƒç´ 
     m_panelEdit->setFixedWidth(100);
     m_panelRelationship->setFixedWidth(100);
     m_panelMatrixTranslate->setFixedWidth(100);
 
-    //ÊÓÍ¼
+    //è§†å›¾
     SARibbonBar* barView=ribbonBar();
     SARibbonCategory* categoryView=new SARibbonCategory();
-    categoryView->setCategoryName(QString::fromLocal8Bit("ÊÓÍ¼ÖÐÐÄ"));
-    categoryView->setObjectName("ÊÓÍ¼");
-    categoryView->setFont(QFont(QString::fromLocal8Bit("Î¢ÈíÑÅºÚ"),10));
+    categoryView->setCategoryName(QString::fromLocal8Bit("è§†å›¾ä¸­å¿ƒ"));
+    categoryView->setObjectName("è§†å›¾");
+    categoryView->setFont(QFont(QString::fromLocal8Bit("å¾®è½¯é›…é»‘"),10));
     barView->addCategoryPage(categoryView);
 
-    m_coreViewControl=categoryView->addPannel(QString::fromLocal8Bit("ÊÓÍ¼"));
+    m_coreViewControl=categoryView->addPannel(QString::fromLocal8Bit("è§†å›¾"));
 
-    // Êý¾ÝÖÐÐÄ
+    // æ•°æ®ä¸­å¿ƒ
     SARibbonBar* dataCenterBarView = ribbonBar();
     SARibbonCategory* dataCenterView = new SARibbonCategory();
-    dataCenterView->setCategoryName(QString::fromLocal8Bit("Êý¾ÝÖÐÐÄ"));
-    dataCenterView->setObjectName("Êý¾ÝÖÐÐÄ");
-    dataCenterView->setFont(QFont(QString::fromLocal8Bit("Î¢ÈíÑÅºÚ"), 10));
+    dataCenterView->setCategoryName(QString::fromLocal8Bit("æ•°æ®ä¸­å¿ƒ"));
+    dataCenterView->setObjectName("æ•°æ®ä¸­å¿ƒ");
+    dataCenterView->setFont(QFont(QString::fromLocal8Bit("å¾®è½¯é›…é»‘"), 10));
     dataCenterBarView->addCategoryPage(dataCenterView);
 
     m_ifcDataManager = dataCenterView->addPannel(QString::fromLocal8Bit("IFC"));
     m_ocafManager = dataCenterView->addPannel(QString::fromLocal8Bit("OCAF"));
 
-    //BÑùÌõÇúÏß
+    //Bæ ·æ¡æ›²çº¿
     SARibbonBar* barViewBSplineCurve = ribbonBar();
     SARibbonCategory* viewBSplineCurve = new SARibbonCategory();
-    viewBSplineCurve->setCategoryName(QString::fromLocal8Bit("BÑùÌõÇúÏß"));
-    viewBSplineCurve->setObjectName("BÑùÌõÇúÏß");
-    viewBSplineCurve->setFont(QFont(QString::fromLocal8Bit("Î¢ÈíÑÅºÚ"), 10));
+    viewBSplineCurve->setCategoryName(QString::fromLocal8Bit("Bæ ·æ¡æ›²çº¿"));
+    viewBSplineCurve->setObjectName("Bæ ·æ¡æ›²çº¿");
+    viewBSplineCurve->setFont(QFont(QString::fromLocal8Bit("å¾®è½¯é›…é»‘"), 10));
     barViewBSplineCurve->addCategoryPage(viewBSplineCurve);
 
-    m_bsplineCurveManager = viewBSplineCurve->addPannel(QString::fromLocal8Bit("»ù´¡"));
+    m_bsplineCurveManager = viewBSplineCurve->addPannel(QString::fromLocal8Bit("åŸºç¡€"));
 }
 
 void MainWindow::createActions() 
 {
     QString exePath =QApplication::applicationDirPath();
-    // Ä£ÐÍ±à¼­
+    // æ¨¡åž‹ç¼–è¾‘
     // geom curve
     QString splitCurvePath= exePath +QString("/Resource/Arc3Points.png");
     m_actionSimpleBSplineCurve = new QAction(QIcon(splitCurvePath), QString::fromLocal8Bit("Simple BSplineCurve"), m_panelCurve);
@@ -201,100 +201,100 @@ void MainWindow::createActions()
     connect(m_actionTopExp, &QAction::triggered, this, &MainWindow::onActionSimpleTopExp);
     m_panelSolid->addSmallAction(m_actionTopExp);
 
-    m_actionInclineRectangle = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("´´½¨ÇãÐ±µÄ³¤·½Ìå"), m_panelSolid);
+    m_actionInclineRectangle = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("åˆ›å»ºå€¾æ–œçš„é•¿æ–¹ä½“"), m_panelSolid);
     connect(m_actionInclineRectangle, &QAction::triggered, this, &MainWindow::onActionCreateRectangle);
     m_panelSolid->addSmallAction(m_actionInclineRectangle);
 
-    //²âÊÔ ·ìºÏBRepBuilderAPI_Sewing
-    m_actionSewingSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Test·ìºÏ"), m_panelSolid);
+    //æµ‹è¯• ç¼åˆBRepBuilderAPI_Sewing
+    m_actionSewingSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Testç¼åˆ"), m_panelSolid);
     connect(m_actionSewingSimpleTest, &QAction::triggered, this, &MainWindow::onActionTestSimpleSewing);
     m_panelSolid->addSmallAction(m_actionSewingSimpleTest);
 
-    //²âÊÔ ¼ò»¯ ShapeUpgrade_UnifySameDomain
-    m_actionShapeUpgradeSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Test¼ò»¯"), m_panelSolid);
+    //æµ‹è¯• ç®€åŒ– ShapeUpgrade_UnifySameDomain
+    m_actionShapeUpgradeSimpleTest = new QAction(QIcon(simpleSolidPath), QString::fromLocal8Bit("Testç®€åŒ–"), m_panelSolid);
     connect(m_actionShapeUpgradeSimpleTest, &QAction::triggered, this, &MainWindow::onActionTestSimpleShapeUpgrade);
     m_panelSolid->addSmallAction(m_actionShapeUpgradeSimpleTest);
 
     //edit 
     QString rotationSolidPath = exePath + QString("/Resource/ExternalCommands.png");
-    m_actionEditShape = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("»¥²Ù×÷"), m_panelEdit);
+    m_actionEditShape = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("äº’æ“ä½œ"), m_panelEdit);
     connect(m_actionEditShape, &QAction::triggered, this, &MainWindow::onActionEditShape);
     m_panelEdit->addSmallAction(m_actionEditShape);
 
     //QString rotationSolidPath = exePath + QString("/Resource/ExternalCommands.png");
-    m_actionBuildBaseMode = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("»ù´¡½¨Ä£"), m_panelEdit);
+    m_actionBuildBaseMode = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("åŸºç¡€å»ºæ¨¡"), m_panelEdit);
     connect(m_actionBuildBaseMode, &QAction::triggered, this, &MainWindow::onActionBuildBaseMode);
     m_panelEdit->addSmallAction(m_actionBuildBaseMode);
 
     
-    m_actionPointLineRelation = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" µãÓëÏß¹ØÏµ"), m_panelEdit);
+    m_actionPointLineRelation = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" ç‚¹ä¸Žçº¿å…³ç³»"), m_panelEdit);
     connect(m_actionPointLineRelation, &QAction::triggered, this, &MainWindow::onActionPointLineRelation);
     m_panelRelationship->addSmallAction(m_actionPointLineRelation);
 
-    m_actionPointOnFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" µãÔÚÃæÉÏ "), m_panelEdit);
+    m_actionPointOnFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" ç‚¹åœ¨é¢ä¸Š "), m_panelEdit);
     connect(m_actionPointOnFace, &QAction::triggered, this, &MainWindow::onActionPointOnFace);
     m_panelRelationship->addSmallAction(m_actionPointOnFace);
 
-    m_actionLine2Line = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" Ö±Ïß¶ÎÓëÖ±Ïß¶Î "), m_panelEdit);
+    m_actionLine2Line = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit(" ç›´çº¿æ®µä¸Žç›´çº¿æ®µ "), m_panelEdit);
     connect(m_actionLine2Line, &QAction::triggered, this, &MainWindow::onActionLine2Line);
     m_panelRelationship->addSmallAction(m_actionLine2Line);
 
-    m_actionLine2BSplineCurve = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("Ö±ÏßÓëBÑùÌõ"), m_panelEdit);
+    m_actionLine2BSplineCurve = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("ç›´çº¿ä¸ŽBæ ·æ¡"), m_panelEdit);
     connect(m_actionLine2BSplineCurve, &QAction::triggered, this, &MainWindow::onActionLine2BSplineCurve);
     m_panelRelationship->addSmallAction(m_actionLine2BSplineCurve);
 
-    m_actionSegmentPlaneIntersection = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("Ïß¶ÎÓëÆ½ÃæÏà½»"), m_panelEdit);
+    m_actionSegmentPlaneIntersection = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("çº¿æ®µä¸Žå¹³é¢ç›¸äº¤"), m_panelEdit);
     connect(m_actionSegmentPlaneIntersection, &QAction::triggered, this, &MainWindow::onActionSegPlaneIntersection);
     m_panelRelationship->addSmallAction(m_actionSegmentPlaneIntersection);
 
-    m_actionArcBsplineInteersect = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("Ô²»¡ÓëBÑùÌõÇúÃæÏà½»"),m_panelEdit);
+    m_actionArcBsplineInteersect = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("åœ†å¼§ä¸ŽBæ ·æ¡æ›²é¢ç›¸äº¤"),m_panelEdit);
     connect(m_actionArcBsplineInteersect, &QAction::triggered, this, &MainWindow::onActionArcBSplineIntersect);
     m_panelRelationship->addSmallAction(m_actionArcBsplineInteersect);
 
-    //Ô²»¡ÇúÃæÓëBÑùÌõÇúÃæÏà½»
-    m_actionArcFaceIntersectBSplineFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("Ô²»¡ÇúÃæÓëBÑùÌõÇúÃæÏà½»"), m_panelEdit);
+    //åœ†å¼§æ›²é¢ä¸ŽBæ ·æ¡æ›²é¢ç›¸äº¤
+    m_actionArcFaceIntersectBSplineFace = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("åœ†å¼§æ›²é¢ä¸ŽBæ ·æ¡æ›²é¢ç›¸äº¤"), m_panelEdit);
     connect(m_actionArcFaceIntersectBSplineFace, &QAction::triggered, this, &MainWindow::onActionArcFaceIntersectBSplineFace);
     m_panelRelationship->addSmallAction(m_actionArcFaceIntersectBSplineFace);
 
-    //×ø±êÏµ×ª»»
-    m_actionMatrixTranslate = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("»ùÓÚ44¾ØÕó×ø±êÏµ×ª»»"), m_panelEdit);
+    //åæ ‡ç³»è½¬æ¢
+    m_actionMatrixTranslate = new QAction(QIcon(rotationSolidPath), QString::fromLocal8Bit("åŸºäºŽ44çŸ©é˜µåæ ‡ç³»è½¬æ¢"), m_panelEdit);
     connect(m_actionMatrixTranslate, &QAction::triggered, this, &MainWindow::onActionMatrixTranslate);
     m_panelMatrixTranslate->addSmallAction(m_actionMatrixTranslate);
 
 
-    // ÊÓÍ¼ÖÐÐÄ
-    m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("×óÊÓÍ¼"), m_panelSolid);
+    // è§†å›¾ä¸­å¿ƒ
+    m_actionLeftCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("å·¦è§†å›¾"), m_panelSolid);
     connect(m_actionLeftCoreView, &QAction::triggered, this, &MainWindow::onActionLeftCoreView);
     m_coreViewControl->addSmallAction(m_actionLeftCoreView);
 
-    m_actionRightCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("ÓÒÊÓÍ¼"), m_panelSolid);
+    m_actionRightCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("å³è§†å›¾"), m_panelSolid);
     connect(m_actionRightCoreView, &QAction::triggered, this, &MainWindow::onActionRightCoreView);
     m_coreViewControl->addSmallAction(m_actionRightCoreView);
 
-    m_actionFrontCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("Ç°ÊÓÍ¼"), m_panelSolid);
+    m_actionFrontCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("å‰è§†å›¾"), m_panelSolid);
     connect(m_actionFrontCoreView, &QAction::triggered, this, &MainWindow::onActionFrontCoreView);
     m_coreViewControl->addSmallAction(m_actionFrontCoreView);
 
-    m_actionBackCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("ºóÊÓÍ¼"), m_panelSolid);
+    m_actionBackCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("åŽè§†å›¾"), m_panelSolid);
     connect(m_actionBackCoreView, &QAction::triggered, this, &MainWindow::onActionBackCoreView);
     m_coreViewControl->addSmallAction(m_actionBackCoreView);
 
-    m_actionTopCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("¸©ÊÓÍ¼"), m_panelSolid);
+    m_actionTopCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("ä¿¯è§†å›¾"), m_panelSolid);
     connect(m_actionTopCoreView, &QAction::triggered, this, &MainWindow::onActionTopCoreView);
     m_coreViewControl->addSmallAction(m_actionTopCoreView);
 
-    m_actionBottomCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("ÑöÊÓÍ¼"), m_panelSolid);
+    m_actionBottomCoreView = new QAction(QIcon(QString(exePath + "/Resource/Floor.png")), QString::fromLocal8Bit("ä»°è§†å›¾"), m_panelSolid);
     connect(m_actionBottomCoreView, &QAction::triggered, this, &MainWindow::onActionBottomCoreView);
     m_coreViewControl->addSmallAction(m_actionBottomCoreView);
 
 
-    //Êý¾ÝÖÐÐÄ
-    m_actionImportIfc = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("µ¼ÈëIFC"), m_panelSolid);
+    //æ•°æ®ä¸­å¿ƒ
+    m_actionImportIfc = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("å¯¼å…¥IFC"), m_panelSolid);
     connect(m_actionImportIfc, &QAction::triggered, this, &MainWindow::onActionImportIfc);
     m_ifcDataManager->addSmallAction(m_actionImportIfc);
 
     //OCAF
-    m_actionHelloOCAF = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("Hello OCAF-´´½¨TDocStd_Document"), m_panelSolid);
+    m_actionHelloOCAF = new QAction(QIcon(QString(exePath + "/Resource/Door.png")), QString::fromLocal8Bit("Hello OCAF-åˆ›å»ºTDocStd_Document"), m_panelSolid);
     connect(m_actionHelloOCAF, &QAction::triggered, this, &MainWindow::onActionHelloOCAF);
     m_ocafManager->addSmallAction(m_actionHelloOCAF);
 
@@ -303,28 +303,35 @@ void MainWindow::createActions()
     // bspline curve
     m_actionBsplineCurveTest1 = new QAction(
         QIcon(QString(exePath + "/Resource/Arc3Points.png")),
-        QString::fromLocal8Bit("BÑùÌõÇúÏß ¿ØÖÆµã/½Úµã/´ÎÊý¶Ô±È"),
+        QString::fromLocal8Bit("Bæ ·æ¡æ›²çº¿ æŽ§åˆ¶ç‚¹/èŠ‚ç‚¹/æ¬¡æ•°å¯¹æ¯”"),
         m_bsplineCurveManager);
     connect(m_actionBsplineCurveTest1, &QAction::triggered, this, &MainWindow::onActionBsplineCurveTest1);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveTest1);
 
     m_actionBsplineCurveKnotMultCompareTest = new QAction(
         QIcon(QString(exePath + "/Resource/Arc3Points.png")),
-        QString::fromLocal8Bit("½ÚµãÖØÊýÓëÁ¬ÐøÐÔ¶Ô±È²âÊÔ"),
+        QString::fromLocal8Bit("èŠ‚ç‚¹é‡æ•°ä¸Žè¿žç»­æ€§å¯¹æ¯”æµ‹è¯•"),
         m_bsplineCurveManager);
     connect(m_actionBsplineCurveKnotMultCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveKnotMultCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveKnotMultCompareTest);
 
     m_actionBsplineCurveLocalControlCompareTest = new QAction(
         QIcon(QString(exePath + "/Resource/Arc3Points.png")),
-        QString::fromLocal8Bit("¾Ö²¿¿ØÖÆ¶Ô±È²âÊÔ"),
+        QString::fromLocal8Bit("å±€éƒ¨æŽ§åˆ¶å¯¹æ¯”æµ‹è¯•"),
         m_bsplineCurveManager);
     connect(m_actionBsplineCurveLocalControlCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveLocalControlCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveLocalControlCompareTest);
 
+    m_actionBsplineCurvePointEvalCompareTest = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("D0ç‚¹å€¼æ±‚è§£(De Boor)éªŒè¯"),
+        m_bsplineCurveManager);
+    connect(m_actionBsplineCurvePointEvalCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurvePointEvalCompareTest);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineCurvePointEvalCompareTest);
+
     m_actionBsplineDataValidityCompareTest = new QAction(
         QIcon(QString(exePath + "/Resource/Arc3Points.png")),
-        QString::fromLocal8Bit("Êý¾ÝºÏ·¨ÐÔÑéÖ¤"),
+        QString::fromLocal8Bit("æ•°æ®åˆæ³•æ€§éªŒè¯"),
         m_bsplineCurveManager);
     connect(m_actionBsplineDataValidityCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineDataValidityCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineDataValidityCompareTest);

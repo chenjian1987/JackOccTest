@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #define MAINWINDOW_ACTION_SLATS \
@@ -148,6 +148,10 @@
     void WIN::onActionBsplineCurveLocalControlCompareTest() \
     { \
     HOMEPAGE->OP->BsplineCurveLocalControlCompareTest(); \
+    }\
+    void WIN::onActionBsplineCurvePointEvalCompareTest() \
+    { \
+    HOMEPAGE->OP->BsplineCurvePointEvalCompareTest(); \
     }\
     void WIN::onActionBsplineDataValidityCompareTest() \
     { \

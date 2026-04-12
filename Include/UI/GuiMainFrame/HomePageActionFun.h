@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <AIS_InteractiveContext.hxx>
 #include <AIS_Shape.hxx>
@@ -27,8 +27,8 @@ public:
     void TestSimpleTopExp(); 
     void TestEditShape(); 
     void TestBuildBaseMode();
-    void TestSimpleSewing();   //²âÊÔ¼òµ¥·ìºÏ
-    void TestSimpleShapeUpgrade();  //²âÊÔ¼ò»¯
+    void TestSimpleSewing();   //æµ‹è¯•ç®€å•ç¼åˆ
+    void TestSimpleShapeUpgrade();  //æµ‹è¯•ç®€åŒ–
     
     void TestLeftCoreView(); 
     void TestRightCoreView(); 
@@ -61,16 +61,21 @@ public:
     void BsplineCurveTest1();
 
     /// <summary>
-    /// ½ÚµãÖØÊıÓëÁ¬ĞøĞÔ¶Ô±ÈÑéÖ¤
+    /// èŠ‚ç‚¹é‡æ•°ä¸è¿ç»­æ€§å¯¹æ¯”éªŒè¯
     /// </summary>
     void BsplineCurveKnotMultCompareTest();
 
     /// <summary>
-    /// ¾Ö²¿¿ØÖÆ¶Ô±ÈÑéÖ¤
+    /// å±€éƒ¨æ§åˆ¶å¯¹æ¯”éªŒè¯
     /// </summary>
     void BsplineCurveLocalControlCompareTest();
 
-    //  BÑùÌõÊı¾İºÏ·¨ĞÔÑéÖ¤
+    /// <summary>
+    /// D0 ç‚¹å€¼æ±‚è§£ä¸ De Boor è®¡ç®—è¿‡ç¨‹å¯¹æ¯”éªŒè¯
+    /// </summary>
+    void BsplineCurvePointEvalCompareTest();
+
+    //  Bæ ·æ¡æ•°æ®åˆæ³•æ€§éªŒè¯
     void BsplineDataValidityCompareTest();
 
 private:
@@ -80,16 +85,16 @@ private:
 
     void ApplyTransformToSelected(ShapeEditDialog::TransformType type, QVector3D vec, double value, int mirrorPlane);
 
-    //·ìºÏ
+    //ç¼åˆ
     TopoDS_Shape SewMeshFaces(const TopoDS_Shape& rawFaces, double tolerance);
 
-    //·ÖÎöÄ£ĞÍ
+    //åˆ†ææ¨¡å‹
     void InspectModel(const std::string& name, const TopoDS_Shape& shape);
 
 private:
     void BSplineContinuityCompareTest();
 
-    //  Ö´ĞĞµ¥¸öBÑùÌõºÏ·¨ĞÔ
+    //  æ‰§è¡Œå•ä¸ªBæ ·æ¡åˆæ³•æ€§
     void RunBsplineValidityTest(const QString& caseName, const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, const std::vector<int>& mults, int degree, bool needDisplay, const gp_Vec& displayTranslation);
 
     

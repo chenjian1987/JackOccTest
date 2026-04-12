@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <QString>
 #include <SARibbonMainWindow.h>
 #include <QMainWindow>
@@ -34,7 +34,7 @@ namespace JackC
         virtual ~MainWindow();
 
     public:
-        virtual bool Initialize() override;// ³õÊ¼»¯
+        virtual bool Initialize() override;// åˆå§‹åŒ–
         void AppendOutput(const QString& text);
 
     private slots:
@@ -42,8 +42,8 @@ namespace JackC
         void onActionSimpleTopExp(); 
         void onActionCreateSimpleBSplineCurve(); 
         void onActionCreateRectangle(); 
-        void onActionTestSimpleSewing();   //²âÊÔ¼òµ¥·ìºÏ
-        void onActionTestSimpleShapeUpgrade();   //²âÊÔ¼òµ¥¼ò»¯
+        void onActionTestSimpleSewing();   //æµ‹è¯•ç®€å•ç¼åˆ
+        void onActionTestSimpleShapeUpgrade();   //æµ‹è¯•ç®€å•ç®€åŒ–
 
         void onActionLeftCoreView(); 
         void onActionRightCoreView(); 
@@ -71,8 +71,9 @@ namespace JackC
 
         void onActionBsplineCurveTest1();
         void onActionBsplineCurveKnotMultCompareTest();
-        void onActionBsplineCurveLocalControlCompareTest();    //¾Ö²¿¿ØÖÆ¶Ô±È²âÊÔ
-		void onActionBsplineDataValidityCompareTest();         //Êı¾İºÏ·¨ĞÔÑéÖ¤
+        void onActionBsplineCurveLocalControlCompareTest();    //å±€éƒ¨æ§åˆ¶å¯¹æ¯”æµ‹è¯•
+        void onActionBsplineCurvePointEvalCompareTest();       //D0 / De Boor ç‚¹å€¼éªŒè¯
+		void onActionBsplineDataValidityCompareTest();         //æ•°æ®åˆæ³•æ€§éªŒè¯
 
     private:
         void createActions();
@@ -83,11 +84,11 @@ namespace JackC
     private:
         QPlainTextEdit* m_outputWindow = nullptr;
 
-        // MDIÇøÓò¡£
+        // MDIåŒºåŸŸã€‚
         QMdiArea* m_pMDIArea;
         HomePage* m_pHomePage;
 
-        // ³ÌĞòÊÇ·ñÕıÔÚÍË³öµÄ±êÖ¾
+        // ç¨‹åºæ˜¯å¦æ­£åœ¨é€€å‡ºçš„æ ‡å¿—
         bool    m_isAppClosing;
         QToolBar* m_brepToolBar;
 
@@ -97,14 +98,14 @@ namespace JackC
         SARibbonPannel* m_panelSolid;
         SARibbonPannel* m_panelEdit;
         SARibbonPannel* m_panelRelationship;
-        SARibbonPannel* m_panelMatrixTranslate;     //×ø±êÏµ×ª»»
+        SARibbonPannel* m_panelMatrixTranslate;     //åæ ‡ç³»è½¬æ¢
 
         QAction* m_actionSimpleBSplineCurve;
         QAction*  m_actionSimpleSolidTranslate;
         QAction* m_actionTopExp;
         QAction* m_actionInclineRectangle;
-        QAction* m_actionSewingSimpleTest;  //²âÊÔ¼òµ¥µÄ·ìºÏ
-        QAction* m_actionShapeUpgradeSimpleTest;  //²âÊÔ¼òµ¥µÄ·ìºÏ
+        QAction* m_actionSewingSimpleTest;  //æµ‹è¯•ç®€å•çš„ç¼åˆ
+        QAction* m_actionShapeUpgradeSimpleTest;  //æµ‹è¯•ç®€å•çš„ç¼åˆ
 
         QAction* m_actionEditShape;
         QAction* m_actionBuildBaseMode;
@@ -133,11 +134,12 @@ namespace JackC
         SARibbonPannel* m_ocafManager;
         QAction* m_actionHelloOCAF;
 
-        //bÑùÌõÇúÏß
+        //bæ ·æ¡æ›²çº¿
         SARibbonPannel* m_bsplineCurveManager;
         QAction* m_actionBsplineCurveTest1;
-        QAction* m_actionBsplineCurveKnotMultCompareTest;      //½ÚµãÖØÊıÓëÁ¬ĞøĞÔ¶Ô±È²âÊÔ
-        QAction* m_actionBsplineCurveLocalControlCompareTest;  //¾Ö²¿¿ØÖÆ¶Ô±È²âÊÔ
-        QAction* m_actionBsplineDataValidityCompareTest;        //Êı¾İºÏ·¨ĞÔÑéÖ¤
+        QAction* m_actionBsplineCurveKnotMultCompareTest;      //èŠ‚ç‚¹é‡æ•°ä¸è¿ç»­æ€§å¯¹æ¯”æµ‹è¯•
+        QAction* m_actionBsplineCurveLocalControlCompareTest;  //å±€éƒ¨æ§åˆ¶å¯¹æ¯”æµ‹è¯•
+        QAction* m_actionBsplineCurvePointEvalCompareTest;     //D0 / De Boor ç‚¹å€¼éªŒè¯
+        QAction* m_actionBsplineDataValidityCompareTest;        //æ•°æ®åˆæ³•æ€§éªŒè¯
     };
 }

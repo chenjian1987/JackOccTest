@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 #include <Geom_Point.hxx>
 #include <Geom_CartesianPoint.hxx>
@@ -31,6 +33,18 @@
 #include <TColStd_Array1OfInteger.hxx>
 
 using namespace JackC;
+
+namespace
+{
+	gp_Pnt LerpPoint(const gp_Pnt& p0, const gp_Pnt& p1, double alpha)
+	{
+		const double oneMinusAlpha = 1.0 - alpha;
+		return gp_Pnt(
+			oneMinusAlpha * p0.X() + alpha * p1.X(),
+			oneMinusAlpha * p0.Y() + alpha * p1.Y(),
+			oneMinusAlpha * p0.Z() + alpha * p1.Z());
+	}
+}
 
 
 // 将occ的连续性枚举转换为字符串，方便显示在UI上
@@ -62,6 +76,14 @@ QString BSplineValidationUtils::RealToString(double value, int pre)
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(pre) << value;
 	return QString::fromStdString(oss.str());
+}
+
+QString BSplineValidationUtils::PointToString(const gp_Pnt& point, int precision)
+{
+	return QStringLiteral("(%1, %2, %3)")
+		.arg(RealToString(point.X(), precision))
+		.arg(RealToString(point.Y(), precision))
+		.arg(RealToString(point.Z(), precision));
 }
 
 
@@ -427,6 +449,249 @@ int BSplineValidationUtils::FindSpanIndex(const Handle(Geom_BSplineCurve)& curve
 			return static_cast<int>(i);
 	}
 	return static_cast<int>(curve->NbKnots() - 1);
+}
+
+std::vector<double> BSplineValidationUtils::ExpandKnots(const Handle(Geom_BSplineCurve)& curve)
+{
+	std::vector<double> knots;
+	if (curve.IsNull())
+		return knots;
+
+	for (Standard_Integer i = 1; i <= curve->NbKnots(); ++i)
+	{
+		const double knot = curve->Knot(i);
+		const int mult = curve->Multiplicity(i);
+		for (int m = 0; m < mult; ++m)
+		{
+			knots.push_back(knot);
+		}
+	}
+	return knots;
+}
+
+bool BSplineValidationUtils::EvaluatePointByDeBoor(const Handle(Geom_BSplineCurve)& curve, double u, BSplinePointEvaluationResult& outResult)
+{
+	outResult = BSplinePointEvaluationResult();
+	outResult.parameter = u;
+
+	if (curve.IsNull())
+	{
+		outResult.message = QStringLiteral("曲线为空");
+		return false;
+	}
+
+	if (curve->IsRational())
+	{
+		outResult.message = QStringLiteral("当前验证只支持非有理 B 样条曲线");
+		return false;
+	}
+
+	const int degree = curve->Degree();
+	const int poleCount = curve->NbPoles();
+	if (degree < 1 || poleCount <= degree)
+	{
+		outResult.message = QStringLiteral("次数或控制点数量非法");
+		return false;
+	}
+
+	std::vector<double> fullKnots = ExpandKnots(curve);
+	if (fullKnots.size() != static_cast<size_t>(poleCount + degree + 1))
+	{
+		outResult.message = QStringLiteral("展开 knot vector 的长度异常");
+		return false;
+	}
+
+	const int n = poleCount - 1;
+	const double first = fullKnots[static_cast<size_t>(degree)];
+	const double last = fullKnots[static_cast<size_t>(n + 1)];
+	const double tol = 1.0e-12;
+
+	if (u < first - tol || u > last + tol)
+	{
+		outResult.message = QStringLiteral("参数 u 超出曲线定义域");
+		return false;
+	}
+
+	int span = -1;
+	if (std::abs(u - last) <= tol)
+	{
+		span = n;
+	}
+	else
+	{
+		for (int k = degree; k <= n; ++k)
+		{
+			if (u >= fullKnots[static_cast<size_t>(k)] && u < fullKnots[static_cast<size_t>(k + 1)])
+			{
+				span = k;
+				break;
+			}
+		}
+	}
+
+	if (span < degree)
+	{
+		outResult.message = QStringLiteral("未找到合法的 knot span");
+		return false;
+	}
+
+	outResult.ok = true;
+	outResult.message = QStringLiteral("OK");
+	outResult.degree = degree;
+	outResult.fullSpanIndex = span;
+	outResult.uniqueSpanIndex = FindSpanIndex(curve, std::min(u, curve->LastParameter() - 1.0e-12));
+	outResult.expandedKnots = fullKnots;
+	outResult.spanLeft = fullKnots[static_cast<size_t>(span)];
+	outResult.spanRight = fullKnots[static_cast<size_t>(span + 1)];
+
+	std::vector<gp_Pnt> work(static_cast<size_t>(degree + 1));
+	BSplineDeBoorLayer baseLayer;
+	baseLayer.level = 0;
+
+	for (int j = 0; j <= degree; ++j)
+	{
+		const int poleIndex0 = span - degree + j;
+		const int occPoleIndex = poleIndex0 + 1;
+		const gp_Pnt pole = curve->Pole(occPoleIndex);
+
+		work[static_cast<size_t>(j)] = pole;
+		outResult.activePoleIndices.push_back(occPoleIndex);
+		outResult.activePoles.push_back(pole);
+		baseLayer.points.push_back(pole);
+	}
+	outResult.layers.push_back(baseLayer);
+
+	for (int r = 1; r <= degree; ++r)
+	{
+		std::vector<double> alphaByIndex(static_cast<size_t>(degree + 1), 0.0);
+		for (int j = degree; j >= r; --j)
+		{
+			const int knotIndex = span - degree + j;
+			const double left = fullKnots[static_cast<size_t>(knotIndex)];
+			const double right = fullKnots[static_cast<size_t>(knotIndex + degree - r + 1)];
+			const double denom = right - left;
+			const double alpha = std::abs(denom) > tol ? (u - left) / denom : 0.0;
+
+			alphaByIndex[static_cast<size_t>(j)] = alpha;
+			work[static_cast<size_t>(j)] = LerpPoint(
+				work[static_cast<size_t>(j - 1)],
+				work[static_cast<size_t>(j)],
+				alpha);
+		}
+
+		BSplineDeBoorLayer layer;
+		layer.level = r;
+		for (int j = r; j <= degree; ++j)
+		{
+			layer.points.push_back(work[static_cast<size_t>(j)]);
+			layer.alphas.push_back(alphaByIndex[static_cast<size_t>(j)]);
+		}
+		outResult.layers.push_back(layer);
+	}
+
+	curve->D0(u, outResult.occPoint);
+	outResult.deBoorPoint = work[static_cast<size_t>(degree)];
+	outResult.deviation = outResult.occPoint.Distance(outResult.deBoorPoint);
+	return true;
+}
+
+QString BSplineValidationUtils::BuildPointEvaluationSummary(const QString& caseName, const BSplinePointEvaluationResult& result)
+{
+	QString msg;
+	msg += QStringLiteral("--------------------------------------------------------\n");
+	msg += QStringLiteral("[%1] D0 / De Boor 点值验证\n").arg(caseName);
+
+	if (!result.ok)
+	{
+		msg += QStringLiteral("结果：%1\n").arg(result.message);
+		return msg;
+	}
+
+	msg += QStringLiteral("参数 u = %1, 次数 Degree = %2\n")
+		.arg(RealToString(result.parameter, 6))
+		.arg(result.degree);
+
+	msg += QStringLiteral("唯一节点区间 span = Knot[%1, %2] = [%3, %4]\n")
+		.arg(result.uniqueSpanIndex)
+		.arg(result.uniqueSpanIndex + 1)
+		.arg(RealToString(result.spanLeft, 3))
+		.arg(RealToString(result.spanRight, 3));
+
+	msg += QStringLiteral("De Boor full span index k = %1\n")
+		.arg(result.fullSpanIndex);
+
+	msg += QStringLiteral("参与计算的控制点：");
+	for (size_t i = 0; i < result.activePoleIndices.size(); ++i)
+	{
+		const int occPoleIndex = result.activePoleIndices[i];
+		msg += QStringLiteral("Pole[%1]/P%2 ").arg(occPoleIndex).arg(occPoleIndex - 1);
+	}
+	msg += QStringLiteral("\n");
+
+	msg += QStringLiteral("Expanded Knots: ");
+	for (double knot : result.expandedKnots)
+	{
+		msg += QStringLiteral("%1 ").arg(RealToString(knot, 3));
+	}
+	msg += QStringLiteral("\n");
+
+	msg += QStringLiteral("OCC::D0       = %1\n").arg(PointToString(result.occPoint, 6));
+	msg += QStringLiteral("De Boor       = %1\n").arg(PointToString(result.deBoorPoint, 6));
+	msg += QStringLiteral("Deviation     = %1\n").arg(RealToString(result.deviation, 12));
+
+	for (const BSplineDeBoorLayer& layer : result.layers)
+	{
+		msg += QStringLiteral("r = %1 : ").arg(layer.level);
+		for (size_t i = 0; i < layer.points.size(); ++i)
+		{
+			if (layer.level > 0 && i < layer.alphas.size())
+			{
+				msg += QStringLiteral("alpha=%1 ").arg(RealToString(layer.alphas[i], 6));
+			}
+			msg += QStringLiteral("Q%1=%2 ").arg(static_cast<int>(i)).arg(PointToString(layer.points[i], 3));
+		}
+		msg += QStringLiteral("\n");
+	}
+
+	return msg;
+}
+
+void BSplineValidationUtils::LogPointEvaluationSamplingComparison(const OutputFunc& outputFunc, const QString& caseName, const Handle(Geom_BSplineCurve)& curve, int sampleCount)
+{
+	if (!outputFunc || curve.IsNull() || sampleCount < 2)
+		return;
+
+	const double u0 = curve->FirstParameter();
+	const double u1 = curve->LastParameter();
+	double maxDeviation = 0.0;
+	double sumDeviation = 0.0;
+	int validCount = 0;
+
+	for (int i = 0; i <= sampleCount; ++i)
+	{
+		const double t = static_cast<double>(i) / static_cast<double>(sampleCount);
+		const double u = u0 + (u1 - u0) * t;
+
+		BSplinePointEvaluationResult result;
+		if (!EvaluatePointByDeBoor(curve, u, result))
+			continue;
+
+		maxDeviation = std::max(maxDeviation, result.deviation);
+		sumDeviation += result.deviation;
+		++validCount;
+	}
+
+	if (validCount == 0)
+	{
+		outputFunc(QStringLiteral("[%1] 采样对比失败：没有有效样本").arg(caseName));
+		return;
+	}
+
+	outputFunc(QStringLiteral("[%1] 采样验证：sampleCount = %2, max deviation = %3, avg deviation = %4")
+		.arg(caseName)
+		.arg(validCount)
+		.arg(RealToString(maxDeviation, 12))
+		.arg(RealToString(sumDeviation / static_cast<double>(validCount), 12)));
 }
 
 // 对比两条曲线

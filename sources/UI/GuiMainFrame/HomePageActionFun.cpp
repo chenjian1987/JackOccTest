@@ -1,4 +1,4 @@
-#include <AIS_InteractiveContext.hxx>
+ï»¿#include <AIS_InteractiveContext.hxx>
 #include <AIS_Shape.hxx>
 #include <Aspect_DisplayConnection.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
@@ -25,6 +25,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QApplication>
+#include <algorithm>
 #include <IfcImportDialog.h>
 #include <Poly_Triangulation.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
@@ -53,14 +54,14 @@
 #include <ifcpp/IFC4X3/include/IfcExtrudedAreaSolid.h>
 #include <ifcpp/IFC4X3/include/IfcSolidModel.h>
 
-// OCAF ºËĞÄÍ·ÎÄ¼ş
+// OCAF æ ¸å¿ƒå¤´æ–‡ä»¶
 #include <TDocStd_Application.hxx>
 #include <TDocStd_Document.hxx>
 #include <TDF_Label.hxx>
 #include <TDF_Tool.hxx>
 #include <TDF_AttributeIterator.hxx>
 
-// ÊôĞÔÍ·ÎÄ¼ş (ÓÃÓÚ´æÊı¾İ)
+// å±æ€§å¤´æ–‡ä»¶ (ç”¨äºå­˜æ•°æ®)
 #include <TDataStd_Integer.hxx>
 #include <TDataStd_Real.hxx>
 #include <TDataStd_Name.hxx>
@@ -107,7 +108,7 @@ Handle(AIS_Shape) HomePageActionFun::GetFirstSelectedShape() const
         if (!shape.IsNull())
             return shape;
     }
-    return Handle(AIS_Shape)(); // ¿Õ
+    return Handle(AIS_Shape)(); // ç©º
 }
 
 //-------------------------test--------------------------
@@ -126,7 +127,7 @@ void HomePageActionFun::TestSimpleBuildAndTranslate()
 
     TopoDS_Face rectFace = BRepBuilderAPI_MakeFace(rectWire);
     TopoDS_Shape solidBodyShape = BRepPrimAPI_MakePrism(rectFace, gp_Vec(0, 0, 50));
-    //µ¹Ô²½Ç
+    //å€’åœ†è§’
     BRepFilletAPI_MakeFillet filletMaker(solidBodyShape);
     for (TopExp_Explorer exp(solidBodyShape, TopAbs_EDGE); exp.More(); exp.Next())
     {
@@ -134,12 +135,12 @@ void HomePageActionFun::TestSimpleBuildAndTranslate()
     }
     TopoDS_Shape filletedSolid = filletMaker.Shape();
 
-    //´´½¨Ò»¸öÔ²ÖùÌå£¬ÓÃÓÚ²¼¶û¼õ·¨¼ÆËã, ĞÎ³É´ø¿×¶´µÄÁã¼ş
+    //åˆ›å»ºä¸€ä¸ªåœ†æŸ±ä½“ï¼Œç”¨äºå¸ƒå°”å‡æ³•è®¡ç®—, å½¢æˆå¸¦å­”æ´çš„é›¶ä»¶
     gp_Ax2 axis(gp_Pnt(50, 25, 0), gp_Dir(0, 0, 1));
     TopoDS_Solid cylinder = BRepPrimAPI_MakeCylinder(axis, 10, 80).Solid();
     TopoDS_Shape cutShape = BRepAlgoAPI_Cut(filletedSolid, cylinder).Shape();
 
-    //ÈÆZÖáĞı×ª45¶È£¬ ÑØXÆ½ÒÆ100
+    //ç»•Zè½´æ—‹è½¬45åº¦ï¼Œ æ²¿Xå¹³ç§»100
     gp_Trsf transform;
     transform.SetRotation(gp_Ax1(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)), 3.141592653589793238 / 4);
     transform.SetTranslation(gp_Vec(100, 0, 0));
@@ -148,13 +149,13 @@ void HomePageActionFun::TestSimpleBuildAndTranslate()
 
     Handle(AIS_Shape) aisShape = new AIS_Shape(cutShape);
     aisShape->SetColor(Quantity_NOC_GREEN1);
-    aisShape->SetWidth(1.0); // ÉèÖÃÏß¿í
+    aisShape->SetWidth(1.0); // è®¾ç½®çº¿å®½
     m_context->Display(aisShape, Standard_True);
 
 
     Handle(AIS_Shape) moveAisShape = new AIS_Shape(moveeShape);
     moveAisShape->SetColor(Quantity_NOC_YELLOW);
-    moveAisShape->SetWidth(1.0); // ÉèÖÃÏß¿í
+    moveAisShape->SetWidth(1.0); // è®¾ç½®çº¿å®½
     m_context->Display(moveAisShape, Standard_True);
 }
 
@@ -173,7 +174,7 @@ void HomePageActionFun::TestSimpleTopExp()
 
     TopoDS_Face rectFace = BRepBuilderAPI_MakeFace(rectWire);
     TopoDS_Shape solidBodyShape = BRepPrimAPI_MakePrism(rectFace, gp_Vec(0, 0, 50));
-    //µ¹Ô²½Ç
+    //å€’åœ†è§’
     BRepFilletAPI_MakeFillet filletMaker(solidBodyShape);
     for (TopExp_Explorer exp(solidBodyShape, TopAbs_EDGE); exp.More(); exp.Next())
     {
@@ -181,12 +182,12 @@ void HomePageActionFun::TestSimpleTopExp()
     }
     TopoDS_Shape filletedSolid = filletMaker.Shape();
 
-    //´´½¨Ò»¸öÔ²ÖùÌå£¬ÓÃÓÚ²¼¶û¼õ·¨¼ÆËã, ĞÎ³É´ø¿×¶´µÄÁã¼ş
+    //åˆ›å»ºä¸€ä¸ªåœ†æŸ±ä½“ï¼Œç”¨äºå¸ƒå°”å‡æ³•è®¡ç®—, å½¢æˆå¸¦å­”æ´çš„é›¶ä»¶
     gp_Ax2 axis(gp_Pnt(50, 25, 0), gp_Dir(0, 0, 1));
     TopoDS_Solid cylinder = BRepPrimAPI_MakeCylinder(axis, 10, 80).Solid();
     TopoDS_Shape cutShape = BRepAlgoAPI_Cut(filletedSolid, cylinder).Shape();
 
-    //ÈÆZÖáĞı×ª45¶È£¬ ÑØXÆ½ÒÆ100
+    //ç»•Zè½´æ—‹è½¬45åº¦ï¼Œ æ²¿Xå¹³ç§»100
     gp_Trsf transform;
     transform.SetRotation(gp_Ax1(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)), 3.141592653589793238 / 4);
     transform.SetTranslation(gp_Vec(100, 0, 0));
@@ -194,13 +195,13 @@ void HomePageActionFun::TestSimpleTopExp()
 
     Handle(AIS_Shape) aisShape = new AIS_Shape(cutShape);
     aisShape->SetColor(Quantity_NOC_GREEN1);
-    aisShape->SetWidth(1.0); // ÉèÖÃÏß¿í
+    aisShape->SetWidth(1.0); // è®¾ç½®çº¿å®½
     m_context->Display(aisShape, Standard_True);
 
 
     Handle(AIS_Shape) moveAisShape = new AIS_Shape(moveeShape);
     moveAisShape->SetColor(Quantity_NOC_YELLOW);
-    moveAisShape->SetWidth(1.0); // ÉèÖÃÏß¿í
+    moveAisShape->SetWidth(1.0); // è®¾ç½®çº¿å®½
     m_context->Display(moveAisShape, Standard_True);
 
 
@@ -209,12 +210,12 @@ void HomePageActionFun::TestSimpleTopExp()
     {
         TopoDS_Face face = TopoDS::Face(exp.Current());
 
-        // ÏÔÊ¾Ô­Ê¼Ãæ£¨À¶É«£©
+        // æ˜¾ç¤ºåŸå§‹é¢ï¼ˆè“è‰²ï¼‰
         Handle(AIS_Shape) aisFace = new AIS_Shape(face);
         aisFace->SetColor(Quantity_NOC_BLUE1);
         m_context->Display(aisFace, Standard_True);
 
-        // »ñÈ¡¸ÃÃæµÄµ×²ãÇúÃæGeom_SurfaceµÄ¾ä±ú
+        // è·å–è¯¥é¢çš„åº•å±‚æ›²é¢Geom_Surfaceçš„å¥æŸ„
         Handle(Geom_Surface) surface = BRep_Tool::Surface(face);
         if (surface.IsNull()) return;
 
@@ -228,7 +229,7 @@ void HomePageActionFun::TestSimpleTopExp()
 
 }
 
-// ´´½¨Ò»¸ö±ß³¤100 * 50 * 30³¤·½Ìå
+// åˆ›å»ºä¸€ä¸ªè¾¹é•¿100 * 50 * 30é•¿æ–¹ä½“
 void HomePageActionFun::TestCreateRectangle()
 {
     gp_Pnt origin(-200, -80, -70);
@@ -238,7 +239,7 @@ void HomePageActionFun::TestCreateRectangle()
 
     Handle(AIS_Shape) aisShape = new AIS_Shape(box);
     aisShape->SetColor(Quantity_NOC_BLUE2);
-    aisShape->SetWidth(1.0); // ÉèÖÃÏß¿í
+    aisShape->SetWidth(1.0); // è®¾ç½®çº¿å®½
     m_context->Display(aisShape, Standard_True);
 }
 
@@ -246,15 +247,15 @@ void HomePageActionFun::TestCreateRectangle()
 //  Test GeomCurve
 void  HomePageActionFun::TestCreateSimpleBSplineCurve()
 {
-    TColgp_Array1OfPnt2d points(1, 4);     // ´´½¨Ò»¸ö´ÓË÷Òı1µ½4µÄ¶şÎ¬µãÊı×é.  TColgp_Array1OfPnt2d ÊÇÒ»¸ö·â×°ÁËgp_Pnt2dÀàĞÍÊı×éµÄÈİÆ÷Àà
+    TColgp_Array1OfPnt2d points(1, 4);     // åˆ›å»ºä¸€ä¸ªä»ç´¢å¼•1åˆ°4çš„äºŒç»´ç‚¹æ•°ç»„.  TColgp_Array1OfPnt2d æ˜¯ä¸€ä¸ªå°è£…äº†gp_Pnt2dç±»å‹æ•°ç»„çš„å®¹å™¨ç±»
     points.SetValue(1, gp_Pnt2d(0, 0));
     points.SetValue(2, gp_Pnt2d(1, 2));
     points.SetValue(3, gp_Pnt2d(2, 3));
     points.SetValue(4, gp_Pnt2d(4, 4));
-    // Ê¹ÓÃ4¸ö¿ØÖÆµãµÄ·ÇÖÜÆÚÈı´Î¶şÎ¬BÑùÌõÇúÏß
+    // ä½¿ç”¨4ä¸ªæ§åˆ¶ç‚¹çš„éå‘¨æœŸä¸‰æ¬¡äºŒç»´Bæ ·æ¡æ›²çº¿
 
-    // 2. ½Úµã£¨Knot£©ÏòÁ¿£¨Ã¿¸ö knot ÖµÔÚ [0, 1] Çø¼äµİÔö£©
-    TColStd_Array1OfReal knots(1, 2);  // ¼òµ¥µÄ 2 knot£¨·Ç¾ùÔÈ B ÑùÌõ£©Àı×Ó
+    // 2. èŠ‚ç‚¹ï¼ˆKnotï¼‰å‘é‡ï¼ˆæ¯ä¸ª knot å€¼åœ¨ [0, 1] åŒºé—´é€’å¢ï¼‰
+    TColStd_Array1OfReal knots(1, 2);  // ç®€å•çš„ 2 knotï¼ˆéå‡åŒ€ B æ ·æ¡ï¼‰ä¾‹å­
     knots.SetValue(1, 0.0);
     knots.SetValue(2, 1.0);
 
@@ -266,13 +267,13 @@ void  HomePageActionFun::TestCreateSimpleBSplineCurve()
     Standard_Boolean preiodic = Standard_False;
     Handle(Geom2d_BSplineCurve) curve2d = new Geom2d_BSplineCurve(points, knots, mults, degress, preiodic);
 
-    //¶¨ÒåÒ»¸ö3DÆ½Ãæ
+    //å®šä¹‰ä¸€ä¸ª3Då¹³é¢
     Handle(Geom_Plane) surface = new Geom_Plane(gp::XOY());
     Handle(Geom_Curve) curve3d = GeomAPI::To3d(curve2d, surface->Pln());
 
     TopoDS_Edge edge = BRepBuilderAPI_MakeEdge(curve3d);
 
-    // ÏÔÊ¾
+    // æ˜¾ç¤º
     Handle(AIS_Shape) aisCurve = new AIS_Shape(edge);
     m_context->Display(aisCurve, Standard_True);
 }
@@ -328,11 +329,11 @@ void HomePageActionFun::TestBuildBaseMode()
 
 void HomePageActionFun::ApplyTransformToSelected( ShapeEditDialog::TransformType type, QVector3D vec, double value, int mirrorPlane)
 {
-    // »ñÈ¡µ±Ç°Ñ¡ÖĞĞÎÌå
+    // è·å–å½“å‰é€‰ä¸­å½¢ä½“
     Handle(AIS_Shape) selectedShape = GetFirstSelectedShape(); 
     if (selectedShape.IsNull())
     {
-        QMessageBox::warning(m_parent, "ÌáÊ¾", "Î´Ñ¡ÖĞĞÎÌå£¡");
+        QMessageBox::warning(m_parent, "æç¤º", "æœªé€‰ä¸­å½¢ä½“ï¼");
         return;
     }
     TopoDS_Shape shape = selectedShape->Shape();
@@ -363,11 +364,11 @@ void HomePageActionFun::ApplyTransformToSelected( ShapeEditDialog::TransformType
     else if (type == ShapeEditDialog::Mirror)
     {
         gp_Ax2 plane;
-        if (mirrorPlane == 0) // YZÃæ
+        if (mirrorPlane == 0) // YZé¢
             trsf.SetMirror(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(1, 0, 0)));
-        else if (mirrorPlane == 1) // XZÃæ
+        else if (mirrorPlane == 1) // XZé¢
             trsf.SetMirror(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 1, 0)));
-        else // XYÃæ
+        else // XYé¢
             trsf.SetMirror(gp_Ax2(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1)));
     }
     //m_context->Remove(selectedShape, Standard_True);
@@ -393,19 +394,19 @@ void HomePageActionFun::SetStandardView(const Handle(V3d_View)& view, EnumCoreVi
     gp_Dir dir, up;
     switch (v)
     {
-    case EnumCoreViewControlType::Front:   // ÕıÊÓ XY£¬Z+
+    case EnumCoreViewControlType::Front:   // æ­£è§† XYï¼ŒZ+
         dir = gp_Dir(0, 0, 1);   up = gp_Dir(0, 1, 0); break;
-    case EnumCoreViewControlType::Back:    // ±³ÊÓ XY£¬Z-
+    case EnumCoreViewControlType::Back:    // èƒŒè§† XYï¼ŒZ-
         dir = gp_Dir(0, 0, -1);  up = gp_Dir(0, 1, 0); break;
-    case EnumCoreViewControlType::Left:    // ×óÊÓ YZ£¬X-
+    case EnumCoreViewControlType::Left:    // å·¦è§† YZï¼ŒX-
         dir = gp_Dir(-1, 0, 0);  up = gp_Dir(0, 0, 1); break;
-    case EnumCoreViewControlType::Right:   // ÓÒÊÓ YZ£¬X+
+    case EnumCoreViewControlType::Right:   // å³è§† YZï¼ŒX+
         dir = gp_Dir(1, 0, 0);   up = gp_Dir(0, 0, 1); break;
-    case EnumCoreViewControlType::Top:     // ¸©ÊÓ ZX£¬Y-
+    case EnumCoreViewControlType::Top:     // ä¿¯è§† ZXï¼ŒY-
         dir = gp_Dir(0, -1, 0);  up = gp_Dir(0, 0, 1); break;
-    case EnumCoreViewControlType::Bottom:  // ÑöÊÓ ZX£¬Y+
+    case EnumCoreViewControlType::Bottom:  // ä»°è§† ZXï¼ŒY+
         dir = gp_Dir(0, 1, 0);   up = gp_Dir(0, 0, 1); break;
-    case EnumCoreViewControlType::Iso:     // µÈÖá²â£¨ÊÓĞèÒªĞŞ¸Ä£©
+    case EnumCoreViewControlType::Iso:     // ç­‰è½´æµ‹ï¼ˆè§†éœ€è¦ä¿®æ”¹ï¼‰
         dir = gp_Dir(1, 1, 1);   up = gp_Dir(0, 0, 1); break;
     }
 
@@ -430,10 +431,10 @@ void HomePageActionFun::ImportIfc(const QString filePath)
     ReaderSTEP reader;
     try {
         reader.loadModelFromFile(ifc_file, model);
-        qDebug() << "IFCÎÄ¼şµ¼Èë³É¹¦";
+        qDebug() << "IFCæ–‡ä»¶å¯¼å…¥æˆåŠŸ";
     }
     catch (const std::exception& e) {
-        qDebug() << "µ¼ÈëÊ§°Ü: " << e.what();
+        qDebug() << "å¯¼å…¥å¤±è´¥: " << e.what();
         return;
     }
 
@@ -443,7 +444,7 @@ void HomePageActionFun::ImportIfc(const QString filePath)
     for (auto& kv : geometry_converter->getShapeInputData()) {
         auto& shapeData = kv.second;
         if (!shapeData) continue;
-        // µİ¹é±éÀúÃ¿¸ö geometric_item µÄËùÓĞ child_items ºÍ meshsets
+        // é€’å½’éå†æ¯ä¸ª geometric_item çš„æ‰€æœ‰ child_items å’Œ meshsets
         for (const auto& item : shapeData->m_geometric_items) {
             IfcImportUtils::DisplayAllMeshes(item, m_context);
         }
@@ -510,59 +511,59 @@ void HomePageActionFun::HelloOCAF()
     try 
     {
         /*
-            OCAF Àà±È¾ÍÊÇÒ»¸öÖ»ÓĞÊı¾İ½á¹¹µÄ"Excel ±í¸ñ" »ò¡±ÎÄ¼şÏµÍ³"
-              TDF_Label £¨±êÇ©£©£º ºÃ±ÈÎÄ¼ş¼Ğ »ò Excelµ¥Ôª¸ñÎ»ÖÃ£¨Èç£ºA1 B2£©ËüÖ»ÓĞµØÖ·£¬Ã»ÓĞÊı¾İ¡£
-              TDF_Attribute £¨ÊôĞÔ£©£ººÃ±ÈÎÄ¼ş¼ĞÀïÃæµÄÎÄ¼ş »ò µ¥Ôª¸ñÀïÃæµÄÄÚÈİ£¨Êı×Ö¡¢ÎÄ×Ö¡¢ĞÎ×´£© Êı¾İ±ØĞë¹ÒÔØÔÚLabelÉÏ
-              TDocStd_Document£¨ÎÄµµ£©£ººÃ±ÈÕû¸öExcelÎÄ¼ş£¬¹ÜÀíËùÓĞµÄLabelºÍAttribute
+            OCAF ç±»æ¯”å°±æ˜¯ä¸€ä¸ªåªæœ‰æ•°æ®ç»“æ„çš„"Excel è¡¨æ ¼" æˆ–â€æ–‡ä»¶ç³»ç»Ÿ"
+              TDF_Label ï¼ˆæ ‡ç­¾ï¼‰ï¼š å¥½æ¯”æ–‡ä»¶å¤¹ æˆ– Excelå•å…ƒæ ¼ä½ç½®ï¼ˆå¦‚ï¼šA1 B2ï¼‰å®ƒåªæœ‰åœ°å€ï¼Œæ²¡æœ‰æ•°æ®ã€‚
+              TDF_Attribute ï¼ˆå±æ€§ï¼‰ï¼šå¥½æ¯”æ–‡ä»¶å¤¹é‡Œé¢çš„æ–‡ä»¶ æˆ– å•å…ƒæ ¼é‡Œé¢çš„å†…å®¹ï¼ˆæ•°å­—ã€æ–‡å­—ã€å½¢çŠ¶ï¼‰ æ•°æ®å¿…é¡»æŒ‚è½½åœ¨Labelä¸Š
+              TDocStd_Documentï¼ˆæ–‡æ¡£ï¼‰ï¼šå¥½æ¯”æ•´ä¸ªExcelæ–‡ä»¶ï¼Œç®¡ç†æ‰€æœ‰çš„Labelå’ŒAttribute
         */
 
-        // ´´½¨3¸ö±ä"Á¿ ³¤ ¿í  ¸ß. ¶ÁÈ¡ÕâĞ©±äÁ¿£¬¹¹½¨Ò»¸ö3DÁ¢·½Ìå¡£ ½«¹¹½¨ºÃµÄÁ¢·½ÌåĞÎ×´´æ»ØOCAF£¬±£´æÎª.cbfÎÄ¼ş
-        std::cout << " ³õÊ¼»¯ Application ºÍ Document...." << std::endl;
-        //´´½¨Ó¦ÓÃÈİÆ÷
+        // åˆ›å»º3ä¸ªå˜"é‡ é•¿ å®½  é«˜. è¯»å–è¿™äº›å˜é‡ï¼Œæ„å»ºä¸€ä¸ª3Dç«‹æ–¹ä½“ã€‚ å°†æ„å»ºå¥½çš„ç«‹æ–¹ä½“å½¢çŠ¶å­˜å›OCAFï¼Œä¿å­˜ä¸º.cbfæ–‡ä»¶
+        std::cout << " åˆå§‹åŒ– Application å’Œ Document...." << std::endl;
+        //åˆ›å»ºåº”ç”¨å®¹å™¨
         Handle(TDocStd_Application) app = new TDocStd_Application;
-        //¼ÓÔØ¶ş½øÖÆÎÄ¼şÇı¶¯£¨·ñÔòÎŞ·¨±£´æÎÄ¼ş£©
+        //åŠ è½½äºŒè¿›åˆ¶æ–‡ä»¶é©±åŠ¨ï¼ˆå¦åˆ™æ— æ³•ä¿å­˜æ–‡ä»¶ï¼‰
         BinDrivers::DefineFormat(app);
 
-        //ĞÂ½¨Ò»¸öÎÄµµ£¬¸ñÊ½ÎªBinOcaf (¶ş½øÖÆOCAF)
+        //æ–°å»ºä¸€ä¸ªæ–‡æ¡£ï¼Œæ ¼å¼ä¸ºBinOcaf (äºŒè¿›åˆ¶OCAF)
         Handle(TDocStd_Document) doc;
         app->NewDocument("BinOcaf", doc);
 
-        //¼ìÑéÎÄµµÊÇ·ñ´´½¨³É¹¦
+        //æ£€éªŒæ–‡æ¡£æ˜¯å¦åˆ›å»ºæˆåŠŸ
         if (doc.IsNull())
         {
-            std::cerr << "Error: ÎŞ·¨´´½¨ÎÄµµ" << std::endl;
+            std::cerr << "Error: æ— æ³•åˆ›å»ºæ–‡æ¡£" << std::endl;
             return;
         }
-        //¿ªÆôÒ»¸öÊÂÎñ Transaction   OCAFµÄĞŞ¸ÄÔÙCommandÖĞ½øĞĞ£¬·½±ãUndo/Redo
+        //å¼€å¯ä¸€ä¸ªäº‹åŠ¡ Transaction   OCAFçš„ä¿®æ”¹å†Commandä¸­è¿›è¡Œï¼Œæ–¹ä¾¿Undo/Redo
         doc->NewCommand();
 
-        //½¨Á¢Êı¾İ½á¹¹
-        std::cout << "ÉèÖÃ²ÎÊı£¨³¤=100£¬¿í=50£¬¸ß=30£© ..." << std::endl;
+        //å»ºç«‹æ•°æ®ç»“æ„
+        std::cout << "è®¾ç½®å‚æ•°ï¼ˆé•¿=100ï¼Œå®½=50ï¼Œé«˜=30ï¼‰ ..." << std::endl;
 
-        //»ñÈ¡¸ù±êÇ©(Root Label £¬Ò²¾ÍÊÇ0£©
+        //è·å–æ ¹æ ‡ç­¾(Root Label ï¼Œä¹Ÿå°±æ˜¯0ï¼‰
         TDF_Label rootLabel = doc->Main();
-        //´´½¨×Ó±êÇ©ÓÃÓÚ´æ·ÅÊı¾İ
-        // 0:1 ÓÃÓÚ´æ·Å³¤
-        // 0:2 ÓÃÓÚ´æ·Å¿í
-        // 0:3 ÓÃÓÚ´æ·Å¸ß
-        // 0:4 ÓÃÓÚ´æ·Å½á¹ûĞÎ×´
+        //åˆ›å»ºå­æ ‡ç­¾ç”¨äºå­˜æ”¾æ•°æ®
+        // 0:1 ç”¨äºå­˜æ”¾é•¿
+        // 0:2 ç”¨äºå­˜æ”¾å®½
+        // 0:3 ç”¨äºå­˜æ”¾é«˜
+        // 0:4 ç”¨äºå­˜æ”¾ç»“æœå½¢çŠ¶
         TDF_Label labelLength = rootLabel.FindChild(1);
         TDF_Label labelWidth = rootLabel.FindChild(2);
         TDF_Label labelHeight = rootLabel.FindChild(3);
         TDF_Label labelShape = rootLabel.FindChild(4);
 
-        //Éè¶¨¾ßÌåÊıÖµ £¨Ê¹ÓÃTDataStd_Real ÊôĞÔ£© £¬ÕâÀïSet·½·¨»á×Ô¶¯¼ì²é£¬Èç¹û¸ÃLabelÒÑ¾­ÓĞÕâ¸öÊôĞÔ¾ÍĞŞ¸ÄÖµ£¬Ã»ÓĞ¾Í´´½¨
+        //è®¾å®šå…·ä½“æ•°å€¼ ï¼ˆä½¿ç”¨TDataStd_Real å±æ€§ï¼‰ ï¼Œè¿™é‡ŒSetæ–¹æ³•ä¼šè‡ªåŠ¨æ£€æŸ¥ï¼Œå¦‚æœè¯¥Labelå·²ç»æœ‰è¿™ä¸ªå±æ€§å°±ä¿®æ”¹å€¼ï¼Œæ²¡æœ‰å°±åˆ›å»º
         TDataStd_Real::Set(labelLength, 100);
         TDataStd_Real::Set(labelWidth, 50);
         TDataStd_Real::Set(labelHeight, 30);
 
-        //¸ø±êÇ©È¡Ãû×Ö(Ê¹ÓÃTDataStd_NameÊôĞÔ£©£¬·½±ãÔÚ²é¿´Æ÷²é¿´
+        //ç»™æ ‡ç­¾å–åå­—(ä½¿ç”¨TDataStd_Nameå±æ€§ï¼‰ï¼Œæ–¹ä¾¿åœ¨æŸ¥çœ‹å™¨æŸ¥çœ‹
         TDataStd_Name::Set(labelHeight, "Length");
         TDataStd_Name::Set(labelWidth, "Width");
         TDataStd_Name::Set(labelHeight, "Height");
         TDataStd_Name::Set(labelShape, "MyShape");
 
-        //´ÓOCAF¶ÁÈ¡Êı¾İ£¬Ê¹ÓÃFind»ñÈ¡ÊôĞÔÖ¸Õë£¬È»ºóGet »ñÈ¡Öµ
+        //ä»OCAFè¯»å–æ•°æ®ï¼Œä½¿ç”¨Findè·å–å±æ€§æŒ‡é’ˆï¼Œç„¶åGet è·å–å€¼
         Handle(TDataStd_Real) attrL, attrW, attrH;
 
         labelLength.FindAttribute(TDataStd_Real::GetID(), attrL);
@@ -573,21 +574,21 @@ void HomePageActionFun::HelloOCAF()
         double width = attrW->Get();
         double height = attrH->Get();
 
-        std::cout << "µ±Ç°²ÎÊı:" << length << " " << width << " " << height << std::endl;
-        //½¨Ä£
+        std::cout << "å½“å‰å‚æ•°:" << length << " " << width << " " << height << std::endl;
+        //å»ºæ¨¡
         TopoDS_Shape boxShape = BRepPrimAPI_MakeBox(length, width, height).Shape();
 
-        //½«ShapeÊı¾İ´æ»ØOCAF
-        //TNaming_Builder ½«TopoDS_Shape×ª»»ÎªTNaming_NamedShapeÊôĞÔµÄ¹¤¾ß
+        //å°†Shapeæ•°æ®å­˜å›OCAF
+        //TNaming_Builder å°†TopoDS_Shapeè½¬æ¢ä¸ºTNaming_NamedShapeå±æ€§çš„å·¥å…·
         TNaming_Builder builder(labelShape);
-        builder.Generated(boxShape);   //½«ĞÎ×´¹ÒÔØµ½labelShape(0:4)ÉÏ
+        builder.Generated(boxShape);   //å°†å½¢çŠ¶æŒ‚è½½åˆ°labelShape(0:4)ä¸Š
 
-        std::cout << " box ÒÑ¾­¹¹½¨²¢´æ´¢µ½Label 0:4ÉÏ" << std::endl;
+        std::cout << " box å·²ç»æ„å»ºå¹¶å­˜å‚¨åˆ°Label 0:4ä¸Š" << std::endl;
 
-        //Ìá½»ÊÂÎñ
+        //æäº¤äº‹åŠ¡
         doc->CommitCommand();
 
-        //±£´æµ½´ÅÅÌ
+        //ä¿å­˜åˆ°ç£ç›˜
         PCDM_StoreStatus status = app->SaveAs(doc, "TestBox.cbf");
 
         app->Close(doc);
@@ -602,7 +603,7 @@ void HomePageActionFun::HelloOCAF()
 }
 
 
-// -----×ø±êÏµ×ª»»----//
+// -----åæ ‡ç³»è½¬æ¢----//
 void HomePageActionFun::TestMatrixTranslate()
 {
     Matrix44OperationDialog* dlg = new Matrix44OperationDialog(m_context, m_v3dViewer, m_v3dView, m_parent, m_outputFunc);
@@ -614,88 +615,88 @@ void HomePageActionFun::TestMatrixTranslate()
 // -----Test BRepBuilderAPI_Sewing----//
 void HomePageActionFun::TestSimpleSewing()
 {
-    m_outputFunc(QString::fromLocal8Bit("=== ¿ªÊ¼·ìºÏ¶Ô±ÈÊµÑé (×ó²àÊ§°Ü vs ÓÒ²à³É¹¦) ==="));
+    m_outputFunc(QString::fromLocal8Bit("=== å¼€å§‹ç¼åˆå¯¹æ¯”å®éªŒ (å·¦ä¾§å¤±è´¥ vs å³ä¾§æˆåŠŸ) ==="));
 
-    // 1. ×¼±¸²ÎÊı
-    double size = 50.0;     // Á¢·½Ìå°ë³¤
-    double gapSize = 5.0;   // ¡¾¹ÊÒâÉèÖÃ´óÒ»µã¡¿5.0mm ¼äÏ¶£¬ÈÃÊÓ¾õĞ§¹û¸üÃ÷ÏÔ£¡
+    // 1. å‡†å¤‡å‚æ•°
+    double size = 50.0;     // ç«‹æ–¹ä½“åŠé•¿
+    double gapSize = 5.0;   // ã€æ•…æ„è®¾ç½®å¤§ä¸€ç‚¹ã€‘5.0mm é—´éš™ï¼Œè®©è§†è§‰æ•ˆæœæ›´æ˜æ˜¾ï¼
 
-    // 2. ´´½¨¼¸ºÎÌå (¶¥ÃæĞü¿Õ)
+    // 2. åˆ›å»ºå‡ ä½•ä½“ (é¡¶é¢æ‚¬ç©º)
     std::vector<TopoDS_Face> faces;
-    // µ×ÃæºÍËÄÖÜ (Õı³£)
+    // åº•é¢å’Œå››å‘¨ (æ­£å¸¸)
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, 0, -size), gp_Dir(0, 0, 1)), -size, size, -size, size)); // Bottom
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, size, 0), gp_Dir(0, 1, 0)), -size, size, -size, size));  // Front
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, -size, 0), gp_Dir(0, 1, 0)), -size, size, -size, size)); // Back
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(size, 0, 0), gp_Dir(1, 0, 0)), -size, size, -size, size));   // Right
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(-size, 0, 0), gp_Dir(1, 0, 0)), -size, size, -size, size));   // Left
 
-    // ¶¥Ãæ (Ğü¿Õ gapSize = 5.0mm)
+    // é¡¶é¢ (æ‚¬ç©º gapSize = 5.0mm)
     faces.push_back(BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(0, 0, size + gapSize), gp_Dir(0, 0, 1)), -size, size, -size, size));
 
-    // ¹¹½¨Ô­Ê¼ Compound
+    // æ„å»ºåŸå§‹ Compound
     TopoDS_Compound rawShape;
     BRep_Builder builder;
     builder.MakeCompound(rawShape);
     for (const auto& f : faces) builder.Add(rawShape, f);
 
-    m_outputFunc(QString::fromLocal8Bit("Ô­Ê¼Ä£ĞÍ£º¶¥Ãæ¼äÏ¶ %1 mm").arg(gapSize));
+    m_outputFunc(QString::fromLocal8Bit("åŸå§‹æ¨¡å‹ï¼šé¡¶é¢é—´éš™ %1 mm").arg(gapSize));
 
-    // ³¡¾° A£º·ìºÏÊ§°Ü (Èİ²îÌ«Ğ¡) -> ·ÅÔÚÔ­µã
+    // åœºæ™¯ Aï¼šç¼åˆå¤±è´¥ (å®¹å·®å¤ªå°) -> æ”¾åœ¨åŸç‚¹
     double smallTol = 0.1;
-    m_outputFunc(QString::fromLocal8Bit("--- Éú³É×ó²àÄ£ĞÍ (Ê§°Ü)... Èİ²î %1 (Ğ¡ÓÚ¼äÏ¶)").arg(smallTol));
+    m_outputFunc(QString::fromLocal8Bit("--- ç”Ÿæˆå·¦ä¾§æ¨¡å‹ (å¤±è´¥)... å®¹å·® %1 (å°äºé—´éš™)").arg(smallTol));
     TopoDS_Shape shapeFail = SewMeshFaces(rawShape, smallTol);
 
-    // ·ÖÎö½á¹û A
-    InspectModel("×ó²à-Ê§°ÜÄ£ĞÍ", shapeFail);
+    // åˆ†æç»“æœ A
+    InspectModel("å·¦ä¾§-å¤±è´¥æ¨¡å‹", shapeFail);
 
-    // ³¡¾° B£º·ìºÏ³É¹¦ (Èİ²î¹»´ó) -> ÏòÓÒÆ½ÒÆ 200mm
-    double bigTol = gapSize + 1.0; // Èİ²îÉèÎª 6.0mm£¬´óÓÚ 5.0mm
-    m_outputFunc(QString::fromLocal8Bit("--- Éú³ÉÓÒ²àÄ£ĞÍ (³É¹¦)... Èİ²î %1 (´óÓÚ¼äÏ¶)").arg(bigTol));
+    // åœºæ™¯ Bï¼šç¼åˆæˆåŠŸ (å®¹å·®å¤Ÿå¤§) -> å‘å³å¹³ç§» 200mm
+    double bigTol = gapSize + 1.0; // å®¹å·®è®¾ä¸º 6.0mmï¼Œå¤§äº 5.0mm
+    m_outputFunc(QString::fromLocal8Bit("--- ç”Ÿæˆå³ä¾§æ¨¡å‹ (æˆåŠŸ)... å®¹å·® %1 (å¤§äºé—´éš™)").arg(bigTol));
     TopoDS_Shape shapeSuccess = SewMeshFaces(rawShape, bigTol);
 
-    // ¡¾¹Ø¼ü²½Öè¡¿½«³É¹¦Ä£ĞÍÏòÓÒÆ½ÒÆ 200mm£¬·ÀÖ¹ÖØµş
+    // ã€å…³é”®æ­¥éª¤ã€‘å°†æˆåŠŸæ¨¡å‹å‘å³å¹³ç§» 200mmï¼Œé˜²æ­¢é‡å 
     gp_Trsf trsf;
-    trsf.SetTranslation(gp_Vec(200, 0, 0)); // Ïò X ÖáÕı·½ÏòÒÆ¶¯ 200
+    trsf.SetTranslation(gp_Vec(200, 0, 0)); // å‘ X è½´æ­£æ–¹å‘ç§»åŠ¨ 200
     TopoDS_Shape shapeSuccessMoved = BRepBuilderAPI_Transform(shapeSuccess, trsf).Shape();
 
-    // ·ÖÎö½á¹û B (×¢Òâ£ºÆ½ÒÆ²»¸Ä±äÍØÆË±ÕºÏĞÔ£¬·ÖÎö shapeSuccess ¼´¿É)
-    InspectModel("ÓÒ²à-³É¹¦Ä£ĞÍ", shapeSuccess);
+    // åˆ†æç»“æœ B (æ³¨æ„ï¼šå¹³ç§»ä¸æ”¹å˜æ‹“æ‰‘é—­åˆæ€§ï¼Œåˆ†æ shapeSuccess å³å¯)
+    InspectModel("å³ä¾§-æˆåŠŸæ¨¡å‹", shapeSuccess);
 
-    // ÈıÎ¬ÏÔÊ¾ (Visualize)
-    m_context->RemoveAll(Standard_True); // Çå¿ÕÆÁÄ»
+    // ä¸‰ç»´æ˜¾ç¤º (Visualize)
+    m_context->RemoveAll(Standard_True); // æ¸…ç©ºå±å¹•
 
-    // --- ÏÔÊ¾ A (Ê§°Ü£¬ºìÉ«) ---
+    // --- æ˜¾ç¤º A (å¤±è´¥ï¼Œçº¢è‰²) ---
     if (!shapeFail.IsNull()) {
         Handle(AIS_Shape) aisFail = new AIS_Shape(shapeFail);
-        aisFail->SetColor(Quantity_NOC_RED);      // ºìÉ«´ú±í¾¯¸æ/Ê§°Ü
-        aisFail->SetTransparency(0.4);            // Í¸Ã÷Ò»µã£¬·½±ã¿´ÀïÃæµÄ·ìÏ¶
-        m_context->Display(aisFail, Standard_False); // False±íÊ¾ÏÈ²»Ë¢ĞÂ
+        aisFail->SetColor(Quantity_NOC_RED);      // çº¢è‰²ä»£è¡¨è­¦å‘Š/å¤±è´¥
+        aisFail->SetTransparency(0.4);            // é€æ˜ä¸€ç‚¹ï¼Œæ–¹ä¾¿çœ‹é‡Œé¢çš„ç¼éš™
+        m_context->Display(aisFail, Standard_False); // Falseè¡¨ç¤ºå…ˆä¸åˆ·æ–°
 
-        // ¸ßÁÁÏÔÊ¾Â©¶´±ß½ç (ÓÃ»ÆÉ«´ÖÏß)
+        // é«˜äº®æ˜¾ç¤ºæ¼æ´è¾¹ç•Œ (ç”¨é»„è‰²ç²—çº¿)
         ShapeAnalysis_FreeBounds safb(shapeFail, 1.0e-6);
         const TopoDS_Compound& openWires = safb.GetOpenWires();
         if (!openWires.IsNull()) {
             Handle(AIS_Shape) aisOpenEdges = new AIS_Shape(openWires);
-            aisOpenEdges->SetColor(Quantity_NOC_YELLOW); // »ÆÉ«¸ßÁÁÂ©¶´
-            aisOpenEdges->SetWidth(3.0);                 // Ïß¿í¼Ó´Ö
+            aisOpenEdges->SetColor(Quantity_NOC_YELLOW); // é»„è‰²é«˜äº®æ¼æ´
+            aisOpenEdges->SetWidth(3.0);                 // çº¿å®½åŠ ç²—
             m_context->Display(aisOpenEdges, Standard_False);
         }
     }
 
-    // --- ÏÔÊ¾ B (³É¹¦£¬½ğÉ«) ---
+    // --- æ˜¾ç¤º B (æˆåŠŸï¼Œé‡‘è‰²) ---
     if (!shapeSuccessMoved.IsNull()) {
         Handle(AIS_Shape) aisSuccess = new AIS_Shape(shapeSuccessMoved);
-        aisSuccess->SetColor(Quantity_NOC_GOLD);  // ½ğÉ«´ú±íÍêÃÀĞŞ¸´
-        aisSuccess->SetDisplayMode(AIS_Shaded);   // ÊµÌåÏÔÊ¾ (Ö»ÓĞ±ÕºÏÄ£ĞÍ²ÅÄÜÍêÃÀShaded)
-        m_context->Display(aisSuccess, Standard_True); // True±íÊ¾Á¢¼´Ë¢ĞÂ
+        aisSuccess->SetColor(Quantity_NOC_GOLD);  // é‡‘è‰²ä»£è¡¨å®Œç¾ä¿®å¤
+        aisSuccess->SetDisplayMode(AIS_Shaded);   // å®ä½“æ˜¾ç¤º (åªæœ‰é—­åˆæ¨¡å‹æ‰èƒ½å®Œç¾Shaded)
+        m_context->Display(aisSuccess, Standard_True); // Trueè¡¨ç¤ºç«‹å³åˆ·æ–°
     }
 
     m_v3dView->FitAll();
 
-    m_outputFunc(QString::fromLocal8Bit("\n¶Ô±ÈÍê³É£º\n  <×ó±ß(ºìÉ«)>£º·ìºÏÊ§°Ü£¬ÒÀÈ»ÓĞÂ©¶´¡£\n  <ÓÒ±ß(½ğÉ«)>£º·ìºÏ³É¹¦£¬¶¥Ãæ±»À­Éì±ÕºÏ¡£"));
+    m_outputFunc(QString::fromLocal8Bit("\nå¯¹æ¯”å®Œæˆï¼š\n  <å·¦è¾¹(çº¢è‰²)>ï¼šç¼åˆå¤±è´¥ï¼Œä¾ç„¶æœ‰æ¼æ´ã€‚\n  <å³è¾¹(é‡‘è‰²)>ï¼šç¼åˆæˆåŠŸï¼Œé¡¶é¢è¢«æ‹‰ä¼¸é—­åˆã€‚"));
 }
 
-// ---------·ìºÏ Sewing-----------------//
+// ---------ç¼åˆ Sewing-----------------//
 TopoDS_Shape HomePageActionFun::SewMeshFaces(const TopoDS_Shape& rawFaces, double tolerance)
 {
     if (rawFaces.IsNull()) return TopoDS_Shape();
@@ -704,7 +705,7 @@ TopoDS_Shape HomePageActionFun::SewMeshFaces(const TopoDS_Shape& rawFaces, doubl
     {
         BRepBuilderAPI_Sewing sewingTool;
         sewingTool.Init(tolerance);
-        sewingTool.SetNonManifoldMode(Standard_False);  // ½ûÓÃ·ÇÁ÷ĞÎ
+        sewingTool.SetNonManifoldMode(Standard_False);  // ç¦ç”¨éæµå½¢
         sewingTool.Add(rawFaces);
         sewingTool.Perform();
 
@@ -726,10 +727,10 @@ void HomePageActionFun::InspectModel(const std::string& name, const TopoDS_Shape
 {
     m_outputFunc("========================================");
 
-    // Ê¹ÓÃ QString::arg ×éºÏ×Ö·û´®
-    m_outputFunc(QString::fromLocal8Bit("¼ì²éÄ£ĞÍ×´Ì¬: [%1]"));
+    // ä½¿ç”¨ QString::arg ç»„åˆå­—ç¬¦ä¸²
+    m_outputFunc(QString::fromLocal8Bit("æ£€æŸ¥æ¨¡å‹çŠ¶æ€: [%1]"));
 
-    // Í³¼ÆÎïÀí±ßµÄÊıÁ¿
+    // ç»Ÿè®¡ç‰©ç†è¾¹çš„æ•°é‡
     TopTools_IndexedMapOfShape edgeMap;
     TopExp_Explorer exp(shape, TopAbs_EDGE);
     while (exp.More()) {
@@ -738,14 +739,14 @@ void HomePageActionFun::InspectModel(const std::string& name, const TopoDS_Shape
     }
     int totalEdges = edgeMap.Extent();
 
-    // Êä³ö×Ü±ßÊı
-    m_outputFunc(QString::fromLocal8Bit("  -> ×Ü±ßÊı (Total Edges): %1").arg(totalEdges));
+    // è¾“å‡ºæ€»è¾¹æ•°
+    m_outputFunc(QString::fromLocal8Bit("  -> æ€»è¾¹æ•° (Total Edges): %1").arg(totalEdges));
 
-    // Ê¹ÓÃ ShapeAnalysis_FreeBounds ÀàÖ±½Ó·ÖÎö Shape
+    // ä½¿ç”¨ ShapeAnalysis_FreeBounds ç±»ç›´æ¥åˆ†æ Shape
     ShapeAnalysis_FreeBounds safb(shape, 1.0e-6);
     const TopoDS_Compound& openWires = safb.GetOpenWires();
 
-    // Í³¼ÆÂ©¶´±ßµÄÊıÁ¿
+    // ç»Ÿè®¡æ¼æ´è¾¹çš„æ•°é‡
     int freeEdgeCount = 0;
     TopExp_Explorer expFree(openWires, TopAbs_EDGE);
     while (expFree.More())
@@ -756,93 +757,93 @@ void HomePageActionFun::InspectModel(const std::string& name, const TopoDS_Shape
 
     if (freeEdgeCount > 0)
     {
-        m_outputFunc(QString::fromLocal8Bit("  -> ×´Ì¬: [¿ª·Å/ÓĞÂ©¶´] (OPEN SHELL)"));
-        m_outputFunc(QString::fromLocal8Bit("  -> ·¢ÏÖÂ©¶´±ß½ç±ßÊı: %1").arg(freeEdgeCount));
+        m_outputFunc(QString::fromLocal8Bit("  -> çŠ¶æ€: [å¼€æ”¾/æœ‰æ¼æ´] (OPEN SHELL)"));
+        m_outputFunc(QString::fromLocal8Bit("  -> å‘ç°æ¼æ´è¾¹ç•Œè¾¹æ•°: %1").arg(freeEdgeCount));
     }
     else
     {
-        m_outputFunc(QString::fromLocal8Bit("  -> ×´Ì¬: [·â±Õ/Ë®ÃÜ] (WATERTIGHT)"));
-        m_outputFunc(QString::fromLocal8Bit("  -> ÕâÊÇÒ»¸öÍêÃÀµÄÊµÌåÍâ¿Ç£¬¿ÉÒÔ½øĞĞ²¼¶ûÔËËã¡£"));
+        m_outputFunc(QString::fromLocal8Bit("  -> çŠ¶æ€: [å°é—­/æ°´å¯†] (WATERTIGHT)"));
+        m_outputFunc(QString::fromLocal8Bit("  -> è¿™æ˜¯ä¸€ä¸ªå®Œç¾çš„å®ä½“å¤–å£³ï¼Œå¯ä»¥è¿›è¡Œå¸ƒå°”è¿ç®—ã€‚"));
     }
     m_outputFunc("========================================");
 }
 
 
-// ---------¼ò»¯ ShapeUpgrade_UnifySameDomain-----------------//
+// ---------ç®€åŒ– ShapeUpgrade_UnifySameDomain-----------------//
 void HomePageActionFun::TestSimpleShapeUpgrade()
 {
-    m_outputFunc(QString::fromLocal8Bit("=== ¿ªÊ¼ UnifySameDomain ¶Ô±ÈÊµÑé (×ó²à·ìºÏ vs ÓÒ²à·ìºÏ+¼ò»¯) ==="));
+    m_outputFunc(QString::fromLocal8Bit("=== å¼€å§‹ UnifySameDomain å¯¹æ¯”å®éªŒ (å·¦ä¾§ç¼åˆ vs å³ä¾§ç¼åˆ+ç®€åŒ–) ==="));
 
-    // 1. ´´½¨Á½¸öÏàÁÚÇÒÍêÈ«¹²ÃæµÄÕı·½ĞÎÃæÆ¬
-    // Ãæ 1£ºX ´Ó 0 µ½ 50£¬Y ´Ó 0 µ½ 50
+    // 1. åˆ›å»ºä¸¤ä¸ªç›¸é‚»ä¸”å®Œå…¨å…±é¢çš„æ­£æ–¹å½¢é¢ç‰‡
+    // é¢ 1ï¼šX ä» 0 åˆ° 50ï¼ŒY ä» 0 åˆ° 50
     TopoDS_Face face1 = BRepBuilderAPI_MakeFace(gp_Pln(gp::XOY()), 0, 50, 0, 50);
-    // Ãæ 2£ºX ´Ó 50 µ½ 100£¬Y ´Ó 0 µ½ 50 (ÓëÃæ1ÔÚ X=50 ´¦ÏàÁÚ)
+    // é¢ 2ï¼šX ä» 50 åˆ° 100ï¼ŒY ä» 0 åˆ° 50 (ä¸é¢1åœ¨ X=50 å¤„ç›¸é‚»)
     TopoDS_Face face2 = BRepBuilderAPI_MakeFace(gp_Pln(gp::XOY()), 50, 100, 0, 50);
 
-    // ½«ËüÃÇ·ÅÈëÒ»¸ö Compound ÖĞ
+    // å°†å®ƒä»¬æ”¾å…¥ä¸€ä¸ª Compound ä¸­
     TopoDS_Compound rawCompound;
     BRep_Builder builder;
     builder.MakeCompound(rawCompound);
     builder.Add(rawCompound, face1);
     builder.Add(rawCompound, face2);
 
-    // 2. µÚÒ»²½£º±ØĞëÏÈ·ìºÏ (Sewing)
-    // ÒòÎª¶ÀÁ¢µÄÁ½¸öÃæ£¬ÄÄÅÂ½ô°¤×Å£¬ÔÚÍØÆËÉÏÒ²ÊÇ¶Ï¿ªµÄ¡£Unify ĞèÒª´¦ÀíµÄÊÇÁ¬Í¨µÄÍØÆË¡£
+    // 2. ç¬¬ä¸€æ­¥ï¼šå¿…é¡»å…ˆç¼åˆ (Sewing)
+    // å› ä¸ºç‹¬ç«‹çš„ä¸¤ä¸ªé¢ï¼Œå“ªæ€•ç´§æŒ¨ç€ï¼Œåœ¨æ‹“æ‰‘ä¸Šä¹Ÿæ˜¯æ–­å¼€çš„ã€‚Unify éœ€è¦å¤„ç†çš„æ˜¯è¿é€šçš„æ‹“æ‰‘ã€‚
     BRepBuilderAPI_Sewing sewer(1e-3);
     sewer.Add(rawCompound);
     sewer.Perform();
     TopoDS_Shape sewedShape = sewer.SewedShape();
 
-    // Í³¼Æ×ó²à·ìºÏºóÄ£ĞÍµÄÃæÊıºÍ±ßÊı
+    // ç»Ÿè®¡å·¦ä¾§ç¼åˆåæ¨¡å‹çš„é¢æ•°å’Œè¾¹æ•°
     TopTools_IndexedMapOfShape sewedFaces, sewedEdges;
     TopExp::MapShapes(sewedShape, TopAbs_FACE, sewedFaces);
     TopExp::MapShapes(sewedShape, TopAbs_EDGE, sewedEdges);
 
-    m_outputFunc(QString::fromLocal8Bit("--- ×ó²àÄ£ĞÍ (½öSewing·ìºÏ) ---"));
-    m_outputFunc(QString::fromLocal8Bit("  -> ÃæÊı (Faces): %1").arg(sewedFaces.Extent())); // Ô¤ÆÚ£º2 ¸öÃæ
-    m_outputFunc(QString::fromLocal8Bit("  -> ±ßÊı (Edges): %1").arg(sewedEdges.Extent())); // Ô¤ÆÚ£º7 Ìõ±ß (ÍâÎ§6Ìõ + ÖĞ¼ä1Ìõ¹²Ïí±ß)
+    m_outputFunc(QString::fromLocal8Bit("--- å·¦ä¾§æ¨¡å‹ (ä»…Sewingç¼åˆ) ---"));
+    m_outputFunc(QString::fromLocal8Bit("  -> é¢æ•° (Faces): %1").arg(sewedFaces.Extent())); // é¢„æœŸï¼š2 ä¸ªé¢
+    m_outputFunc(QString::fromLocal8Bit("  -> è¾¹æ•° (Edges): %1").arg(sewedEdges.Extent())); // é¢„æœŸï¼š7 æ¡è¾¹ (å¤–å›´6æ¡ + ä¸­é—´1æ¡å…±äº«è¾¹)
 
-    // 3. µÚ¶ş²½£ºÊ¹ÓÃ ShapeUpgrade_UnifySameDomain ½øĞĞ¼ò»¯
-    // ¿ªÆôºÏ²¢±ß(true)¡¢ºÏ²¢Ãæ(true)¡¢ºÏ²¢BÑùÌõ(true)
+    // 3. ç¬¬äºŒæ­¥ï¼šä½¿ç”¨ ShapeUpgrade_UnifySameDomain è¿›è¡Œç®€åŒ–
+    // å¼€å¯åˆå¹¶è¾¹(true)ã€åˆå¹¶é¢(true)ã€åˆå¹¶Bæ ·æ¡(true)
     ShapeUpgrade_UnifySameDomain unifier(sewedShape, true, true, true);
     unifier.Build();
     TopoDS_Shape unifiedShape = unifier.Shape();
 
-    // Í³¼ÆÓÒ²à¼ò»¯ºóÄ£ĞÍµÄÃæÊıºÍ±ßÊı
+    // ç»Ÿè®¡å³ä¾§ç®€åŒ–åæ¨¡å‹çš„é¢æ•°å’Œè¾¹æ•°
     TopTools_IndexedMapOfShape unifiedFaces, unifiedEdges;
     TopExp::MapShapes(unifiedShape, TopAbs_FACE, unifiedFaces);
     TopExp::MapShapes(unifiedShape, TopAbs_EDGE, unifiedEdges);
 
-    m_outputFunc(QString::fromLocal8Bit("--- ÓÒ²àÄ£ĞÍ (Sewing + Unify¼ò»¯) ---"));
-    m_outputFunc(QString::fromLocal8Bit("  -> ÃæÊı (Faces): %1").arg(unifiedFaces.Extent())); // Ô¤ÆÚ£º1 ¸öÃæ
-    m_outputFunc(QString::fromLocal8Bit("  -> ±ßÊı (Edges): %1").arg(unifiedEdges.Extent())); // Ô¤ÆÚ£º4 Ìõ±ß (Ö»ÓĞÍâÎ§4Ìõ±ß£¬ÖĞ¼äÏß±»Ä¨³ıÁË)
+    m_outputFunc(QString::fromLocal8Bit("--- å³ä¾§æ¨¡å‹ (Sewing + Unifyç®€åŒ–) ---"));
+    m_outputFunc(QString::fromLocal8Bit("  -> é¢æ•° (Faces): %1").arg(unifiedFaces.Extent())); // é¢„æœŸï¼š1 ä¸ªé¢
+    m_outputFunc(QString::fromLocal8Bit("  -> è¾¹æ•° (Edges): %1").arg(unifiedEdges.Extent())); // é¢„æœŸï¼š4 æ¡è¾¹ (åªæœ‰å¤–å›´4æ¡è¾¹ï¼Œä¸­é—´çº¿è¢«æŠ¹é™¤äº†)
 
-    // 4. ½«¼ò»¯ºóµÄÄ£ĞÍÏòÓÒÆ½ÒÆ 120mm£¬·½±ã¶Ô±È
+    // 4. å°†ç®€åŒ–åçš„æ¨¡å‹å‘å³å¹³ç§» 120mmï¼Œæ–¹ä¾¿å¯¹æ¯”
     gp_Trsf trsf;
     trsf.SetTranslation(gp_Vec(120, 0, 0));
     TopoDS_Shape unifiedShapeMoved = BRepBuilderAPI_Transform(unifiedShape, trsf).Shape();
 
-    // 5. ÈıÎ¬ÏÔÊ¾ (Visualize)
-    m_context->RemoveAll(Standard_True); // Çå¿ÕÆÁÄ»
+    // 5. ä¸‰ç»´æ˜¾ç¤º (Visualize)
+    m_context->RemoveAll(Standard_True); // æ¸…ç©ºå±å¹•
 
-    // --- ÏÔÊ¾×ó²à (½ö·ìºÏ£¬À¶É«) ---
+    // --- æ˜¾ç¤ºå·¦ä¾§ (ä»…ç¼åˆï¼Œè“è‰²) ---
     Handle(AIS_Shape) aisSewed = new AIS_Shape(sewedShape);
     aisSewed->SetColor(Quantity_NOC_BLUE4);
-    // ¿ªÆôÏß¿òÏÔÊ¾Ä£Ê½£¬ÎªÁËÇåÎúµØ¿´µ½ÖĞ¼äÄÇÌõ·ìºÏÏß
+    // å¼€å¯çº¿æ¡†æ˜¾ç¤ºæ¨¡å¼ï¼Œä¸ºäº†æ¸…æ™°åœ°çœ‹åˆ°ä¸­é—´é‚£æ¡ç¼åˆçº¿
     aisSewed->SetDisplayMode(AIS_WireFrame);
     aisSewed->SetWidth(2.0);
     m_context->Display(aisSewed, Standard_False);
 
-    // --- ÏÔÊ¾ÓÒ²à (¼ò»¯ºó£¬ÂÌÉ«) ---
+    // --- æ˜¾ç¤ºå³ä¾§ (ç®€åŒ–åï¼Œç»¿è‰²) ---
     Handle(AIS_Shape) aisUnified = new AIS_Shape(unifiedShapeMoved);
     aisUnified->SetColor(Quantity_NOC_GREEN);
-    // Í¬Ñù¿ªÆôÏß¿òÏÔÊ¾Ä£Ê½£¬ÑéÖ¤ÖĞ¼äµÄÏßÊÇ·ñÏûÊ§ÁË
+    // åŒæ ·å¼€å¯çº¿æ¡†æ˜¾ç¤ºæ¨¡å¼ï¼ŒéªŒè¯ä¸­é—´çš„çº¿æ˜¯å¦æ¶ˆå¤±äº†
     aisUnified->SetDisplayMode(AIS_WireFrame);
     aisUnified->SetWidth(2.0);
     m_context->Display(aisUnified, Standard_True);
 
     m_v3dView->FitAll();
-    m_outputFunc(QString::fromLocal8Bit("¶Ô±ÈÍê³É£º¹Û²ìÆÁÄ»£¬×ó²àÖĞ¼äÓĞÏß£¬ÓÒ²à±ä³ÉÁË¸É¾»µÄÒ»¸ö´óÃæ£¡"));
+    m_outputFunc(QString::fromLocal8Bit("å¯¹æ¯”å®Œæˆï¼šè§‚å¯Ÿå±å¹•ï¼Œå·¦ä¾§ä¸­é—´æœ‰çº¿ï¼Œå³ä¾§å˜æˆäº†å¹²å‡€çš„ä¸€ä¸ªå¤§é¢ï¼"));
     m_outputFunc("==================================================================");
 }
 
@@ -853,10 +854,10 @@ void HomePageActionFun::BsplineCurveTest1()
 {
     m_context->RemoveAll(Standard_False);
     m_outputFunc(QStringLiteral("================================================"));
-    m_outputFunc(QStringLiteral("Í¼ĞÎ¹æÔò£ºÇúÏß--²ÊÉ«Ïß£»¿ØÖÆ¶à±ßĞÎ---»ÒÉ«ÕÛÏß£»¿ØÖÆµã---ºìÉ«"));
-    m_outputFunc(QStringLiteral("µ¥¶ÎÈı´Î°¸Àı"));
+    m_outputFunc(QStringLiteral("å›¾å½¢è§„åˆ™ï¼šæ›²çº¿--å½©è‰²çº¿ï¼›æ§åˆ¶å¤šè¾¹å½¢---ç°è‰²æŠ˜çº¿ï¼›æ§åˆ¶ç‚¹---çº¢è‰²"));
+    m_outputFunc(QStringLiteral("å•æ®µä¸‰æ¬¡æ¡ˆä¾‹"));
 
-    //¿ØÖÆµã
+    //æ§åˆ¶ç‚¹
     std::vector<gp_Pnt> poles =
     {
         gp_Pnt(0,   0, 0),
@@ -864,25 +865,25 @@ void HomePageActionFun::BsplineCurveTest1()
         gp_Pnt(105, -90, 0),
         gp_Pnt(140,  0, 0)
     };
-    //½Úµã
+    //èŠ‚ç‚¹
     std::vector<double> knots = { 0,1 };
-    //·ÇÖÜÆÚÈı´ÎBÑùÌõ£¬Ã¿¸ö½ÚµãµÄÖØÊıÎª4£¨degree + 1£©£¬±íÊ¾ÇúÏßÔÚÆğµãºÍÖÕµã´¦¶¼¾­¹ı¿ØÖÆµã
+    //éå‘¨æœŸä¸‰æ¬¡Bæ ·æ¡ï¼Œæ¯ä¸ªèŠ‚ç‚¹çš„é‡æ•°ä¸º4ï¼ˆdegree + 1ï¼‰ï¼Œè¡¨ç¤ºæ›²çº¿åœ¨èµ·ç‚¹å’Œç»ˆç‚¹å¤„éƒ½ç»è¿‡æ§åˆ¶ç‚¹
     std::vector<int> mults = { 4,4 };
     Handle(Geom_BSplineCurve) bspline = BSplineValidationUtils::CreateBSpline3d(poles, knots, mults, 3, Standard_False);
 
     BSplineDisplayStyle style;
-    style.curveColor = BSplineValidationUtils::MakeColor(0.95, 0.55, 0.05);     //ÇúÏßÑÕÉ«£¨³ÈÉ«£©
-    style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //¿ØÖÆ¶à±ßĞÎÑÕÉ«£¨»ÒÉ«£©
-    style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //¿ØÖÆµãÑÕÉ«£¨ºìÉ«£©
+    style.curveColor = BSplineValidationUtils::MakeColor(0.95, 0.55, 0.05);     //æ›²çº¿é¢œè‰²ï¼ˆæ©™è‰²ï¼‰
+    style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //æ§åˆ¶å¤šè¾¹å½¢é¢œè‰²ï¼ˆç°è‰²ï¼‰
+    style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //æ§åˆ¶ç‚¹é¢œè‰²ï¼ˆçº¢è‰²ï¼‰
 
     BSplineValidationUtils::DisplayCurveCase(m_context, bspline, style);
 
-    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case1-¶à¶ÎÈı´ÎBÑùÌõ"), bspline));
-    m_outputFunc(QStringLiteral("ËµÃ÷£ºÕâÊÇÎÄµµÖ÷°¸Àı¡£ËüÓĞ¶à¸ö interior knots£¬¸üÈİÒ×¿´³ö¾Ö²¿¿ØÖÆºÍÁ¬ĞøĞÔ¡£"));
-    BSplineValidationUtils::LogPoleDistance(m_outputFunc, QStringLiteral("Case1-¶à¶ÎÈı´ÎBÑùÌõ"), bspline);
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case1-å¤šæ®µä¸‰æ¬¡Bæ ·æ¡"), bspline));
+    m_outputFunc(QStringLiteral("è¯´æ˜ï¼šè¿™æ˜¯æ–‡æ¡£ä¸»æ¡ˆä¾‹ã€‚å®ƒæœ‰å¤šä¸ª interior knotsï¼Œæ›´å®¹æ˜“çœ‹å‡ºå±€éƒ¨æ§åˆ¶å’Œè¿ç»­æ€§ã€‚"));
+    BSplineValidationUtils::LogPoleDistance(m_outputFunc, QStringLiteral("Case1-å¤šæ®µä¸‰æ¬¡Bæ ·æ¡"), bspline);
 }
 
-/// ½ÚµãÖØÊıÓëÁ¬ĞøĞÔ¶Ô±ÈÑéÖ¤
+/// èŠ‚ç‚¹é‡æ•°ä¸è¿ç»­æ€§å¯¹æ¯”éªŒè¯
 void HomePageActionFun::BsplineCurveKnotMultCompareTest()
 {
     BSplineContinuityCompareTest();
@@ -891,10 +892,10 @@ void HomePageActionFun::BsplineCurveKnotMultCompareTest()
 void HomePageActionFun::BSplineContinuityCompareTest()
 {
 	m_context->RemoveAll(Standard_False);
-    // Èı×é°¸ÀıÍ³Ò»Ê¹ÓÃÈı¸öÎ¨Ò»½ÚµãÖµ£¬Ö»ĞŞ¸ÄÖĞ¼ä½ÚµãÖØÊı
+    // ä¸‰ç»„æ¡ˆä¾‹ç»Ÿä¸€ä½¿ç”¨ä¸‰ä¸ªå”¯ä¸€èŠ‚ç‚¹å€¼ï¼Œåªä¿®æ”¹ä¸­é—´èŠ‚ç‚¹é‡æ•°
     std::vector<double> knots = { 0, 1, 2 };
 
-    // -------------------- Case1£ºÄÚ²¿ÖØÊı = 1£¬¶ÔÓ¦ C2 --------------------
+    // -------------------- Case1ï¼šå†…éƒ¨é‡æ•° = 1ï¼Œå¯¹åº” C2 --------------------
     {
         std::vector<gp_Pnt> poles =
         {
@@ -908,7 +909,7 @@ void HomePageActionFun::BSplineContinuityCompareTest()
 
         QString msg;
         Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
-        m_outputFunc(QStringLiteral("[Case1-C2] ¹¹Ôì½á¹û£º%1").arg(msg));
+        m_outputFunc(QStringLiteral("[Case1-C2] æ„é€ ç»“æœï¼š%1").arg(msg));
 
         if (!curve.IsNull())
         {
@@ -921,12 +922,12 @@ void HomePageActionFun::BSplineContinuityCompareTest()
             BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
             m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("Case1-C2"), curve));
 
-            // ÕâÀïknotIndex = 2£¬±íÊ¾¼ì²éÖĞ¼ä½Úµã u = 1 µÄÁ¬ĞøĞÔ
+            // è¿™é‡ŒknotIndex = 2ï¼Œè¡¨ç¤ºæ£€æŸ¥ä¸­é—´èŠ‚ç‚¹ u = 1 çš„è¿ç»­æ€§
             BSplineValidationUtils::LogContinuityAtKnot(m_outputFunc, QStringLiteral("Case1-C2"), curve, 2);
         }
     }
 
-    // -------------------- Case2£ºÄÚ²¿ÖØÊı = 2£¬¶ÔÓ¦ C1 --------------------
+    // -------------------- Case2ï¼šå†…éƒ¨é‡æ•° = 2ï¼Œå¯¹åº” C1 --------------------
     {
         std::vector<gp_Pnt> poles =
         {
@@ -941,7 +942,7 @@ void HomePageActionFun::BSplineContinuityCompareTest()
 
         QString msg;
         Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
-        m_outputFunc(QStringLiteral("[Case2-C1] ¹¹Ôì½á¹û£º%1").arg(msg));
+        m_outputFunc(QStringLiteral("[Case2-C1] æ„é€ ç»“æœï¼š%1").arg(msg));
 
         if (!curve.IsNull())
         {
@@ -957,7 +958,7 @@ void HomePageActionFun::BSplineContinuityCompareTest()
         }
     }
 
-    // -------------------- Case3£ºÄÚ²¿ÖØÊı = 3£¬¶ÔÓ¦ C0 --------------------
+    // -------------------- Case3ï¼šå†…éƒ¨é‡æ•° = 3ï¼Œå¯¹åº” C0 --------------------
     {
         std::vector<gp_Pnt> poles =
         {
@@ -973,7 +974,7 @@ void HomePageActionFun::BSplineContinuityCompareTest()
 
         QString msg;
         Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
-        m_outputFunc(QStringLiteral("[Case3-C0] ¹¹Ôì½á¹û£º%1").arg(msg));
+        m_outputFunc(QStringLiteral("[Case3-C0] æ„é€ ç»“æœï¼š%1").arg(msg));
 
         if (!curve.IsNull())
         {
@@ -992,7 +993,7 @@ void HomePageActionFun::BSplineContinuityCompareTest()
     m_context->UpdateCurrentViewer();
     m_v3dView->FitAll();
     m_outputFunc(QStringLiteral("============================================================"));
-    m_outputFunc(QStringLiteral("½áÂÛ£º¶ÔÓÚÈı´ÎBÑùÌõ£¬ÄÚ²¿½ÚµãÖØÊı´Ó1Ôö¼Óµ½3Ê±£¬Á¬ĞøĞÔ´ÓC2½µµÍµ½C0¡£"));
+    m_outputFunc(QStringLiteral("ç»“è®ºï¼šå¯¹äºä¸‰æ¬¡Bæ ·æ¡ï¼Œå†…éƒ¨èŠ‚ç‚¹é‡æ•°ä»1å¢åŠ åˆ°3æ—¶ï¼Œè¿ç»­æ€§ä»C2é™ä½åˆ°C0ã€‚"));
     m_outputFunc(QStringLiteral("============================================================"));
 }
 
@@ -1001,11 +1002,11 @@ void HomePageActionFun::BsplineCurveLocalControlCompareTest()
     m_context->RemoveAll(Standard_False);
 
     m_outputFunc(QStringLiteral("============================================================"));
-    m_outputFunc(QStringLiteral("BÑùÌõ¾Ö²¿¿ØÖÆ¶Ô±ÈÑéÖ¤¿ªÊ¼"));
-    m_outputFunc(QStringLiteral("Ä¿±ê£º±£³Ö knots / mults / degree ²»±ä£¬Ö»ÒÆ¶¯Ò»¸ö¿ØÖÆµã£¬¹Û²ìÇúÏß¾Ö²¿±ä»¯"));
+    m_outputFunc(QStringLiteral("Bæ ·æ¡å±€éƒ¨æ§åˆ¶å¯¹æ¯”éªŒè¯å¼€å§‹"));
+    m_outputFunc(QStringLiteral("ç›®æ ‡ï¼šä¿æŒ knots / mults / degree ä¸å˜ï¼Œåªç§»åŠ¨ä¸€ä¸ªæ§åˆ¶ç‚¹ï¼Œè§‚å¯Ÿæ›²çº¿å±€éƒ¨å˜åŒ–"));
     m_outputFunc(QStringLiteral("============================================================"));
 
-    // ÕâÀïÊ¹ÓÃ 10 ¸ö¿ØÖÆµã¡¢7 ¸ö span£¬Ê¹¾Ö²¿¿ØÖÆÏÖÏó¸üÃ÷ÏÔ
+    // è¿™é‡Œä½¿ç”¨ 10 ä¸ªæ§åˆ¶ç‚¹ã€7 ä¸ª spanï¼Œä½¿å±€éƒ¨æ§åˆ¶ç°è±¡æ›´æ˜æ˜¾
     std::vector<gp_Pnt> poles =
     {
         gp_Pnt(0,    0,   0),
@@ -1020,25 +1021,25 @@ void HomePageActionFun::BsplineCurveLocalControlCompareTest()
         gp_Pnt(300,   0,  0)
     };
 
-    // Î¨Ò»½ÚµãÖµ£º0 ~ 7£¬¹² 8 ¸öÎ¨Ò»½Úµã
+    // å”¯ä¸€èŠ‚ç‚¹å€¼ï¼š0 ~ 7ï¼Œå…± 8 ä¸ªå”¯ä¸€èŠ‚ç‚¹
     std::vector<double> knots = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-    // Èı´Î B ÑùÌõ£¬Á½¶Ë¼Ğ³Ö£¬ÖĞ¼ä½ÚµãÖØÊı¾ùÎª 1
+    // ä¸‰æ¬¡ B æ ·æ¡ï¼Œä¸¤ç«¯å¤¹æŒï¼Œä¸­é—´èŠ‚ç‚¹é‡æ•°å‡ä¸º 1
     // Sum(Mults) = 4 + 1 + 1 + 1 + 1 + 1 + 1 + 4 = 14
-    // NbPoles = 14 - 3 - 1 = 10£¬¸ÕºÃÆ¥Åä
+    // NbPoles = 14 - 3 - 1 = 10ï¼Œåˆšå¥½åŒ¹é…
     std::vector<int> mults = { 4, 1, 1, 1, 1, 1, 1, 4 };
 
     QString msg;
     Handle(Geom_BSplineCurve) baseCurve =
         BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, msg);
 
-    m_outputFunc(QStringLiteral("[BaseCurve] ¹¹Ôì½á¹û£º%1").arg(msg));
+    m_outputFunc(QStringLiteral("[BaseCurve] æ„é€ ç»“æœï¼š%1").arg(msg));
     if (baseCurve.IsNull())
         return;
 
-    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("BaseCurve-Ô­Ê¼ÇúÏß"), baseCurve));
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("BaseCurve-åŸå§‹æ›²çº¿"), baseCurve));
 
-    // ÕâÀïÑ¡ÔñµÚ 6 ¸ö¿ØÖÆµã£¬±ãÓÚ¹Û²ìÖĞ²¿ÇøÓòµÄ¾Ö²¿±ä»¯
+    // è¿™é‡Œé€‰æ‹©ç¬¬ 6 ä¸ªæ§åˆ¶ç‚¹ï¼Œä¾¿äºè§‚å¯Ÿä¸­éƒ¨åŒºåŸŸçš„å±€éƒ¨å˜åŒ–
     const int movedPoleIndex = 6;
     const gp_Vec delta(0, 90, 0);
 
@@ -1047,38 +1048,38 @@ void HomePageActionFun::BsplineCurveLocalControlCompareTest()
 
     if (movedCurve.IsNull())
     {
-        m_outputFunc(QStringLiteral("[MovedCurve] ¹¹ÔìÊ§°Ü"));
+        m_outputFunc(QStringLiteral("[MovedCurve] æ„é€ å¤±è´¥"));
         return;
     }
 
-    m_outputFunc(QStringLiteral("ÒÆ¶¯¿ØÖÆµã±àºÅ£ºPole[%1]").arg(movedPoleIndex));
-    m_outputFunc(QStringLiteral("Î»ÒÆÏòÁ¿£º(%1, %2, %3)")
+    m_outputFunc(QStringLiteral("ç§»åŠ¨æ§åˆ¶ç‚¹ç¼–å·ï¼šPole[%1]").arg(movedPoleIndex));
+    m_outputFunc(QStringLiteral("ä½ç§»å‘é‡ï¼š(%1, %2, %3)")
         .arg(delta.X())
         .arg(delta.Y())
         .arg(delta.Z()));
 
-    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("MovedCurve-ÒÆ¶¯¿ØÖÆµãºó"), movedCurve));
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("MovedCurve-ç§»åŠ¨æ§åˆ¶ç‚¹å"), movedCurve));
 
-    // ÏÔÊ¾Ô­Ê¼ÇúÏß 
+    // æ˜¾ç¤ºåŸå§‹æ›²çº¿ 
     {
         BSplineDisplayStyle style;
         style.translation = gp_Vec(0, 0, 0);
-        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);   // À¶É«£ºÔ­Ê¼ÇúÏß
-        style.polygonColor = BSplineValidationUtils::MakeColor(0.60, 0.60, 0.60); // »ÒÉ«£ºÔ­Ê¼¿ØÖÆ¶à±ßĞÎ
-        style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);    // ºìÉ«£ºÔ­Ê¼¿ØÖÆµã
+        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);   // è“è‰²ï¼šåŸå§‹æ›²çº¿
+        style.polygonColor = BSplineValidationUtils::MakeColor(0.60, 0.60, 0.60); // ç°è‰²ï¼šåŸå§‹æ§åˆ¶å¤šè¾¹å½¢
+        style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);    // çº¢è‰²ï¼šåŸå§‹æ§åˆ¶ç‚¹
         style.curveWidth = 2.0;
         style.polygonWidth = 1.0;
 
         BSplineValidationUtils::DisplayCurveCase(m_context, baseCurve, style, false);
     }
 
-    //  ÏÔÊ¾ĞŞ¸ÄºóµÄÇúÏß 
+    //  æ˜¾ç¤ºä¿®æ”¹åçš„æ›²çº¿ 
     {
         BSplineDisplayStyle style;
         style.translation = gp_Vec(0, 0, 0);
-        style.curveColor = BSplineValidationUtils::MakeColor(0.90, 0.30, 0.15);   // ºì³ÈÉ«£ºĞŞ¸ÄºóÇúÏß
-        style.polygonColor = BSplineValidationUtils::MakeColor(0.25, 0.25, 0.25); // Éî»Ò£ºĞŞ¸Äºó¿ØÖÆ¶à±ßĞÎ
-        style.poleColor = BSplineValidationUtils::MakeColor(0.10, 0.70, 0.20);    // ÂÌÉ«£ºĞŞ¸Äºó¿ØÖÆµã
+        style.curveColor = BSplineValidationUtils::MakeColor(0.90, 0.30, 0.15);   // çº¢æ©™è‰²ï¼šä¿®æ”¹åæ›²çº¿
+        style.polygonColor = BSplineValidationUtils::MakeColor(0.25, 0.25, 0.25); // æ·±ç°ï¼šä¿®æ”¹åæ§åˆ¶å¤šè¾¹å½¢
+        style.poleColor = BSplineValidationUtils::MakeColor(0.10, 0.70, 0.20);    // ç»¿è‰²ï¼šä¿®æ”¹åæ§åˆ¶ç‚¹
         style.curveWidth = 2.0;
         style.polygonWidth = 1.0;
 
@@ -1090,23 +1091,117 @@ void HomePageActionFun::BsplineCurveLocalControlCompareTest()
     BSplineValidationUtils::LogLocalControlDeviation(m_outputFunc, baseCurve, movedCurve);
 
     m_outputFunc(QStringLiteral("============================================================"));
-    m_outputFunc(QStringLiteral("¹Û²ì½áÂÛ£ºÒÆ¶¯µ¥¸ö¿ØÖÆµãºó£¬ÇúÏß±ä»¯Ö÷Òª¼¯ÖĞÔÚÆäÓ°ÏìÇø¼ä£¬¶ø²»ÊÇÕûÌõÇúÏß¾ùÔÈ±ä»¯¡£"));
+    m_outputFunc(QStringLiteral("è§‚å¯Ÿç»“è®ºï¼šç§»åŠ¨å•ä¸ªæ§åˆ¶ç‚¹åï¼Œæ›²çº¿å˜åŒ–ä¸»è¦é›†ä¸­åœ¨å…¶å½±å“åŒºé—´ï¼Œè€Œä¸æ˜¯æ•´æ¡æ›²çº¿å‡åŒ€å˜åŒ–ã€‚"));
+    m_outputFunc(QStringLiteral("============================================================"));
+}
+
+void HomePageActionFun::BsplineCurvePointEvalCompareTest()
+{
+    m_context->RemoveAll(Standard_False);
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("Bæ ·æ¡ D0 ç‚¹å€¼æ±‚è§£ / De Boor å¯¹æ¯”éªŒè¯å¼€å§‹"));
+    m_outputFunc(QStringLiteral("å›¾å½¢è§„åˆ™ï¼š"));
+    m_outputFunc(QStringLiteral("1) æ©™è‰²æ›²çº¿ = OCC Bæ ·æ¡æ›²çº¿"));
+    m_outputFunc(QStringLiteral("2) ç°è‰²æŠ˜çº¿ + çº¢ç‚¹ = å…¨éƒ¨æ§åˆ¶å¤šè¾¹å½¢ / å…¨éƒ¨æ§åˆ¶ç‚¹"));
+    m_outputFunc(QStringLiteral("3) ç»¿è‰²æŠ˜çº¿ + ç»¿ç‚¹ = å½“å‰å‚æ•° u æ‰€åœ¨ span çš„æ´»è·ƒæ§åˆ¶ç‚¹"));
+    m_outputFunc(QStringLiteral("4) é’è‰² / ç´«è‰² = De Boor é€’æ¨ä¸­é—´å±‚"));
+    m_outputFunc(QStringLiteral("5) é»„è‰²ç‚¹ = æœ€ç»ˆç‚¹ï¼ˆåŒæ—¶å¯¹åº” OCC::D0 ä¸ De Boor ç»“æœï¼‰"));
+    m_outputFunc(QStringLiteral("============================================================"));
+
+    std::vector<gp_Pnt> poles =
+    {
+        gp_Pnt(0,    0,   0),   // P0
+        gp_Pnt(30,   85,  0),   // P1
+        gp_Pnt(75,  -35,  0),   // P2
+        gp_Pnt(120, 110,  0),   // P3
+        gp_Pnt(170,  20,  0),   // P4
+        gp_Pnt(220, -95,  0),   // P5
+        gp_Pnt(270,  70,  0),   // P6
+        gp_Pnt(315,   0,  0)    // P7
+    };
+
+    std::vector<double> knots = { 0, 1, 2, 3, 4, 5 };
+    std::vector<int> mults = { 4, 1, 1, 1, 1, 4 };
+
+    QString buildMsg;
+    Handle(Geom_BSplineCurve) curve =
+        BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, buildMsg);
+
+    m_outputFunc(QStringLiteral("[PointEvalCase] æ„é€ ç»“æœï¼š%1").arg(buildMsg));
+    if (curve.IsNull())  return;
+
+    BSplineDisplayStyle baseStyle;
+    baseStyle.curveColor = BSplineValidationUtils::MakeColor(0.95, 0.55, 0.05);
+    baseStyle.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);
+    baseStyle.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);
+    baseStyle.curveWidth = 2.2;
+    baseStyle.polygonWidth = 1.0;
+    BSplineValidationUtils::DisplayCurveCase(m_context, curve, baseStyle, false);
+
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("PointEvalCase-å¤šæ®µä¸‰æ¬¡Bæ ·æ¡"), curve));
+
+    const double u = 2.35;
+    BSplinePointEvaluationResult evalResult;
+    if (!BSplineValidationUtils::EvaluatePointByDeBoor(curve, u, evalResult))
+    {
+        m_outputFunc(QStringLiteral("[PointEvalCase] ç‚¹å€¼éªŒè¯å¤±è´¥ï¼š%1").arg(evalResult.message));
+        return;
+    }
+    {
+        TopoDS_Shape activePolygon = BSplineValidationUtils::MakeControlPolygonShape(evalResult.activePoles);
+        BSplineValidationUtils::DisplayShape(  m_context, activePolygon,  BSplineValidationUtils::MakeColor(0.10, 0.75, 0.20), 0, 3.0, false,   0.0);
+
+        BSplineValidationUtils::DisplayPoles( m_context,evalResult.activePoles,gp_Vec(0, 0, 0),   BSplineValidationUtils::MakeColor(0.10, 0.75, 0.20));
+    }
+
+    const std::vector<Quantity_Color> layerColors =
+    {
+        BSplineValidationUtils::MakeColor(0.00, 0.70, 0.95),
+        BSplineValidationUtils::MakeColor(0.70, 0.25, 0.85),
+        BSplineValidationUtils::MakeColor(0.95, 0.85, 0.10)
+    };
+
+    for (size_t layerIndex = 1; layerIndex < evalResult.layers.size(); ++layerIndex)
+    {
+        const BSplineDeBoorLayer& layer = evalResult.layers[layerIndex];
+        const Quantity_Color& color = layerColors[std::min(layerIndex - 1, layerColors.size() - 1)];
+
+        if (layer.points.size() >= 2)
+        {
+            TopoDS_Shape layerPolygon = BSplineValidationUtils::MakeControlPolygonShape(layer.points);
+            BSplineValidationUtils::DisplayShape(m_context, layerPolygon, color, 0, 2.0, false, 0.0);
+        }
+
+        BSplineValidationUtils::DisplayPoles(m_context, layer.points, gp_Vec(0, 0, 0), color);
+    }
+
+    BSplineValidationUtils::DisplayPoles( m_context,   std::vector<gp_Pnt>{ evalResult.occPoint },  gp_Vec(0, 0, 0), BSplineValidationUtils::MakeColor(0.95, 0.85, 0.10));
+
+    m_context->UpdateCurrentViewer();
+    m_v3dView->FitAll();
+
+    m_outputFunc(BSplineValidationUtils::BuildPointEvaluationSummary(QStringLiteral("PointEvalCase-u=2.35"), evalResult));
+    BSplineValidationUtils::LogPointEvaluationSamplingComparison(   m_outputFunc,  QStringLiteral("PointEvalCase-å…¨å‚æ•°åŸŸ"),  curve,  80);
+
+    m_outputFunc(QStringLiteral("è§‚å¯Ÿç»“è®ºï¼šå½“å‰å‚æ•° u = 2.35 åªæ¿€æ´» 4 ä¸ªå±€éƒ¨æ§åˆ¶ç‚¹ã€‚"));
+    m_outputFunc(QStringLiteral("De Boor é€’æ¨å¾—åˆ°çš„é»„è‰²ç‚¹ä¸ OCC::D0 çš„ç»“æœé‡åˆï¼Œè¯´æ˜ D0 èƒŒåéµå¾ªçš„æ˜¯æ˜ç¡®çš„ B æ ·æ¡ç‚¹å€¼æ±‚è§£é€»è¾‘ã€‚"));
     m_outputFunc(QStringLiteral("============================================================"));
 }
 
 
-//  BÑùÌõÊı¾İºÏ·¨ĞÔÑéÖ¤
+//  Bæ ·æ¡æ•°æ®åˆæ³•æ€§éªŒè¯
 void HomePageActionFun::BsplineDataValidityCompareTest()
 {
     m_context->RemoveAll(Standard_False);
 
     m_outputFunc(QStringLiteral("============================================================"));
-    m_outputFunc(QStringLiteral("BÑùÌõÊı¾İºÏ·¨ĞÔÑéÖ¤¿ªÊ¼"));
-    m_outputFunc(QStringLiteral("Ä¿±ê£ººÏ·¨ÊäÈë¿ÉÒÔÕı³£¹¹Ôì£»·Ç·¨ÊäÈëÔÚ½øÈë OCC Ç°±»Ô¤Ğ£ÑéÀ¹½Ø"));
-    m_outputFunc(QStringLiteral("×¢Òâ£º±¾ÊµÑéÖ»Õë¶Ô·ÇÖÜÆÚ B ÑùÌõ"));
+    m_outputFunc(QStringLiteral("Bæ ·æ¡æ•°æ®åˆæ³•æ€§éªŒè¯å¼€å§‹"));
+    m_outputFunc(QStringLiteral("ç›®æ ‡ï¼šåˆæ³•è¾“å…¥å¯ä»¥æ­£å¸¸æ„é€ ï¼›éæ³•è¾“å…¥åœ¨è¿›å…¥ OCC å‰è¢«é¢„æ ¡éªŒæ‹¦æˆª"));
+    m_outputFunc(QStringLiteral("æ³¨æ„ï¼šæœ¬å®éªŒåªé’ˆå¯¹éå‘¨æœŸ B æ ·æ¡"));
     m_outputFunc(QStringLiteral("============================================================"));
 
-    //case1 ºÏ·¨ÊäÈë
+    //case1 åˆæ³•è¾“å…¥
     std::vector<gp_Pnt> poles1 = 
     {
         gp_Pnt(0,   0, 0),
@@ -1120,9 +1215,9 @@ void HomePageActionFun::BsplineDataValidityCompareTest()
     std::vector<double> knots1 = { 0,1,2,3,4 };
 	std::vector<int> mults1 = { 4, 1, 1, 1, 4 };
 
-    RunBsplineValidityTest(QStringLiteral("Case1-ºÏ·¨ÊäÈë"), poles1, knots1, mults1, 3, true, gp_Vec(0, 0, 0));
+    RunBsplineValidityTest(QStringLiteral("Case1-åˆæ³•è¾“å…¥"), poles1, knots1, mults1, 3, true, gp_Vec(0, 0, 0));
     
-    //case2 ·Ç·¨ÊäÈë£º¿ØÖÆµãÊıÁ¿²»Æ¥Åä
+    //case2 éæ³•è¾“å…¥ï¼šæ§åˆ¶ç‚¹æ•°é‡ä¸åŒ¹é…
     std::vector<gp_Pnt> poles2=
     {
         gp_Pnt(0,   0, 0),
@@ -1134,9 +1229,9 @@ void HomePageActionFun::BsplineDataValidityCompareTest()
     };
     std::vector<double> knots2 = { 0,1,2,3,4 };
     std::vector<int> mults2 = { 4, 1, 1, 1, 4 };
-    RunBsplineValidityTest(QStringLiteral("Case2-·Ç·¨ÊäÈë-¿ØÖÆµãÊıÁ¿²»Æ¥Åä"), poles2,knots2, mults2, 3, false, gp_Vec(0, 0, 0));
+    RunBsplineValidityTest(QStringLiteral("Case2-éæ³•è¾“å…¥-æ§åˆ¶ç‚¹æ•°é‡ä¸åŒ¹é…"), poles2,knots2, mults2, 3, false, gp_Vec(0, 0, 0));
 
-    //case3 ·Ç·¨ÊäÈë£º½ÚµãÓëÖØÊı²»Æ¥Åä
+    //case3 éæ³•è¾“å…¥ï¼šèŠ‚ç‚¹ä¸é‡æ•°ä¸åŒ¹é…
     std::vector<gp_Pnt> poles3 =
     {
         gp_Pnt(0,   0, 0),
@@ -1149,9 +1244,9 @@ void HomePageActionFun::BsplineDataValidityCompareTest()
     };
     std::vector<double> knots3 = { 0,1,2,3,4 };
     std::vector<int> mults3 = { 4, 1,  1, 4 };
-    RunBsplineValidityTest(QStringLiteral("Case3-·Ç·¨ÊäÈë-½ÚµãÓëÖØÊı²»Æ¥Åä"), poles3, knots3, mults3, 3, false, gp_Vec(0, 0, 0));
+    RunBsplineValidityTest(QStringLiteral("Case3-éæ³•è¾“å…¥-èŠ‚ç‚¹ä¸é‡æ•°ä¸åŒ¹é…"), poles3, knots3, mults3, 3, false, gp_Vec(0, 0, 0));
 
-    //case4 ·Ç·¨ÊäÈë£º½Úµã´æÔÚÖØ¸´
+    //case4 éæ³•è¾“å…¥ï¼šèŠ‚ç‚¹å­˜åœ¨é‡å¤
     std::vector<gp_Pnt> poles4 =
     {
         gp_Pnt(0,   0, 0),
@@ -1164,9 +1259,9 @@ void HomePageActionFun::BsplineDataValidityCompareTest()
     };
     std::vector<double> knots4 = { 0,1,1,3,4 };
     std::vector<int> mults4 = { 4, 1,  1, 4 };
-    RunBsplineValidityTest(QStringLiteral("Case4-·Ç·¨ÊäÈë-½Úµã´æÔÚÖØ¸´"), poles4, knots4, mults4, 3, false, gp_Vec(0, 0, 0));
+    RunBsplineValidityTest(QStringLiteral("Case4-éæ³•è¾“å…¥-èŠ‚ç‚¹å­˜åœ¨é‡å¤"), poles4, knots4, mults4, 3, false, gp_Vec(0, 0, 0));
 
-    //case5 ·Ç·¨ÊäÈë£ºÄÚ²¿½ÓÖØÊı¹ı´ó
+    //case5 éæ³•è¾“å…¥ï¼šå†…éƒ¨æ¥é‡æ•°è¿‡å¤§
     std::vector<gp_Pnt> poles5 =
     {
         gp_Pnt(0,   0,  0),
@@ -1177,30 +1272,30 @@ void HomePageActionFun::BsplineDataValidityCompareTest()
     };
     std::vector<double> knots5 = { 0,1,2 };
     std::vector<int> mults5 = { 4, 4, 4 };
-    RunBsplineValidityTest(QStringLiteral("Case4-·Ç·¨ÊäÈë-ÄÚ²¿½ÓÖØÊı¹ı´ó"), poles5, knots5, mults5, 3, false, gp_Vec(0, 0, 0));
+    RunBsplineValidityTest(QStringLiteral("Case4-éæ³•è¾“å…¥-å†…éƒ¨æ¥é‡æ•°è¿‡å¤§"), poles5, knots5, mults5, 3, false, gp_Vec(0, 0, 0));
 
 }
 
-//  Ö´ĞĞµ¥¸öBÑùÌõºÏ·¨ĞÔ
+//  æ‰§è¡Œå•ä¸ªBæ ·æ¡åˆæ³•æ€§
 void HomePageActionFun::RunBsplineValidityTest(const QString& caseName, const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, const std::vector<int>& mults, int degree, bool needDisplay, const gp_Vec& displayTranslation)
 {
     m_outputFunc(QStringLiteral("------------------------------------------------------------"));
     m_outputFunc(QStringLiteral("[%1]").arg(caseName));
 
     QString checkMsg = BSplineValidationUtils::ValidateOpenBSplineInput(poles, knots, mults, degree);
-    m_outputFunc(QStringLiteral("Ğ£Ñé½á¹û:%1").arg(checkMsg));
+    m_outputFunc(QStringLiteral("æ ¡éªŒç»“æœ:%1").arg(checkMsg));
 
     QString buildMsg;
     Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, degree, buildMsg);
-    m_outputFunc(QStringLiteral("¹¹Ôì½á¹û:%1").arg(buildMsg));
+    m_outputFunc(QStringLiteral("æ„é€ ç»“æœ:%1").arg(buildMsg));
 
 	if (!curve.IsNull() && needDisplay)
     {
         BSplineDisplayStyle style;
         style.translation = displayTranslation;
-        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);     //À¶É«£ºÇúÏß
-		style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //»ÒÉ«£º¿ØÖÆ¶à±ßĞÎ
-		style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //ºìÉ«£º¿ØÖÆµã
+        style.curveColor = BSplineValidationUtils::MakeColor(0.10, 0.45, 0.90);     //è“è‰²ï¼šæ›²çº¿
+		style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);   //ç°è‰²ï¼šæ§åˆ¶å¤šè¾¹å½¢
+		style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);      //çº¢è‰²ï¼šæ§åˆ¶ç‚¹
         BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
         m_outputFunc(BSplineValidationUtils::BuildCurveSummary(caseName, curve));
     }
