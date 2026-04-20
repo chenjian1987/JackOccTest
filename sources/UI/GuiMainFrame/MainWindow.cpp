@@ -335,6 +335,13 @@ void MainWindow::createActions()
         m_bsplineCurveManager);
     connect(m_actionBsplineDataValidityCompareTest, &QAction::triggered, this, &MainWindow::onActionBsplineDataValidityCompareTest);
     m_bsplineCurveManager->addSmallAction(m_actionBsplineDataValidityCompareTest);
+
+    m_actionBsplineCurveActivePoleRangeTest = new QAction(
+        QIcon(QString(exePath + "/Resource/Arc3Points.png")),
+        QString::fromLocal8Bit("活跃控制点判定验证"),
+        m_bsplineCurveManager);
+    connect(m_actionBsplineCurveActivePoleRangeTest, &QAction::triggered, this, &MainWindow::onActionBsplineCurveActivePoleRangeTest);
+    m_bsplineCurveManager->addSmallAction(m_actionBsplineCurveActivePoleRangeTest);
 }
 
 void MainWindow::AppendOutput(const QString& text)

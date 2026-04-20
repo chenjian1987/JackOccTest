@@ -156,4 +156,8 @@
     void WIN::onActionBsplineDataValidityCompareTest() \
     { \
     HOMEPAGE->OP->BsplineDataValidityCompareTest(); \
-    }
+    }\
+    void WIN::onActionBsplineCurveActivePoleRangeTest() \
+    { \
+        HOMEPAGE->OP->BsplineCurveActivePoleRangeTest(); \
+    } 

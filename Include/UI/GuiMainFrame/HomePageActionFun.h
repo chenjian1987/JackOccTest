@@ -78,6 +78,11 @@ public:
     //  B样条数据合法性验证
     void BsplineDataValidityCompareTest();
 
+    /// <summary>
+    /// 活跃控制点判定验证
+    /// </summary>
+    void BsplineCurveActivePoleRangeTest();
+
 private:
     Handle(AIS_Shape) GetFirstSelectedShape() const;
 
@@ -96,6 +101,7 @@ private:
 
     //  执行单个B样条合法性
     void RunBsplineValidityTest(const QString& caseName, const std::vector<gp_Pnt>& poles, const std::vector<double>& knots, const std::vector<int>& mults, int degree, bool needDisplay, const gp_Vec& displayTranslation);
+
 
     
 private:

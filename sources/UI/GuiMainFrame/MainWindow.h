@@ -74,6 +74,7 @@ namespace JackC
         void onActionBsplineCurveLocalControlCompareTest();    //局部控制对比测试
         void onActionBsplineCurvePointEvalCompareTest();       //D0 / De Boor 点值验证
 		void onActionBsplineDataValidityCompareTest();         //数据合法性验证
+        void onActionBsplineCurveActivePoleRangeTest(); // 活跃控制点判定验证
 
     private:
         void createActions();
@@ -141,5 +142,6 @@ namespace JackC
         QAction* m_actionBsplineCurveLocalControlCompareTest;  //局部控制对比测试
         QAction* m_actionBsplineCurvePointEvalCompareTest;     //D0 / De Boor 点值验证
         QAction* m_actionBsplineDataValidityCompareTest;        //数据合法性验证
+        QAction* m_actionBsplineCurveActivePoleRangeTest; // 活跃控制点判定验证
     };
 }

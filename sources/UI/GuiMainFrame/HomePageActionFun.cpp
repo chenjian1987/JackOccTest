@@ -1301,3 +1301,114 @@ void HomePageActionFun::RunBsplineValidityTest(const QString& caseName, const st
     }
     m_outputFunc(QStringLiteral("------------------------------------------------------------"));
 }
+
+
+void HomePageActionFun::BsplineCurveActivePoleRangeTest()
+{
+    m_context->RemoveAll(Standard_False);
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("B样条活跃控制点判定验证开始"));
+    m_outputFunc(QStringLiteral("目标：验证当参数 u 落在不同 span 时，活跃控制点严格满足 P(k-p) ~ Pk"));
+    m_outputFunc(QStringLiteral("图形规则："));
+    m_outputFunc(QStringLiteral("1) 橙色曲线 = OCC B样条曲线"));
+    m_outputFunc(QStringLiteral("2) 灰色折线 + 红点 = 全部控制多边形 / 全部控制点"));
+    m_outputFunc(QStringLiteral("3) 绿色折线 + 绿点 = 当前参数 u 所在 span 的活跃控制点"));
+    m_outputFunc(QStringLiteral("4) 黄色点 = 当前参数 u 对应的曲线点"));
+    m_outputFunc(QStringLiteral("============================================================"));
+
+    std::vector<gp_Pnt> poles =
+    {
+        gp_Pnt(0,    0,   0),   // P0
+        gp_Pnt(30,   85,  0),   // P1
+        gp_Pnt(75,  -35,  0),   // P2
+        gp_Pnt(120, 110,  0),   // P3
+        gp_Pnt(170,  20,  0),   // P4
+        gp_Pnt(220, -95,  0),   // P5
+        gp_Pnt(270,  70,  0),   // P6
+        gp_Pnt(315,   0,  0)    // P7
+    };
+
+    std::vector<double> knots = { 0, 1, 2, 3, 4, 5 };
+    std::vector<int> mults = { 4, 1, 1, 1, 1, 4 };
+
+    QString buildMsg;
+    Handle(Geom_BSplineCurve) curve = BSplineValidationUtils::CreateOpenBSpline3dChecked(poles, knots, mults, 3, buildMsg);
+
+    m_outputFunc(QStringLiteral("[ActivePoleCase] 构造结果：%1").arg(buildMsg));
+    if (curve.IsNull())
+        return;
+
+    m_outputFunc(BSplineValidationUtils::BuildCurveSummary(QStringLiteral("ActivePoleCase-多段三次B样条"), curve));
+
+    struct ActivePoleCase
+    {
+        QString caseName;
+        double u;
+        gp_Vec translation;
+    };
+
+    std::vector<ActivePoleCase> cases =
+    {
+        { QStringLiteral("Case1-k=4"), 1.35, gp_Vec(0,   0, 0) },
+        { QStringLiteral("Case2-k=5"), 2.35, gp_Vec(380, 0, 0) },
+        { QStringLiteral("Case3-k=6"), 3.35, gp_Vec(760, 0, 0) }
+    };
+
+    for (const ActivePoleCase& item : cases)
+    {
+        BSplineDisplayStyle style;
+        style.translation = item.translation;
+        style.curveColor = BSplineValidationUtils::MakeColor(0.95, 0.55, 0.05);
+        style.polygonColor = BSplineValidationUtils::MakeColor(0.55, 0.55, 0.55);
+        style.poleColor = BSplineValidationUtils::MakeColor(0.85, 0.05, 0.05);
+        style.curveWidth = 2.2;
+        style.polygonWidth = 1.0;
+        BSplineValidationUtils::DisplayCurveCase(m_context, curve, style, false);
+
+        BSplinePointEvaluationResult result;
+        if (!BSplineValidationUtils::EvaluatePointByDeBoor(curve, item.u, result))
+        {
+            m_outputFunc(QStringLiteral("[%1] 求值失败：%2").arg(item.caseName).arg(result.message));
+            continue;
+        }
+
+        TopoDS_Shape activePolygon = BSplineValidationUtils::MakeControlPolygonShape(result.activePoles, item.translation);
+
+        BSplineValidationUtils::DisplayShape(m_context, activePolygon, BSplineValidationUtils::MakeColor(0.10, 0.75, 0.20), 0, 3.0, false, 0.0);
+        BSplineValidationUtils::DisplayPoles(m_context, result.activePoles, item.translation, BSplineValidationUtils::MakeColor(0.10, 0.75, 0.20));
+        BSplineValidationUtils::DisplayPoles(m_context, std::vector<gp_Pnt>{ result.occPoint }, item.translation, BSplineValidationUtils::MakeColor(0.95, 0.85, 0.10));
+
+        const int k = result.fullSpanIndex;
+        const int p = result.degree;
+
+        QString expectedText;
+        expectedText = QStringLiteral("P%1 ~ P%2").arg(k - p).arg(k);
+
+        QString actualText;
+        for (size_t i = 0; i < result.activePoleIndices.size(); ++i)
+        {
+            if (!actualText.isEmpty())
+                actualText += QStringLiteral(", ");
+
+            actualText += QStringLiteral("P%1").arg(result.activePoleIndices[i] - 1);
+        }
+
+        m_outputFunc(QStringLiteral("------------------------------------------------------------"));
+        m_outputFunc(QStringLiteral("[%1]").arg(item.caseName));
+        m_outputFunc(QStringLiteral("参数 u = %1").arg(BSplineValidationUtils::RealToString(item.u, 3)));
+        m_outputFunc(QStringLiteral("唯一节点区间 = [%1, %2]").arg(BSplineValidationUtils::RealToString(result.spanLeft, 3)).arg(BSplineValidationUtils::RealToString(result.spanRight, 3)));
+        m_outputFunc(QStringLiteral("full span index k = %1, degree p = %2").arg(k).arg(p));
+        m_outputFunc(QStringLiteral("按公式 P(k-p) ~ Pk = %1").arg(expectedText));
+        m_outputFunc(QStringLiteral("程序实际提取的活跃控制点 = %1").arg(actualText));
+        m_outputFunc(QStringLiteral("当前曲线点 = %1").arg(BSplineValidationUtils::PointToString(result.occPoint, 3)));
+    }
+
+    m_context->UpdateCurrentViewer();
+    m_v3dView->FitAll();
+
+    m_outputFunc(QStringLiteral("============================================================"));
+    m_outputFunc(QStringLiteral("结论：对于三次 B 样条，活跃控制点始终为连续 4 个，并满足 P(k-3) ~ Pk。"));
+    m_outputFunc(QStringLiteral("当 span 从 k=4 变到 k=5、k=6 时，活跃控制点集合会整体向右平移一格。"));
+    m_outputFunc(QStringLiteral("============================================================"));
+}
